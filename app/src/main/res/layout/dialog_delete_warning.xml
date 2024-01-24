@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="48dp"
+    android:layout_marginTop="96dp"
+    android:background="@drawable/shape_rounded"
+    android:backgroundTint="@color/theme_bg"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/iv_warning"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/icon_warning"
+        app:layout_constraintEnd_toStartOf="@id/tv_warning_title"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_warning_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:text="@string/warning_delete_title"
+        android:textColor="@color/white"
+        android:textSize="14dp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_warning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_warning"
+        app:layout_constraintTop_toTopOf="@id/iv_warning" />
+
+    <TextView
+        android:id="@+id/tv_warning_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/warning_delete_body"
+        android:textColor="@color/white"
+        android:textSize="14dp"
+        app:layout_constraintEnd_toEndOf="@id/tv_warning_title"
+        app:layout_constraintStart_toStartOf="@id/iv_warning"
+        app:layout_constraintTop_toBottomOf="@id/tv_warning_title" />
+
+    <Button
+        android:id="@+id/bnt_negative"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="4dp"
+        android:backgroundTint="@color/theme_secondary"
+        android:text="@string/warning_negative"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/bnt_positive"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_warning_body" />
+
+    <Button
+        android:id="@+id/bnt_positive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="@color/theme_accent"
+        android:text="@string/warning_positive"
+        android:textColor="@color/theme_secondary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bnt_negative"
+        app:layout_constraintTop_toBottomOf="@id/tv_warning_body" />
+</androidx.constraintlayout.widget.ConstraintLayout>
