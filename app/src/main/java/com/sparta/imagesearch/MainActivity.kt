@@ -1,7 +1,6 @@
 package com.sparta.imagesearch
 
 import android.content.res.ColorStateList
-import android.graphics.ColorFilter
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -13,7 +12,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sparta.imagesearch.databinding.ActivityMainBinding
-import com.sparta.imagesearch.databinding.TabLayoutItemBinding
+import com.sparta.imagesearch.databinding.TabCustomViewBinding
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
@@ -47,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun TabLayout.setCustomTabView() {
-        TabLayoutItemBinding.inflate(layoutInflater).apply {
+        TabCustomViewBinding.inflate(layoutInflater).apply {
             ivTabIcon.setImageResource(R.drawable.icon_search)
             tvTabName.setText(R.string.menu_search)
 
@@ -56,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             this.getTabAt(0)?.customView = it.root
         }
 
-        TabLayoutItemBinding.inflate(layoutInflater).apply {
+        TabCustomViewBinding.inflate(layoutInflater).apply {
             ivTabIcon.setImageResource(R.drawable.icon_folder)
             tvTabName.setText(R.string.menu_folder)
         }.also {
