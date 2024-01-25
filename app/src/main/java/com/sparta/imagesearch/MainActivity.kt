@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 import com.sparta.imagesearch.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -16,6 +17,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.viewpager.adapter = MyPagerAdapter(this)
+        TabLayoutMediator(binding.layoutTab, binding.viewpager){tab, position ->
+            tab.text = resources.getText(
+                if(position==0)R.string.menu_search
+                else R.string.menu_folder
+            )
+        }.attach()
     }
 
     class MyPagerAdapter(activity: AppCompatActivity): FragmentStateAdapter(activity) {
