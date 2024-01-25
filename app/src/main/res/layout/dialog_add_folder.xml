@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="48dp"
+    android:layout_marginTop="48dp"
+    android:background="@drawable/shape_rounded"
+    android:backgroundTint="@color/theme_bg"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_folder_title"
+        android:textColor="@color/white"
+        android:textSize="14dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_folder_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/add_folder_name"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/shape_rounded"
+        android:backgroundTint="@color/theme_secondary"
+        app:layout_constraintBottom_toBottomOf="@id/tv_folder_name"
+        app:layout_constraintStart_toEndOf="@id/tv_folder_name"
+        app:layout_constraintTop_toTopOf="@id/tv_folder_name">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:hint="@string/add_folder_name_hint"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_folder"
+        android:layout_width="25dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/icon_folder"
+        app:layout_constraintEnd_toEndOf="@id/tv_folder_color"
+        app:layout_constraintStart_toStartOf="@id/tv_folder_color"
+        app:layout_constraintTop_toBottomOf="@id/tv_folder_name"
+        app:tint="@color/folder_color1" />
+
+    <TextView
+        android:id="@+id/tv_folder_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="@string/add_folder_color"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/tv_folder_name"
+        app:layout_constraintTop_toBottomOf="@id/iv_folder" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/shape_rounded"
+        android:backgroundTint="@color/theme_secondary"
+        android:padding="4dp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_folder_color"
+        app:layout_constraintStart_toEndOf="@id/tv_folder_color"
+        app:layout_constraintTop_toTopOf="@id/iv_folder">
+
+        <ImageView
+            android:id="@+id/iv_color1"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/folder_color1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_dot1"
+            android:layout_width="3dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/icon_dot"
+            app:layout_constraintEnd_toEndOf="@id/iv_color1"
+            app:layout_constraintStart_toStartOf="@id/iv_color1"
+            app:layout_constraintTop_toBottomOf="@id/iv_color1" />
+
+        <ImageView
+            android:id="@+id/iv_color2"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/folder_color2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/iv_color1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_dot2"
+            android:layout_width="3dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/icon_dot"
+            android:visibility="invisible"
+            tools:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@id/iv_color2"
+            app:layout_constraintStart_toStartOf="@id/iv_color2"
+            app:layout_constraintTop_toBottomOf="@id/iv_color2" />
+
+        <ImageView
+            android:id="@+id/iv_color3"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/folder_color3"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/iv_color2"
+            app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/iv_dot3"
+            android:layout_width="3dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/icon_dot"
+            android:visibility="invisible"
+            tools:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@id/iv_color3"
+            app:layout_constraintStart_toStartOf="@id/iv_color3"
+            app:layout_constraintTop_toBottomOf="@id/iv_color3" />
+
+        <ImageView
+            android:id="@+id/iv_color4"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/folder_color4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/iv_color3"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_dot4"
+            android:layout_width="3dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/icon_dot"
+            android:visibility="invisible"
+            tools:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@id/iv_color4"
+            app:layout_constraintStart_toStartOf="@id/iv_color4"
+            app:layout_constraintTop_toBottomOf="@id/iv_color4" />
+        <ImageView
+            android:id="@+id/iv_color5"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/folder_color5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/iv_color4"
+            app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/iv_dot5"
+            android:layout_width="3dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/icon_dot"
+            android:visibility="invisible"
+            tools:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@id/iv_color5"
+            app:layout_constraintStart_toStartOf="@id/iv_color5"
+            app:layout_constraintTop_toBottomOf="@id/iv_color5" />
+
+        <ImageView
+            android:id="@+id/iv_more"
+            android:layout_width="16dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/icon_more"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/bnt_negative"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/theme_secondary"
+        android:text="@string/add_folder_negative"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/tv_folder_color"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/bnt_positive"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        />
+    <Button
+        android:id="@+id/bnt_positive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/theme_accent"
+        android:text="@string/add_folder_positive"
+        android:textColor="@color/theme_secondary"
+        app:layout_constraintTop_toBottomOf="@id/tv_folder_color"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bnt_negative"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="12dp"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
