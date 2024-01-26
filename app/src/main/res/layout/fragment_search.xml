@@ -7,7 +7,7 @@
     android:background="@color/theme_bg"
     tools:context=".SearchFragment">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,19 +26,38 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:src="@drawable/icon_search"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:tint="@color/theme_accent" />
 
         <EditText
             android:id="@+id/et_search"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginHorizontal="12dp"
             android:hint="@string/search_hint"
             android:maxLines="1"
             android:textColor="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_search"
+            app:layout_constraintEnd_toStartOf="@id/btn_search"
             android:textColorHint="@color/white"
             android:textSize="14sp" />
-    </LinearLayout>
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search"
+            android:textSize="14sp"
+            android:backgroundTint="@color/theme_accent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@color/theme_bg"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_image"
