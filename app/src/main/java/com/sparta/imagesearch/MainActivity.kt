@@ -23,6 +23,18 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initVP2AndTabLayout()
+        customTabLayout()
+    }
+
+    class MyPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+        override fun getItemCount(): Int = 2
+        override fun createFragment(position: Int): Fragment {
+            return if (position == 0) SearchFragment() else FolderFragment()
+        }
+    }
+
+    private fun initVP2AndTabLayout(){
         binding.viewpager.adapter = MyPagerAdapter(this)
 
         TabLayoutMediator(binding.layoutTab, binding.viewpager) { tab, position ->
@@ -31,17 +43,12 @@ class MainActivity : AppCompatActivity() {
                 else R.string.menu_folder
             )
         }.attach()
+    }
+    private fun customTabLayout(){
         binding.layoutTab.run {
             setCustomTabView()
             setTabSelectedListener()
             setCustomTabAnimation()
-        }
-    }
-
-    class MyPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
-        override fun getItemCount(): Int = 2
-        override fun createFragment(position: Int): Fragment {
-            return if (position == 0) SearchFragment() else FolderFragment()
         }
     }
 
