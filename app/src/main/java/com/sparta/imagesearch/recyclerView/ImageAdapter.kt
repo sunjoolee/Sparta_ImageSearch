@@ -1,5 +1,6 @@
 package com.sparta.imagesearch.recyclerView
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -7,19 +8,20 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.Image
+import com.sparta.imagesearch.data.ImageFolder
 import com.sparta.imagesearch.databinding.RecyclerViewItemImageBinding
 import com.sparta.imagesearch.util.fromDpToPx
 
 
-interface OnClickListener{
-    fun onClick(image: Image)
+interface OnImageClickListener{
+    fun onImageClick(image: Image)
     fun onHeartClick(image: Image)
     fun onHeartLongClick(image: Image)
 }
 class ImageAdapter(var dataset: MutableList<Image>) :
     RecyclerView.Adapter<ImageAdapter.Holder>() {
 
-    var onClickListener:OnClickListener? = null
+    var onImageClickListener:OnImageClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding =
@@ -31,14 +33,14 @@ class ImageAdapter(var dataset: MutableList<Image>) :
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.itemView.setOnClickListener {
-            onClickListener?.onClick(dataset[position])
+            onImageClickListener?.onImageClick(dataset[position])
         }
         holder.heartImageView.setOnClickListener {
-            onClickListener?.onHeartClick(dataset[position])
+            onImageClickListener?.onHeartClick(dataset[position])
         }
         holder.heartImageView.setOnLongClickListener {
-            onClickListener?.onHeartLongClick(dataset[position])
-            false
+            onImageClickListener?.onHeartLongClick(dataset[position])
+            true
         }
 
         holder.bind(position)
@@ -52,16 +54,25 @@ class ImageAdapter(var dataset: MutableList<Image>) :
                     RequestOptions()
                         .placeholder(R.drawable.icon_bad_wifi)
                         .error(R.drawable.icon_bad_wifi)
-                        .override(160f.fromDpToPx()) //TODO 이미지 가로세로 비율 유지하며 크기 조정하기
+                        //TODO 이미지 가로세로 비율 유지하며 크기 조정하기
+                        .override(160f.fromDpToPx())
                 )
                 .into(imageView)
             imageView.clipToOutline = true
 
             sourceTextView.text = this.source
             timeTextView.text = this.time
-            //TODO 폴더 색에 따라 하트 색 바꾸기
 
+            setHeartImageViewColor(this.folder)
         }
+    }
+
+    private fun Holder.setHeartImageViewColor(folder: ImageFolder?){
+        heartImageView.imageTintList = ColorStateList.valueOf(
+            binding.root.resources.getColor(
+                folder?.colorId ?: R.color.gray
+            )
+        )
     }
 
     fun changeDataset(newDataset: MutableList<Image>) {
