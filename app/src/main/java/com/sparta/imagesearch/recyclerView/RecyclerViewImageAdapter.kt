@@ -4,7 +4,11 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.RecyclerViewImage
 import com.sparta.imagesearch.databinding.RecyclerViewItemImageBinding
 
@@ -23,7 +27,13 @@ class RecyclerViewImageAdapter(var dataset:MutableList<RecyclerViewImage>) : Rec
 
     private fun Holder.bind(position:Int){
         with(dataset[position]) {
-            //imageView.setImageURI(Uri.parse(this.thumbnailUrl))
+            Glide.with(binding.root.context)
+                .load(this.thumbnailUrl)
+                .apply(
+                    RequestOptions().error(R.drawable.image_sample1)
+                )
+                .into(imageView)
+
             sourceTextView.text =this.source
             timeTextView.text = this.time
             //TODO 폴더 색에 따라 하트 색 바꾸기
