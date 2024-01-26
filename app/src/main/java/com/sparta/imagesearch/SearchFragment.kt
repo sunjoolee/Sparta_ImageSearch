@@ -9,9 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.sparta.imagesearch.data.RecyclerViewImage
 import com.sparta.imagesearch.databinding.FragmentSearchBinding
+import com.sparta.imagesearch.recyclerView.GridSpacingItemDecoration
 import com.sparta.imagesearch.recyclerView.RecyclerViewImageAdapter
 import com.sparta.imagesearch.retrofit.ImageResponse
 import com.sparta.imagesearch.retrofit.SearchClient
+import com.sparta.imagesearch.util.fromDpToPx
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
@@ -41,7 +43,7 @@ class SearchFragment : Fragment() {
         imageAdapter = RecyclerViewImageAdapter(mutableListOf<RecyclerViewImage>())
         binding.recyclerviewImage.run {
             adapter = imageAdapter
-            //TODO 그리드 항목 사이 간격 일정하게 맞추기
+            addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
         }
     }
 
