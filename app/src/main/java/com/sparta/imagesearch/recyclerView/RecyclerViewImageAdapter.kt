@@ -36,6 +36,7 @@ class RecyclerViewImageAdapter(var dataset: MutableList<RecyclerViewImage>) :
                         .override(160f.fromDpToPx())
                 )
                 .into(imageView)
+            imageView.clipToOutline = true
 
             sourceTextView.text = this.source
             timeTextView.text = this.time
