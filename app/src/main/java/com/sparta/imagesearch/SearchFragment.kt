@@ -1,10 +1,12 @@
 package com.sparta.imagesearch
 
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.sparta.imagesearch.data.RecyclerViewImage
@@ -49,11 +51,17 @@ class SearchFragment : Fragment() {
 
     private fun setSearchButtonOnClickListener() {
         binding.btnSearch.setOnClickListener {
+            hideKeyboard(it)
+
             val keyword = binding.etSearch.text.toString()
             var imageResponse: ImageResponse? = null
-
             lifecycleScope.launch { communicateImageSearchNetwork(keyword) }
         }
+    }
+    private fun hideKeyboard(view:View){
+        val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+        view.clearFocus()
     }
 
     private suspend fun communicateImageSearchNetwork(query: String) {
@@ -69,6 +77,10 @@ class SearchFragment : Fragment() {
         job.join()
 
         val newDataset = imageResponseToDataset(imageResponse)
+        updateImageRecyclerView(newDataset)
+    }
+
+    private fun updateImageRecyclerView(newDataset: MutableList<RecyclerViewImage>) {
         imageAdapter.changeDataset(newDataset)
     }
 
