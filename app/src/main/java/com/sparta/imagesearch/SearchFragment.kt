@@ -6,13 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.sparta.imagesearch.data.RecyclerViewImage
+import com.sparta.imagesearch.data.Image
 import com.sparta.imagesearch.databinding.FragmentSearchBinding
 import com.sparta.imagesearch.recyclerView.GridSpacingItemDecoration
-import com.sparta.imagesearch.recyclerView.RecyclerViewImageAdapter
+import com.sparta.imagesearch.recyclerView.ImageAdapter
 import com.sparta.imagesearch.retrofit.ImageResponse
 import com.sparta.imagesearch.retrofit.SearchClient
 import com.sparta.imagesearch.util.fromDpToPx
@@ -25,7 +24,7 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var imageAdapter: RecyclerViewImageAdapter
+    private lateinit var imageAdapter: ImageAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +41,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun initImageRecyclerView() {
-        imageAdapter = RecyclerViewImageAdapter(mutableListOf<RecyclerViewImage>())
+        imageAdapter = ImageAdapter(mutableListOf<Image>())
         binding.recyclerviewImage.run {
             adapter = imageAdapter
             addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
@@ -54,7 +53,6 @@ class SearchFragment : Fragment() {
             hideKeyboard(it)
 
             val keyword = binding.etSearch.text.toString()
-            var imageResponse: ImageResponse? = null
             lifecycleScope.launch { communicateImageSearchNetwork(keyword) }
         }
     }
@@ -68,7 +66,7 @@ class SearchFragment : Fragment() {
         var imageResponse: ImageResponse? = null
         val job = lifecycleScope.launch {
             try {
-                imageResponse = SearchClient.searchNetWork.getImage(query)
+                imageResponse = SearchClient.searchNetWork.getImageResponse(query)
             } catch (e: Exception) {
                 e.printStackTrace()
                 cancel()
@@ -80,14 +78,14 @@ class SearchFragment : Fragment() {
         updateImageRecyclerView(newDataset)
     }
 
-    private fun updateImageRecyclerView(newDataset: MutableList<RecyclerViewImage>) {
+    private fun updateImageRecyclerView(newDataset: MutableList<Image>) {
         imageAdapter.changeDataset(newDataset)
     }
 
-    private fun imageResponseToDataset(imageResponse: ImageResponse?): MutableList<RecyclerViewImage> {
-        val newDataset = mutableListOf<RecyclerViewImage>()
+    private fun imageResponseToDataset(imageResponse: ImageResponse?): MutableList<Image> {
+        val newDataset = mutableListOf<Image>()
         imageResponse?.documents?.forEach {
-            newDataset.add(RecyclerViewImage.createFromImageDocument(it))
+            newDataset.add(Image.createFromImageDocument(it))
         }
         return newDataset
     }

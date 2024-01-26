@@ -11,13 +11,14 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
+import com.sparta.imagesearch.data.ImageFolder
+import com.sparta.imagesearch.data.Image
 import com.sparta.imagesearch.databinding.ActivityMainBinding
 import com.sparta.imagesearch.databinding.TabCustomViewBinding
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
