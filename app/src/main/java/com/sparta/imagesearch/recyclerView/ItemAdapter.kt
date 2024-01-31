@@ -12,6 +12,9 @@ import com.bumptech.glide.Glide
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.Image
 import com.sparta.imagesearch.data.ImageFolder
+import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.data.ItemType
+import com.sparta.imagesearch.data.Video
 import com.sparta.imagesearch.databinding.RecyclerViewItemImageBinding
 import com.sparta.imagesearch.util.fromDpToPx
 import kotlinx.coroutines.CoroutineScope
@@ -22,12 +25,12 @@ import kotlinx.coroutines.withContext
 
 
 interface OnImageClickListener {
-    fun onImageClick(image: Image)
-    fun onHeartClick(image: Image)
-    fun onHeartLongClick(image: Image)
+    fun onImageClick(item: Item)
+    fun onHeartClick(item: Item)
+    fun onHeartLongClick(item: Item)
 }
 
-class ImageAdapter(var dataset: MutableList<Image>) :
+class ImageAdapter(var dataset: MutableList<Item>) :
     RecyclerView.Adapter<ImageAdapter.Holder>() {
     private val TAG = "ImageAdapter"
 
@@ -57,14 +60,27 @@ class ImageAdapter(var dataset: MutableList<Image>) :
     }
 
     private fun Holder.bind(position: Int) {
-        CoroutineScope(Dispatchers.Default).launch {
-            setImageView(dataset[position].imageUrl)
-        }
+        when (dataset[position].type) {
+            ItemType.Image -> {
+                val image = dataset[position] as Image
 
-        with(dataset[position]) {
-            sourceTextView.text = this.source
-            timeTextView.text = this.time
-            setHeartImageViewColor(this.folder)
+                CoroutineScope(Dispatchers.Default).launch {
+                    setImageView(image.imageUrl)
+                }
+                sourceTextView.text = "[Image]"+image.source
+                timeTextView.text = image.time
+                setHeartImageViewColor(image.folder)
+            }
+            ItemType.Video -> {
+                val video = dataset[position] as Video
+
+                CoroutineScope(Dispatchers.Default).launch {
+                    setImageView(video.thumbnail)
+                }
+                sourceTextView.text = "[Video]"
+                timeTextView.text = video.time
+                setHeartImageViewColor(video.folder)
+            }
         }
     }
 
@@ -79,7 +95,7 @@ class ImageAdapter(var dataset: MutableList<Image>) :
                     .submit()
                     .get()
 
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 BitmapFactory.decodeResource(binding.root.resources, R.drawable.icon_bad_wifi)
             }
@@ -110,7 +126,7 @@ class ImageAdapter(var dataset: MutableList<Image>) :
         )
     }
 
-    fun changeDataset(newDataset: MutableList<Image>) {
+    fun changeDataset(newDataset: MutableList<Item>) {
         dataset = newDataset
         notifyDataSetChanged()
     }

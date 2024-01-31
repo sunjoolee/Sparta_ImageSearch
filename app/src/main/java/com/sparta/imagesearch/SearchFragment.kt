@@ -10,7 +10,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.sparta.imagesearch.data.Image
-import com.sparta.imagesearch.data.ImageManager
+import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.data.Video
 import com.sparta.imagesearch.databinding.FragmentSearchBinding
 import com.sparta.imagesearch.recyclerView.GridSpacingItemDecoration
 import com.sparta.imagesearch.recyclerView.ImageAdapter
@@ -45,7 +46,7 @@ class SearchFragment : Fragment(), OnImageClickListener {
     }
 
     private fun initImageRecyclerView() {
-        imageAdapter = ImageAdapter(mutableListOf<Image>())
+        imageAdapter = ImageAdapter(mutableListOf<Item>())
 
         imageAdapter.onImageClickListener = this@SearchFragment
         binding.recyclerviewImage.run {
@@ -54,22 +55,18 @@ class SearchFragment : Fragment(), OnImageClickListener {
         }
     }
 
-    override fun onImageClick(image: Image) {
+    override fun onImageClick(item: Item) {
         Log.d(TAG, "onItemClick")
         //TODO Not yet implemented
     }
-    override fun onHeartClick(image: Image) {
+    override fun onHeartClick(item: Item) {
         Log.d(TAG, "onHeartClick")
-
-        if(!ImageManager.isSaved(image)) ImageManager.saveImage(image)
-        else ImageManager.unsaveImage(image)
-
-        imageAdapter.notifyDataSetChanged()
+        //TODO Not yet implemented
     }
 
-    override fun onHeartLongClick(image: Image) {
+    override fun onHeartLongClick(item: Item) {
         Log.d(TAG, "onHeartLongClick")
-        //TODO 폴더 이동하기
+        //TODO Not yet implemented
     }
 
     private fun setSearchButtonOnClickListener() {
@@ -108,18 +105,38 @@ class SearchFragment : Fragment(), OnImageClickListener {
         }
         job.join()
 
-        val newDataset = imageResponseToDataset(imageResponse)
+        val newDataset = getNewDataset(imageResponse, videoResponse)
         updateImageRecyclerView(newDataset)
     }
 
-    private fun updateImageRecyclerView(newDataset: MutableList<Image>) {
+    private fun updateImageRecyclerView(newDataset: MutableList<Item>) {
         imageAdapter.changeDataset(newDataset)
     }
+    private fun getNewDataset(imageResponse: ImageResponse?, videoResponse: VideoResponse?): MutableList<Item> {
+        val newDataset = mutableListOf<Item>()
+        newDataset += imageResponseToDataset(imageResponse)
+        newDataset += videoResponseToDataset(videoResponse)
 
-    private fun imageResponseToDataset(imageResponse: ImageResponse?): MutableList<Image> {
-        val newDataset = mutableListOf<Image>()
+        newDataset.run{
+            sortBy { it.time }
+            reverse()
+        }
+        return newDataset.toMutableList()
+    }
+
+    private fun imageResponseToDataset(imageResponse: ImageResponse?): MutableList<Item> {
+        Log.d(TAG, "image response to dataset")
+        val newDataset = mutableListOf<Item>()
         imageResponse?.documents?.forEach {
             newDataset.add(Image.createFromImageDocument(it))
+        }
+        return newDataset
+    }
+    private fun videoResponseToDataset(videoResponse: VideoResponse?): MutableList<Item> {
+        Log.d(TAG, "video response to dataset")
+        val newDataset = mutableListOf<Item>()
+        videoResponse?.documents?.forEach {
+            newDataset.add(Video.createFromVideoDocument(it))
         }
         return newDataset
     }

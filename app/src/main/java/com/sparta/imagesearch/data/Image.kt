@@ -9,8 +9,8 @@ data class Image(
     var folder: ImageFolder? = null,
     val imageUrl: String,
     val source: String,
-    val time: String
-) {
+    override val time: String
+):Item(ItemType.Image, time) {
 
     companion object {
         fun createFromImageDocument(imageDocument: ImageDocument): Image {
