@@ -2,25 +2,27 @@ package com.sparta.imagesearch
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.sparta.imagesearch.data.FolderManager
 import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.databinding.FragmentFolderBinding
+import com.sparta.imagesearch.recyclerView.FolderAdapter
 import com.sparta.imagesearch.recyclerView.GridSpacingItemDecoration
 import com.sparta.imagesearch.recyclerView.ItemAdapter
-import com.sparta.imagesearch.recyclerView.OnImageClickListener
+import com.sparta.imagesearch.recyclerView.OnFolderClickListener
+import com.sparta.imagesearch.recyclerView.OnItemClickListener
 import com.sparta.imagesearch.util.fromDpToPx
 
-
-class FolderFragment : Fragment(), OnImageClickListener {
+class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener {
     private val TAG = "FolderFragment"
 
-    private var _binding:FragmentFolderBinding? = null
+    private var _binding: FragmentFolderBinding? = null
     private val binding get() = _binding!!
 
-    //private lateinit var folderAdapter: FolderAdapter
+    private lateinit var folderAdapter: FolderAdapter
     private lateinit var itemAdapter: ItemAdapter
 
     override fun onCreateView(
@@ -34,13 +36,30 @@ class FolderFragment : Fragment(), OnImageClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initFolderRecyclerView()
         initImageRecyclerView()
     }
 
-    private fun initImageRecyclerView(){
-        itemAdapter = ItemAdapter(MainActivity.savedItems)
+    private fun initFolderRecyclerView() {
+        folderAdapter = FolderAdapter(FolderManager.getFolders())
+        folderAdapter.onFolderClickListener = this@FolderFragment
+        binding.recyclerViewFolder.adapter = folderAdapter
+    }
 
-        itemAdapter.onImageClickListener = this@FolderFragment
+    override fun onClick(folderId: String) {
+        FolderManager.setSelectedFolderId(folderId)
+        itemAdapter.changeDataset(
+            getFolderDataset(FolderManager.getSelectedFolderId())
+        )
+    }
+
+    private fun getFolderDataset(folderId: String) = MainActivity.savedItems.filter {
+        it.folder?.id == folderId
+    }.toMutableList()
+
+    private fun initImageRecyclerView() {
+        itemAdapter = ItemAdapter(getFolderDataset(FolderManager.getSelectedFolderId()))
+        itemAdapter.onItemClickListener = this@FolderFragment
         binding.recyclerviewImage.run {
             adapter = itemAdapter
             addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))

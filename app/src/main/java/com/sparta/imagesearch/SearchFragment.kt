@@ -15,7 +15,7 @@ import com.sparta.imagesearch.data.Video
 import com.sparta.imagesearch.databinding.FragmentSearchBinding
 import com.sparta.imagesearch.recyclerView.GridSpacingItemDecoration
 import com.sparta.imagesearch.recyclerView.ItemAdapter
-import com.sparta.imagesearch.recyclerView.OnImageClickListener
+import com.sparta.imagesearch.recyclerView.OnItemClickListener
 import com.sparta.imagesearch.retrofit.ImageResponse
 import com.sparta.imagesearch.retrofit.SearchClient
 import com.sparta.imagesearch.retrofit.VideoResponse
@@ -23,7 +23,7 @@ import com.sparta.imagesearch.util.fromDpToPx
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-class SearchFragment : Fragment(), OnImageClickListener {
+class SearchFragment : Fragment(), OnItemClickListener {
     private val TAG = "SearchFragment"
 
     private var _binding: FragmentSearchBinding? = null
@@ -48,7 +48,7 @@ class SearchFragment : Fragment(), OnImageClickListener {
     private fun initImageRecyclerView() {
         itemAdapter = ItemAdapter(mutableListOf<Item>())
 
-        itemAdapter.onImageClickListener = this@SearchFragment
+        itemAdapter.onItemClickListener = this@SearchFragment
         binding.recyclerviewImage.run {
             adapter = itemAdapter
             addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))

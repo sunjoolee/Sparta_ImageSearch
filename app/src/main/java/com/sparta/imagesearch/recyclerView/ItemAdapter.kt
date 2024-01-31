@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.Image
-import com.sparta.imagesearch.data.ItemFolder
+import com.sparta.imagesearch.data.Folder
 import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.ItemType
 import com.sparta.imagesearch.data.Video
@@ -24,7 +24,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 
-interface OnImageClickListener {
+interface OnItemClickListener {
     fun onImageClick(item: Item)
     fun onHeartClick(position:Int, item: Item)
     fun onHeartLongClick(item: Item)
@@ -34,7 +34,7 @@ class ItemAdapter(var dataset: MutableList<Item>) :
     RecyclerView.Adapter<ItemAdapter.Holder>() {
     private val TAG = "ImageAdapter"
 
-    var onImageClickListener: OnImageClickListener? = null
+    var onItemClickListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding =
@@ -46,13 +46,13 @@ class ItemAdapter(var dataset: MutableList<Item>) :
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.itemView.setOnClickListener {
-            onImageClickListener?.onImageClick(dataset[position])
+            onItemClickListener?.onImageClick(dataset[position])
         }
         holder.heartImageView.setOnClickListener {
-            onImageClickListener?.onHeartClick(position, dataset[position])
+            onItemClickListener?.onHeartClick(position, dataset[position])
         }
         holder.heartImageView.setOnLongClickListener {
-            onImageClickListener?.onHeartLongClick(dataset[position])
+            onItemClickListener?.onHeartLongClick(dataset[position])
             true
         }
 
@@ -121,7 +121,7 @@ class ItemAdapter(var dataset: MutableList<Item>) :
         }
 
 
-        private fun Holder.setHeartImageViewColor(folder: ItemFolder?) {
+        private fun Holder.setHeartImageViewColor(folder: Folder?) {
             heartImageView.imageTintList = ColorStateList.valueOf(
                 binding.root.resources.getColor(
                     folder?.colorId ?: R.color.gray

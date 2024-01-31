@@ -9,13 +9,13 @@ enum class ItemType {
 
 open class Item(
     val type: ItemType,
-    open var folder: ItemFolder? = null,
+    open var folder: Folder? = null,
     open val time: String
 ) {
     fun isSaved(): Boolean = (folder != null)
 
-    fun saveItem(folder: ItemFolder? = null) {
-        this.folder = folder ?: ImageFolderManager.defaultFolder
+    fun saveItem(folder: Folder? = null) {
+        this.folder = folder ?: FolderManager.defaultFolder
         MainActivity.savedItems.add(this)
     }
 
