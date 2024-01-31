@@ -44,9 +44,7 @@ class FolderDeleteAdapter(var dataset: MutableList<Folder>) :
         fun bind(position: Int) {
             val folder = dataset[position]
 
-            folderImageView.imageTintList = ColorStateList.valueOf(
-                binding.root.resources.getColor(folder.colorId)
-            )
+            folderImageView.imageTintList = ColorStateList.valueOf(folder.color)
             nameTextView.text = folder.name
 
             if(position==0){

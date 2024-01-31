@@ -80,8 +80,8 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
         addDialog.show()
     }
 
-    override fun onAddConfirm(name: String, colorId: Int) {
-        FolderManager.addFolder(name, colorId)
+    override fun onAddConfirm(name: String, color: Int) {
+        FolderManager.addFolder(name, color)
         folderAdapter.notifyDataSetChanged()
     }
     private fun showDeleteFolderDialog() {

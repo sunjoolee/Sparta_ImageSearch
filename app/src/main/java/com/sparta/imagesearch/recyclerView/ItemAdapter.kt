@@ -45,17 +45,7 @@ class ItemAdapter(var dataset: MutableList<Item>) :
     override fun getItemCount(): Int = dataset.size
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.itemView.setOnClickListener {
-            onItemClickListener?.onItemImageClick(dataset[position])
-        }
-        holder.heartImageView.setOnClickListener {
-            onItemClickListener?.onItemHeartClick(position, dataset[position])
-        }
-        holder.heartImageView.setOnLongClickListener {
-            onItemClickListener?.onItemHeartLongClick(dataset[position])
-            true
-        }
-
+        holder.setListeners()
         holder.bind(position)
     }
 
@@ -66,10 +56,23 @@ class ItemAdapter(var dataset: MutableList<Item>) :
 
     inner class Holder(val binding: RecyclerViewItemImageBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val imageView = binding.ivImage
-        val sourceTextView = binding.tvImageSource
-        val timeTextView = binding.tvImageTime
-        val heartImageView = binding.ivHeart
+        private val imageView = binding.ivImage
+        private val sourceTextView = binding.tvImageSource
+        private val timeTextView = binding.tvImageTime
+        private val heartImageView = binding.ivHeart
+
+        fun setListeners(){
+            itemView.setOnClickListener {
+                onItemClickListener?.onItemImageClick(dataset[position])
+            }
+            heartImageView.setOnClickListener {
+                onItemClickListener?.onItemHeartClick(position, dataset[position])
+            }
+            heartImageView.setOnLongClickListener {
+                onItemClickListener?.onItemHeartLongClick(dataset[position])
+                true
+            }
+        }
         fun bind(position: Int) {
             val item = dataset[position]
 
@@ -123,9 +126,7 @@ class ItemAdapter(var dataset: MutableList<Item>) :
 
         private fun Holder.setHeartImageViewColor(folder: Folder?) {
             heartImageView.imageTintList = ColorStateList.valueOf(
-                binding.root.resources.getColor(
-                    folder?.colorId ?: R.color.gray
-                )
+                folder?.color ?:binding.root.resources.getColor(R.color.gray)
             )
         }
     }

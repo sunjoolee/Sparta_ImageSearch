@@ -4,19 +4,21 @@ import android.app.Dialog
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.ImageView
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.github.dhaval2404.colorpicker.ColorPickerDialog
+import com.sparta.imagesearch.data.FolderColor
 import com.sparta.imagesearch.databinding.DialogAddFolderBinding
 
 class AddFolderDialog(private val context: AppCompatActivity) {
     private val TAG = "AddFolderDialog"
 
     interface OnAddConfirmListener {
-        fun onAddConfirm(name: String, colorId: Int)
+        fun onAddConfirm(name: String, color: Int)
     }
 
     private var _binding: DialogAddFolderBinding? = null
@@ -24,14 +26,24 @@ class AddFolderDialog(private val context: AppCompatActivity) {
 
     private val dialog = Dialog(context)
 
-    private var colorId: Int = R.color.folder_color1
-    private val colorImageViewMap by lazy{
+    @ColorInt
+    private var color: Int = Color.parseColor(FolderColor.color1.colorHex)
+    private val colorImageViewMap by lazy {
         mapOf<ImageView, Int>(
-            binding.ivColor1 to R.color.folder_color1,
-            binding.ivColor2 to R.color.folder_color2,
-            binding.ivColor3 to R.color.folder_color3,
-            binding.ivColor4 to R.color.folder_color4,
-            binding.ivColor5 to R.color.folder_color5
+            binding.ivColor1 to Color.parseColor(FolderColor.color1.colorHex),
+            binding.ivColor2 to Color.parseColor(FolderColor.color2.colorHex),
+            binding.ivColor3 to Color.parseColor(FolderColor.color3.colorHex),
+            binding.ivColor4 to Color.parseColor(FolderColor.color4.colorHex),
+            binding.ivColor5 to Color.parseColor(FolderColor.color5.colorHex)
+        )
+    }
+    private val dotImageViewMap by lazy {
+        mapOf<ImageView, ImageView>(
+            binding.ivColor1 to binding.ivDot1,
+            binding.ivColor2 to binding.ivDot2,
+            binding.ivColor3 to binding.ivDot3,
+            binding.ivColor4 to binding.ivDot4,
+            binding.ivColor5 to binding.ivDot5
         )
     }
 
@@ -55,12 +67,14 @@ class AddFolderDialog(private val context: AppCompatActivity) {
         dialog.show()
     }
 
-    private fun initColorButtons(){
+    private fun initColorButtons() {
         val colorClickListener = OnClickListener { imageView ->
-            colorId = colorImageViewMap[imageView]!!
-            setFolderColorTint(colorId)
+            setDotVisibility(imageView)
+
+            color = colorImageViewMap[imageView]!!
+            setFolderImageViewTint()
         }
-        binding.run{
+        binding.run {
             ivColor1.setOnClickListener(colorClickListener)
             ivColor2.setOnClickListener(colorClickListener)
             ivColor3.setOnClickListener(colorClickListener)
@@ -69,18 +83,25 @@ class AddFolderDialog(private val context: AppCompatActivity) {
         }
     }
 
-    private fun setFolderColorTint(colorId:Int){
-        binding.ivFolder.imageTintList = ColorStateList.valueOf(
-            binding.root.resources.getColor(colorId)
-        )
+    private fun setFolderImageViewTint() {
+        binding.ivFolder.imageTintList = ColorStateList.valueOf(color)
     }
-    private fun initMoreButton(){
+
+    private fun setDotVisibility(imageView: View) {
+        dotImageViewMap.values.forEach { it.isVisible = false }
+        dotImageViewMap[imageView]!!.isVisible = true
+    }
+
+    private fun initMoreButton() {
         binding.ivMore.setOnClickListener {
+            dotImageViewMap.values.forEach { it.isVisible = false }
+
             ColorPickerDialog
                 .Builder(context)
                 .setDefaultColor(R.color.folder_color1)
                 .setColorListener { color, colorHex ->
-                    Log.d(TAG, "color: ${color}, colorHex: ${colorHex}")
+                    this.color = Color.parseColor(colorHex)
+                    setFolderImageViewTint()
                 }
                 .show()
         }
@@ -94,15 +115,15 @@ class AddFolderDialog(private val context: AppCompatActivity) {
 
     private fun initConfirmButton() {
         binding.bntPositive.setOnClickListener {
-            if(!isNameValid()) return@setOnClickListener
+            if (!isNameValid()) return@setOnClickListener
 
             val name = binding.etFolderName.text.toString()
-            onAddConfirmListener?.onAddConfirm(name , colorId)
+            onAddConfirmListener?.onAddConfirm(name, color)
             dialog.dismiss()
         }
     }
 
-    private fun isNameValid():Boolean{
+    private fun isNameValid(): Boolean {
         binding.etFolderName.run {
             return if (text.isNullOrBlank()) {
                 text.clear()

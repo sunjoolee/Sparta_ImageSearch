@@ -44,9 +44,7 @@ class FolderMoveAdapter(var dataset: MutableList<Folder>, var checkedFolderId: S
                 if (folder.id == checkedFolderId) R.drawable.icon_select_full
                 else R.drawable.icon_select_empty
             )
-            folderImageView.imageTintList = ColorStateList.valueOf(
-                binding.root.resources.getColor(folder.colorId)
-            )
+            folderImageView.imageTintList = ColorStateList.valueOf(folder.color)
             nameTextView.text = folder.name
         }
     }

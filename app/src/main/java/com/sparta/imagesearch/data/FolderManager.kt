@@ -1,18 +1,22 @@
 package com.sparta.imagesearch.data
 
+import android.graphics.Color
 import com.sparta.imagesearch.MainActivity
 import com.sparta.imagesearch.R
 
 object FolderManager {
     const val DEFAULT_FOLDER_ID = "0"
-    val defaultFolder =
-        Folder(id = DEFAULT_FOLDER_ID, name = "기본 폴더", colorId = R.color.folder_color1)
+    val defaultFolder = Folder(
+        id = DEFAULT_FOLDER_ID,
+        name = "기본 폴더",
+        color = Color.parseColor(FolderColor.color1.colorHex)
+    )
 
     private val folders = mutableListOf<Folder>(
         defaultFolder,
-        Folder(name = "폴더 1", colorId = R.color.folder_color2),
-        Folder(name = "폴더 2", colorId = R.color.folder_color3),
-        Folder(name = "폴더 3", colorId = R.color.folder_color4)
+        Folder(name = "폴더 1", color = Color.parseColor(FolderColor.color2.colorHex)),
+        Folder(name = "폴더 2", color = Color.parseColor(FolderColor.color3.colorHex)),
+        Folder(name = "폴더 3", color = Color.parseColor(FolderColor.color4.colorHex))
     )
     private var selectedFolderId = DEFAULT_FOLDER_ID
     fun getFolders(): MutableList<Folder> = folders
@@ -21,8 +25,8 @@ object FolderManager {
         selectedFolderId = folderId
     }
 
-    fun addFolder(name: String, colorId: Int) {
-        folders.add(Folder(name = name, colorId = colorId))
+    fun addFolder(name: String, color: Int) {
+        folders.add(Folder(name = name, color = color))
     }
 
     fun deleteFolder(folder: Folder) {
@@ -30,7 +34,7 @@ object FolderManager {
 
         val deleteItems = mutableListOf<Item>()
         MainActivity.savedItems.forEach {
-            if((it.folder != null) && (it.folder == folder))
+            if ((it.folder != null) && (it.folder == folder))
                 deleteItems.add(it)
         }
         deleteItems.forEach { it.unsaveItem() }
