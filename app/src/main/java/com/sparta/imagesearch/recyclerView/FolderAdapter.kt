@@ -11,7 +11,7 @@ import com.sparta.imagesearch.data.FolderManager
 import com.sparta.imagesearch.databinding.RecyclerViewItemFolderBinding
 
 interface OnFolderClickListener {
-    fun onClick(folderId: String)
+    fun onFolderClick(folderId: String)
 }
 
 class FolderAdapter(var dataset: MutableList<Folder>) :
@@ -30,7 +30,7 @@ class FolderAdapter(var dataset: MutableList<Folder>) :
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.itemView.setOnClickListener {
-            onFolderClickListener?.onClick(dataset[position].id)
+            onFolderClickListener?.onFolderClick(dataset[position].id)
             notifyDataSetChanged()
         }
         holder.bind(position)

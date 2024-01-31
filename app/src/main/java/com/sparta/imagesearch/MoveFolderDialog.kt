@@ -5,27 +5,27 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import com.sparta.imagesearch.data.FolderManager
-import com.sparta.imagesearch.databinding.DialogDeleteFolderBinding
-import com.sparta.imagesearch.recyclerView.FolderDeleteAdapter
+import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.databinding.DialogMoveFolderBinding
+import com.sparta.imagesearch.recyclerView.FolderMoveAdapter
 import com.sparta.imagesearch.recyclerView.OnFolderClickListener
 
-class DeleteFolderDialog(private val context: AppCompatActivity) : OnFolderClickListener {
+class MoveFolderDialog(private val context: AppCompatActivity, val item: Item) : OnFolderClickListener {
 
-    interface OnDeleteConfirmListener {
-        fun onDeleteConfirm(folderIdList: List<String>)
+    interface OnMoveConfirmListener {
+        fun onMoveConfirm(item:Item, folderId:String)
     }
 
-    private var _binding: DialogDeleteFolderBinding? = null
+    private var _binding: DialogMoveFolderBinding? = null
     private val binding get() = _binding!!
 
     private val dialog = Dialog(context)
+    private var checkedFolderId = item.folder!!.id
 
-    private val folderIdList = mutableListOf<String>()
-
-    var onDeleteConfirmListener: OnDeleteConfirmListener? = null
+    var onMoveConfirmListener: OnMoveConfirmListener? = null
 
     fun show() {
-        _binding = DialogDeleteFolderBinding.inflate(context.layoutInflater)
+        _binding = DialogMoveFolderBinding.inflate(context.layoutInflater)
 
         dialog.run {
             setContentView(binding.root)
@@ -41,17 +41,14 @@ class DeleteFolderDialog(private val context: AppCompatActivity) : OnFolderClick
     }
 
     private fun initRecyclerView() {
-        FolderDeleteAdapter(FolderManager.getFolders()).also {
-            it.onFolderClickListener = this@DeleteFolderDialog
-            binding.recyclerviewDelete.adapter = it
+        FolderMoveAdapter(FolderManager.getFolders(), checkedFolderId).also {
+            it.onFolderClickListener = this@MoveFolderDialog
+            binding.recyclerviewMove.adapter = it
         }
     }
 
     override fun onFolderClick(folderId: String) {
-        folderIdList.run {
-            if (contains(folderId)) remove(folderId)
-            else add(folderId)
-        }
+        checkedFolderId = folderId
     }
 
     private fun initCloseButton() {
@@ -62,7 +59,7 @@ class DeleteFolderDialog(private val context: AppCompatActivity) : OnFolderClick
 
     private fun initConfirmButton() {
         binding.bntPositive.setOnClickListener {
-            onDeleteConfirmListener?.onDeleteConfirm(folderIdList)
+            onMoveConfirmListener?.onMoveConfirm(item, checkedFolderId)
             dialog.dismiss()
         }
     }

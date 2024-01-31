@@ -19,7 +19,7 @@ import com.sparta.imagesearch.recyclerView.OnItemClickListener
 import com.sparta.imagesearch.util.fromDpToPx
 
 class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
-    DeleteFolderDialog.OnConfirmListener {
+    DeleteFolderDialog.OnDeleteConfirmListener, MoveFolderDialog.OnMoveConfirmListener {
     private val TAG = "FolderFragment"
 
     private var _binding: FragmentFolderBinding? = null
@@ -52,7 +52,7 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
         binding.recyclerViewFolder.adapter = folderAdapter
     }
 
-    override fun onClick(folderId: String) {
+    override fun onFolderClick(folderId: String) {
         FolderManager.setSelectedFolderId(folderId)
         itemAdapter.changeDataset(
             getFolderDataset(FolderManager.getSelectedFolderId())
@@ -80,13 +80,13 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
 
     private fun showDeleteFolderDialog() {
         val deleteDialog = DeleteFolderDialog(binding.root.context as AppCompatActivity)
-        deleteDialog.onConfirmListener = this@FolderFragment
+        deleteDialog.onDeleteConfirmListener = this@FolderFragment
         deleteDialog.show()
     }
 
-    override fun onConfirm(folderIdList: List<String>) {
-        FolderManager.getFolders().filter { folderIdList.contains(it.id) }
-            .forEach { FolderManager.deleteFolder(it) }
+    override fun onDeleteConfirm(folderIdList: List<String>) {
+        val deleteFolders = FolderManager.getFolders().filter { folderIdList.contains(it.id) }
+        deleteFolders.forEach { FolderManager.deleteFolder(it) }
 
         folderAdapter.notifyDataSetChanged()
     }
@@ -100,20 +100,30 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
         }
     }
 
-    override fun onImageClick(item: Item) {
+    override fun onItemImageClick(item: Item) {
         //TODO("Not yet implemented")
     }
 
-    override fun onHeartClick(position: Int, item: Item) {
-        //TODO("Not yet implemented")
-        item.unsaveItem()
-        itemAdapter.notifyItemRemoved(position)
-    }
-
-    override fun onHeartLongClick(item: Item) {
+    override fun onItemHeartClick(position: Int, item: Item) {
         //TODO("Not yet implemented")
     }
 
+    override fun onItemHeartLongClick(item: Item) {
+        showMoveFolderDialog(item)
+    }
+
+    private fun showMoveFolderDialog(item:Item){
+        val moveDialog = MoveFolderDialog(binding.root.context as AppCompatActivity, item)
+        moveDialog.onMoveConfirmListener = this@FolderFragment
+        moveDialog.show()
+    }
+
+    override fun onMoveConfirm(item:Item, checkedFolderId: String) {
+        item.folder = FolderManager.getFolders().find { it.id == checkedFolderId }!!
+        itemAdapter.changeDataset(
+            getFolderDataset(FolderManager.getSelectedFolderId())
+        )
+    }
     override fun onResume() {
         Log.d(TAG, "onResume")
         super.onResume()
@@ -124,5 +134,4 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
         super.onDestroyView()
         _binding = null
     }
-
 }

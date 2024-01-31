@@ -25,9 +25,9 @@ import kotlinx.coroutines.withContext
 
 
 interface OnItemClickListener {
-    fun onImageClick(item: Item)
-    fun onHeartClick(position:Int, item: Item)
-    fun onHeartLongClick(item: Item)
+    fun onItemImageClick(item: Item)
+    fun onItemHeartClick(position:Int, item: Item)
+    fun onItemHeartLongClick(item: Item)
 }
 
 class ItemAdapter(var dataset: MutableList<Item>) :
@@ -46,13 +46,13 @@ class ItemAdapter(var dataset: MutableList<Item>) :
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.itemView.setOnClickListener {
-            onItemClickListener?.onImageClick(dataset[position])
+            onItemClickListener?.onItemImageClick(dataset[position])
         }
         holder.heartImageView.setOnClickListener {
-            onItemClickListener?.onHeartClick(position, dataset[position])
+            onItemClickListener?.onItemHeartClick(position, dataset[position])
         }
         holder.heartImageView.setOnLongClickListener {
-            onItemClickListener?.onHeartLongClick(dataset[position])
+            onItemClickListener?.onItemHeartLongClick(dataset[position])
             true
         }
 

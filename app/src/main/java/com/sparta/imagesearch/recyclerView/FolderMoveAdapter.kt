@@ -1,24 +1,18 @@
 package com.sparta.imagesearch.recyclerView
 
 import android.content.res.ColorStateList
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.Folder
 import com.sparta.imagesearch.databinding.RecyclerViewItemFolderDialogBinding
 
-interface OnFolderDialogClickListener {
-    fun onClick(folderId: String)
-}
-
-class FolderDialogAdapter(var dataset: MutableList<Folder>) :
-    RecyclerView.Adapter<FolderDialogAdapter.Holder>() {
+class FolderMoveAdapter(var dataset: MutableList<Folder>, var checkedFolderId: String) :
+    RecyclerView.Adapter<FolderMoveAdapter.Holder>() {
     private val TAG = "FolderDialogAdapter"
 
-    var onFolderDialogClickListener: OnFolderDialogClickListener? = null
+    var onFolderClickListener: OnFolderClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding = RecyclerViewItemFolderDialogBinding.inflate(
@@ -31,44 +25,29 @@ class FolderDialogAdapter(var dataset: MutableList<Folder>) :
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.itemView.setOnClickListener {
-            if(position == 0)
-                return@setOnClickListener
-
-            onFolderDialogClickListener?.onClick(dataset[position].id)
-            holder.toggleCheckImageView()
+            checkedFolderId = dataset[position].id
+            onFolderClickListener?.onFolderClick(checkedFolderId)
+            notifyDataSetChanged()
         }
         holder.bind(position)
     }
 
     inner class Holder(private val binding: RecyclerViewItemFolderDialogBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private var checked = false
         private val checkImageView = binding.ivCheck
         private val folderImageView = binding.ivFolder
         private val nameTextView = binding.tvFolderName
 
         fun bind(position: Int) {
             val folder = dataset[position]
-
+            checkImageView.setImageResource(
+                if (folder.id == checkedFolderId) R.drawable.icon_select_full
+                else R.drawable.icon_select_empty
+            )
             folderImageView.imageTintList = ColorStateList.valueOf(
                 binding.root.resources.getColor(folder.colorId)
             )
             nameTextView.text = folder.name
-
-            if(position==0){
-                binding.root.resources.getColor(R.color.gray).also {
-                    checkImageView.imageTintList = ColorStateList.valueOf(it)
-                    nameTextView.setTextColor(it)
-                }
-            }
-        }
-
-        fun toggleCheckImageView() {
-            checked = !checked
-            checkImageView.setImageResource(
-                if (checked) R.drawable.icon_select_check
-                else R.drawable.icon_select_empty
-            )
         }
     }
 }

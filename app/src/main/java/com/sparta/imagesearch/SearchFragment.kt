@@ -55,21 +55,17 @@ class SearchFragment : Fragment(), OnItemClickListener {
         }
     }
 
-    override fun onImageClick(item: Item) {
-        Log.d(TAG, "onItemClick")
+    override fun onItemImageClick(item: Item) {
         //TODO Not yet implemented
     }
-    override fun onHeartClick(position:Int, item: Item) {
-        Log.d(TAG, "onHeartClick")
-
+    override fun onItemHeartClick(position:Int, item: Item) {
         item.run{
             if(isSaved()) unsaveItem() else saveItem()
         }
         itemAdapter.notifyItemChanged(position)
     }
 
-    override fun onHeartLongClick(item: Item) {
-        Log.d(TAG, "onHeartLongClick")
+    override fun onItemHeartLongClick(item: Item) {
         //TODO Not yet implemented
     }
 
