@@ -62,7 +62,9 @@ class SearchFragment : Fragment(), OnImageClickListener {
     override fun onHeartClick(position:Int, item: Item) {
         Log.d(TAG, "onHeartClick")
 
-        item.saveItem()
+        item.run{
+            if(isSaved()) unsaveItem() else saveItem()
+        }
         itemAdapter.notifyItemChanged(position)
     }
 
