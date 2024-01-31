@@ -19,7 +19,8 @@ import com.sparta.imagesearch.recyclerView.OnItemClickListener
 import com.sparta.imagesearch.util.fromDpToPx
 
 class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
-    DeleteFolderDialog.OnDeleteConfirmListener, MoveFolderDialog.OnMoveConfirmListener {
+    DeleteFolderDialog.OnDeleteConfirmListener, MoveFolderDialog.OnMoveConfirmListener,
+    AddFolderDialog.OnAddConfirmListener {
     private val TAG = "FolderFragment"
 
     private var _binding: FragmentFolderBinding? = null
@@ -66,13 +67,22 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
 
     private fun initMoreLayout() {
         binding.tvMoreAdd.setOnClickListener {
-            //TODO 폴더 생성 다이얼로그 표시하기
+            showAddFolderDialog()
         }
         binding.tvMoreDelete.setOnClickListener {
             showDeleteFolderDialog()
         }
     }
 
+    private fun showAddFolderDialog(){
+        val addDialog = AddFolderDialog(binding.root.context as AppCompatActivity)
+        addDialog.onAddConfirmListener = this@FolderFragment
+        addDialog.show()
+    }
+
+    override fun onAddConfirm(name: String, colorId: Int) {
+        //TODO("Not yet implemented")
+    }
     private fun showDeleteFolderDialog() {
         val deleteDialog = DeleteFolderDialog(binding.root.context as AppCompatActivity)
         deleteDialog.onDeleteConfirmListener = this@FolderFragment
