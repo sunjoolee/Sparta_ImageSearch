@@ -48,15 +48,17 @@ class FolderFragment : Fragment(), OnImageClickListener {
     }
 
     override fun onImageClick(item: Item) {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
     }
 
     override fun onHeartClick(position: Int, item: Item) {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
+        item.unsaveItem()
+        itemAdapter.notifyItemRemoved(position)
     }
 
     override fun onHeartLongClick(item: Item) {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
     }
 
     override fun onResume() {
@@ -65,4 +67,8 @@ class FolderFragment : Fragment(), OnImageClickListener {
         itemAdapter.notifyDataSetChanged()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

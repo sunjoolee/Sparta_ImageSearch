@@ -148,6 +148,11 @@ class SearchFragment : Fragment(), OnImageClickListener {
         return newDataset
     }
 
+    override fun onResume() {
+        Log.d(TAG, "onResume")
+        super.onResume()
+        itemAdapter.notifyDataSetChanged()
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
