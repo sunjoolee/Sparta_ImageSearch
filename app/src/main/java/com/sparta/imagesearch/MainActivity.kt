@@ -11,18 +11,31 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
+import com.sparta.imagesearch.data.ImageFolder
+import com.sparta.imagesearch.data.Image
 import com.sparta.imagesearch.databinding.ActivityMainBinding
 import com.sparta.imagesearch.databinding.TabCustomViewBinding
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initVP2AndTabLayout()
+        customTabLayout()
+    }
+
+    class MyPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+        override fun getItemCount(): Int = 2
+        override fun createFragment(position: Int): Fragment {
+            return if (position == 0) SearchFragment() else FolderFragment()
+        }
+    }
+
+    private fun initVP2AndTabLayout(){
         binding.viewpager.adapter = MyPagerAdapter(this)
 
         TabLayoutMediator(binding.layoutTab, binding.viewpager) { tab, position ->
@@ -31,17 +44,12 @@ class MainActivity : AppCompatActivity() {
                 else R.string.menu_folder
             )
         }.attach()
+    }
+    private fun customTabLayout(){
         binding.layoutTab.run {
             setCustomTabView()
             setTabSelectedListener()
             setCustomTabAnimation()
-        }
-    }
-
-    class MyPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
-        override fun getItemCount(): Int = 2
-        override fun createFragment(position: Int): Fragment {
-            return if (position == 0) SearchFragment() else FolderFragment()
         }
     }
 

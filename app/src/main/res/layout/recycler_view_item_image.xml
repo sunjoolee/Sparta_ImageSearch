@@ -9,12 +9,13 @@
 
     <ImageView
         android:id="@+id/iv_image"
-        android:layout_width="wrap_content"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:background="@drawable/shape_rounded"
+        android:backgroundTint="@color/theme_bg"
         android:clipToOutline="true"
+        android:src="@drawable/icon_loading"
         android:scaleType="centerCrop"
-        android:src="@drawable/image_sample1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
