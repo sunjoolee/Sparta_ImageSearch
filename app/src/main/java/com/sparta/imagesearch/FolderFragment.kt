@@ -81,7 +81,8 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
     }
 
     override fun onAddConfirm(name: String, colorId: Int) {
-        //TODO("Not yet implemented")
+        FolderManager.addFolder(name, colorId)
+        folderAdapter.notifyDataSetChanged()
     }
     private fun showDeleteFolderDialog() {
         val deleteDialog = DeleteFolderDialog(binding.root.context as AppCompatActivity)

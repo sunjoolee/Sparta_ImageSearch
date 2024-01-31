@@ -43,6 +43,7 @@
         app:layout_constraintTop_toTopOf="@id/tv_folder_name">
 
         <EditText
+            android:id="@+id/et_folder_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
