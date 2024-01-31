@@ -14,7 +14,7 @@ import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.Video
 import com.sparta.imagesearch.databinding.FragmentSearchBinding
 import com.sparta.imagesearch.recyclerView.GridSpacingItemDecoration
-import com.sparta.imagesearch.recyclerView.ImageAdapter
+import com.sparta.imagesearch.recyclerView.ItemAdapter
 import com.sparta.imagesearch.recyclerView.OnImageClickListener
 import com.sparta.imagesearch.retrofit.ImageResponse
 import com.sparta.imagesearch.retrofit.SearchClient
@@ -29,7 +29,7 @@ class SearchFragment : Fragment(), OnImageClickListener {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var imageAdapter: ImageAdapter
+    private lateinit var itemAdapter: ItemAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,11 +46,11 @@ class SearchFragment : Fragment(), OnImageClickListener {
     }
 
     private fun initImageRecyclerView() {
-        imageAdapter = ImageAdapter(mutableListOf<Item>())
+        itemAdapter = ItemAdapter(mutableListOf<Item>())
 
-        imageAdapter.onImageClickListener = this@SearchFragment
+        itemAdapter.onImageClickListener = this@SearchFragment
         binding.recyclerviewImage.run {
-            adapter = imageAdapter
+            adapter = itemAdapter
             addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
         }
     }
@@ -59,9 +59,11 @@ class SearchFragment : Fragment(), OnImageClickListener {
         Log.d(TAG, "onItemClick")
         //TODO Not yet implemented
     }
-    override fun onHeartClick(item: Item) {
+    override fun onHeartClick(position:Int, item: Item) {
         Log.d(TAG, "onHeartClick")
-        //TODO Not yet implemented
+
+        item.saveItem()
+        itemAdapter.notifyItemChanged(position)
     }
 
     override fun onHeartLongClick(item: Item) {
@@ -110,7 +112,7 @@ class SearchFragment : Fragment(), OnImageClickListener {
     }
 
     private fun updateImageRecyclerView(newDataset: MutableList<Item>) {
-        imageAdapter.changeDataset(newDataset)
+        itemAdapter.changeDataset(newDataset)
     }
     private fun getNewDataset(imageResponse: ImageResponse?, videoResponse: VideoResponse?): MutableList<Item> {
         val newDataset = mutableListOf<Item>()

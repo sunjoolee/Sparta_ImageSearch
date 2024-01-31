@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.Image
-import com.sparta.imagesearch.data.ImageFolder
+import com.sparta.imagesearch.data.ItemFolder
 import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.ItemType
 import com.sparta.imagesearch.data.Video
@@ -26,12 +26,12 @@ import kotlinx.coroutines.withContext
 
 interface OnImageClickListener {
     fun onImageClick(item: Item)
-    fun onHeartClick(item: Item)
+    fun onHeartClick(position:Int, item: Item)
     fun onHeartLongClick(item: Item)
 }
 
-class ImageAdapter(var dataset: MutableList<Item>) :
-    RecyclerView.Adapter<ImageAdapter.Holder>() {
+class ItemAdapter(var dataset: MutableList<Item>) :
+    RecyclerView.Adapter<ItemAdapter.Holder>() {
     private val TAG = "ImageAdapter"
 
     var onImageClickListener: OnImageClickListener? = null
@@ -49,7 +49,7 @@ class ImageAdapter(var dataset: MutableList<Item>) :
             onImageClickListener?.onImageClick(dataset[position])
         }
         holder.heartImageView.setOnClickListener {
-            onImageClickListener?.onHeartClick(dataset[position])
+            onImageClickListener?.onHeartClick(position, dataset[position])
         }
         holder.heartImageView.setOnLongClickListener {
             onImageClickListener?.onHeartLongClick(dataset[position])
@@ -121,7 +121,7 @@ class ImageAdapter(var dataset: MutableList<Item>) :
         }
 
 
-        private fun Holder.setHeartImageViewColor(folder: ImageFolder?) {
+        private fun Holder.setHeartImageViewColor(folder: ItemFolder?) {
             heartImageView.imageTintList = ColorStateList.valueOf(
                 binding.root.resources.getColor(
                     folder?.colorId ?: R.color.gray

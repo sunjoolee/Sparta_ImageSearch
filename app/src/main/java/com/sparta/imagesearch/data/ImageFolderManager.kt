@@ -1,23 +1,24 @@
 package com.sparta.imagesearch.data
 
+import com.sparta.imagesearch.MainActivity
 import com.sparta.imagesearch.R
 
 object ImageFolderManager {
-    val defaultFolder = ImageFolder("기본 폴더", R.color.folder_color1)
+    val defaultFolder = ItemFolder("기본 폴더", R.color.folder_color1)
 
-    private val folders = mutableListOf<ImageFolder>(defaultFolder)
+    private val folders = mutableListOf<ItemFolder>(defaultFolder)
 
-    fun getFolders():MutableList<ImageFolder> = folders
+    fun getFolders():MutableList<ItemFolder> = folders
 
     fun addFolder(name:String, colorId:Int){
-        folders.add(ImageFolder(name, colorId))
+        folders.add(ItemFolder(name, colorId))
     }
 
-    fun deleteFolder(folder:ImageFolder){
+    fun deleteFolder(folder:ItemFolder){
         if(folder == defaultFolder) return
 
-        ImageManager.getSavedImages(folder).forEach {
-            ImageManager.unsaveImage(it)
+        MainActivity.savedItems.forEach {
+            it.unsaveItem()
         }
         folders.remove(folder)
     }
