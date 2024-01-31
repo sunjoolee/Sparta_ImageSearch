@@ -1,20 +1,17 @@
 package com.sparta.imagesearch.retrofit
 
-import java.time.LocalDateTime
-import java.util.Date
-
 data class ImageResponse(
-    val meta: Meta,
-    val documents: MutableList<Document>?
+    val imageMeta: ImageMeta,
+    val documents: MutableList<ImageDocument>?
 )
 
-data class Meta(
+data class ImageMeta(
     val total_count:Int,
     val pageable_count:Int,
     val is_end:Boolean
 )
 
-data class  Document(
+data class  ImageDocument(
     val collection:String,
     val thumbnail_url:String,
     val image_url:String,

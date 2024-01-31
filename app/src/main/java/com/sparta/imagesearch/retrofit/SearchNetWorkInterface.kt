@@ -13,4 +13,10 @@ interface SearchNetWorkInterface {
         @Query("query") query:String,
         @Query("size") size:Int = 80
     ) : ImageResponse
+
+    @Headers("Authorization: KakaoAK ${REST_API_KEY}")
+    @GET("vclip")
+    suspend fun getVideoResponse(
+        @Query("query") query:String
+    ) : VideoResponse
 }

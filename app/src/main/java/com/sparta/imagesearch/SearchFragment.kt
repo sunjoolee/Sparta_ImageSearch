@@ -17,6 +17,7 @@ import com.sparta.imagesearch.recyclerView.ImageAdapter
 import com.sparta.imagesearch.recyclerView.OnImageClickListener
 import com.sparta.imagesearch.retrofit.ImageResponse
 import com.sparta.imagesearch.retrofit.SearchClient
+import com.sparta.imagesearch.retrofit.VideoResponse
 import com.sparta.imagesearch.util.fromDpToPx
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -87,9 +88,19 @@ class SearchFragment : Fragment(), OnImageClickListener {
 
     private suspend fun communicateImageSearchNetwork(query: String) {
         var imageResponse: ImageResponse? = null
+        var videoResponse: VideoResponse? = null
+
         val job = lifecycleScope.launch {
             try {
+                Log.d(TAG, "getting image response...")
                 imageResponse = SearchClient.searchNetWork.getImageResponse(query)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                cancel()
+            }
+            try {
+                Log.d(TAG, "getting video response...")
+                videoResponse = SearchClient.searchNetWork.getVideoResponse(query)
             } catch (e: Exception) {
                 e.printStackTrace()
                 cancel()
