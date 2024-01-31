@@ -74,6 +74,7 @@ class SearchFragment : Fragment(), OnImageClickListener {
     private fun setSearchButtonOnClickListener() {
         binding.btnSearch.setOnClickListener {
             hideKeyboard(it)
+            smoothScrollToTop()
 
             val keyword = binding.etSearch.text.toString()
             lifecycleScope.launch { communicateImageSearchNetwork(keyword) }
@@ -83,6 +84,10 @@ class SearchFragment : Fragment(), OnImageClickListener {
         val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         view.clearFocus()
+    }
+
+    private fun smoothScrollToTop(){
+        binding.recyclerviewImage.smoothScrollToPosition(0)
     }
 
     private suspend fun communicateImageSearchNetwork(query: String) {
