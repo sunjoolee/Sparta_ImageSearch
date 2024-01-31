@@ -6,11 +6,10 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 data class Image(
-    var folder: ImageFolder? = null,
     val imageUrl: String,
     val source: String,
     override val time: String
-):Item(ItemType.Image, time) {
+):Item(type = ItemType.Image, time = time) {
 
     companion object {
         fun createFromImageDocument(imageDocument: ImageDocument): Image {

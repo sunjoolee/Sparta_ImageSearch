@@ -6,10 +6,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 data class Video(
-    var folder: ImageFolder? = null,
     val thumbnail: String,
     override val time: String
-):Item(ItemType.Video, time) {
+):Item(ItemType.Video, time = time) {
     companion object {
         fun createFromVideoDocument(videoDocument: VideoDocument): Video {
             val newVideo = Video(
