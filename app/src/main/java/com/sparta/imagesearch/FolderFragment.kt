@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.sparta.imagesearch.data.FolderManager
 import com.sparta.imagesearch.data.Item
@@ -37,6 +38,9 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         initFolderRecyclerView()
+        initMoreButton()
+        initMoreLayout()
+
         initImageRecyclerView()
     }
 
@@ -56,6 +60,20 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener {
     private fun getFolderDataset(folderId: String) = MainActivity.savedItems.filter {
         it.folder?.id == folderId
     }.toMutableList()
+
+    private fun initMoreButton() {
+        binding.ivMore.setOnClickListener {
+            binding.layoutMore.isVisible = !binding.layoutMore.isVisible
+        }
+    }
+    private fun initMoreLayout() {
+        binding.tvMoreAdd.setOnClickListener {
+            //TODO 폴더 생성 다이얼로그 표시
+        }
+        binding.tvMoreDelete.setOnClickListener {
+            //TODO 폴더 삭제 다이얼로그 표시
+        }
+    }
 
     private fun initImageRecyclerView() {
         itemAdapter = ItemAdapter(getFolderDataset(FolderManager.getSelectedFolderId()))
