@@ -14,8 +14,8 @@ import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.Video
 import com.sparta.imagesearch.databinding.FragmentSearchBinding
 import com.sparta.imagesearch.recyclerView.GridSpacingItemDecoration
-import com.sparta.imagesearch.recyclerView.ImageAdapter
-import com.sparta.imagesearch.recyclerView.OnImageClickListener
+import com.sparta.imagesearch.recyclerView.ItemAdapter
+import com.sparta.imagesearch.recyclerView.OnItemClickListener
 import com.sparta.imagesearch.retrofit.ImageResponse
 import com.sparta.imagesearch.retrofit.SearchClient
 import com.sparta.imagesearch.retrofit.VideoResponse
@@ -23,13 +23,13 @@ import com.sparta.imagesearch.util.fromDpToPx
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-class SearchFragment : Fragment(), OnImageClickListener {
+class SearchFragment : Fragment(), OnItemClickListener {
     private val TAG = "SearchFragment"
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var imageAdapter: ImageAdapter
+    private lateinit var itemAdapter: ItemAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,32 +46,33 @@ class SearchFragment : Fragment(), OnImageClickListener {
     }
 
     private fun initImageRecyclerView() {
-        imageAdapter = ImageAdapter(mutableListOf<Item>())
+        itemAdapter = ItemAdapter(mutableListOf<Item>())
 
-        imageAdapter.onImageClickListener = this@SearchFragment
+        itemAdapter.onItemClickListener = this@SearchFragment
         binding.recyclerviewImage.run {
-            adapter = imageAdapter
+            adapter = itemAdapter
             addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
         }
     }
 
-    override fun onImageClick(item: Item) {
-        Log.d(TAG, "onItemClick")
+    override fun onItemImageClick(item: Item) {
         //TODO Not yet implemented
     }
-    override fun onHeartClick(item: Item) {
-        Log.d(TAG, "onHeartClick")
-        //TODO Not yet implemented
+    override fun onItemHeartClick(position:Int, item: Item) {
+        item.run{
+            if(isSaved()) unsaveItem() else saveItem()
+        }
+        itemAdapter.notifyItemChanged(position)
     }
 
-    override fun onHeartLongClick(item: Item) {
-        Log.d(TAG, "onHeartLongClick")
+    override fun onItemHeartLongClick(item: Item) {
         //TODO Not yet implemented
     }
 
     private fun setSearchButtonOnClickListener() {
         binding.btnSearch.setOnClickListener {
             hideKeyboard(it)
+            smoothScrollToTop()
 
             val keyword = binding.etSearch.text.toString()
             lifecycleScope.launch { communicateImageSearchNetwork(keyword) }
@@ -81,6 +82,10 @@ class SearchFragment : Fragment(), OnImageClickListener {
         val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         view.clearFocus()
+    }
+
+    private fun smoothScrollToTop(){
+        binding.recyclerviewImage.smoothScrollToPosition(0)
     }
 
     private suspend fun communicateImageSearchNetwork(query: String) {
@@ -110,7 +115,7 @@ class SearchFragment : Fragment(), OnImageClickListener {
     }
 
     private fun updateImageRecyclerView(newDataset: MutableList<Item>) {
-        imageAdapter.changeDataset(newDataset)
+        itemAdapter.changeDataset(newDataset)
     }
     private fun getNewDataset(imageResponse: ImageResponse?, videoResponse: VideoResponse?): MutableList<Item> {
         val newDataset = mutableListOf<Item>()
@@ -141,6 +146,11 @@ class SearchFragment : Fragment(), OnImageClickListener {
         return newDataset
     }
 
+    override fun onResume() {
+        Log.d(TAG, "onResume")
+        super.onResume()
+        itemAdapter.notifyDataSetChanged()
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

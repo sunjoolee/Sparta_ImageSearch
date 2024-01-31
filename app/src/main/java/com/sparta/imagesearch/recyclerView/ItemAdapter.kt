@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.Image
-import com.sparta.imagesearch.data.ImageFolder
+import com.sparta.imagesearch.data.Folder
 import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.ItemType
 import com.sparta.imagesearch.data.Video
@@ -24,17 +24,17 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 
-interface OnImageClickListener {
-    fun onImageClick(item: Item)
-    fun onHeartClick(item: Item)
-    fun onHeartLongClick(item: Item)
+interface OnItemClickListener {
+    fun onItemImageClick(item: Item)
+    fun onItemHeartClick(position:Int, item: Item)
+    fun onItemHeartLongClick(item: Item)
 }
 
-class ImageAdapter(var dataset: MutableList<Item>) :
-    RecyclerView.Adapter<ImageAdapter.Holder>() {
+class ItemAdapter(var dataset: MutableList<Item>) :
+    RecyclerView.Adapter<ItemAdapter.Holder>() {
     private val TAG = "ImageAdapter"
 
-    var onImageClickListener: OnImageClickListener? = null
+    var onItemClickListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding =
@@ -45,17 +45,7 @@ class ImageAdapter(var dataset: MutableList<Item>) :
     override fun getItemCount(): Int = dataset.size
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.itemView.setOnClickListener {
-            onImageClickListener?.onImageClick(dataset[position])
-        }
-        holder.heartImageView.setOnClickListener {
-            onImageClickListener?.onHeartClick(dataset[position])
-        }
-        holder.heartImageView.setOnLongClickListener {
-            onImageClickListener?.onHeartLongClick(dataset[position])
-            true
-        }
-
+        holder.setListeners()
         holder.bind(position)
     }
 
@@ -66,10 +56,23 @@ class ImageAdapter(var dataset: MutableList<Item>) :
 
     inner class Holder(val binding: RecyclerViewItemImageBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val imageView = binding.ivImage
-        val sourceTextView = binding.tvImageSource
-        val timeTextView = binding.tvImageTime
-        val heartImageView = binding.ivHeart
+        private val imageView = binding.ivImage
+        private val sourceTextView = binding.tvImageSource
+        private val timeTextView = binding.tvImageTime
+        private val heartImageView = binding.ivHeart
+
+        fun setListeners(){
+            itemView.setOnClickListener {
+                onItemClickListener?.onItemImageClick(dataset[position])
+            }
+            heartImageView.setOnClickListener {
+                onItemClickListener?.onItemHeartClick(position, dataset[position])
+            }
+            heartImageView.setOnLongClickListener {
+                onItemClickListener?.onItemHeartLongClick(dataset[position])
+                true
+            }
+        }
         fun bind(position: Int) {
             val item = dataset[position]
 
@@ -121,11 +124,9 @@ class ImageAdapter(var dataset: MutableList<Item>) :
         }
 
 
-        private fun Holder.setHeartImageViewColor(folder: ImageFolder?) {
+        private fun Holder.setHeartImageViewColor(folder: Folder?) {
             heartImageView.imageTintList = ColorStateList.valueOf(
-                binding.root.resources.getColor(
-                    folder?.colorId ?: R.color.gray
-                )
+                folder?.color ?:binding.root.resources.getColor(R.color.gray)
             )
         }
     }
