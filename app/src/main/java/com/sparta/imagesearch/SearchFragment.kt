@@ -41,8 +41,29 @@ class SearchFragment : Fragment(), OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        loadUIState()
+
         initImageRecyclerView()
         setSearchButtonOnClickListener()
+    }
+
+    private fun loadUIState(){
+        val keyword = loadKeyword()
+        binding.etSearch.setText(keyword)
+        lifecycleScope.launch {
+            communicateImageSearchNetwork(keyword)
+        }
+    }
+    private fun loadKeyword(): String {
+        val pref = requireActivity().getSharedPreferences("pref", 0)
+        return pref.getString("keyword", "") ?: ""
+    }
+
+    private fun saveKeyword(keyword: String) {
+        val pref = requireActivity().getSharedPreferences("pref", 0)
+        pref.edit()
+            .putString("keyword", keyword)
+            .apply()
     }
 
     private fun initImageRecyclerView() {
@@ -58,9 +79,10 @@ class SearchFragment : Fragment(), OnItemClickListener {
     override fun onItemImageClick(item: Item) {
         //TODO Not yet implemented
     }
-    override fun onItemHeartClick(position:Int, item: Item) {
-        item.run{
-            if(isSaved()) unsaveItem() else saveItem()
+
+    override fun onItemHeartClick(position: Int, item: Item) {
+        item.run {
+            if (isSaved()) unsaveItem() else saveItem()
         }
         itemAdapter.notifyItemChanged(position)
     }
@@ -75,16 +97,21 @@ class SearchFragment : Fragment(), OnItemClickListener {
             smoothScrollToTop()
 
             val keyword = binding.etSearch.text.toString()
-            lifecycleScope.launch { communicateImageSearchNetwork(keyword) }
+            saveKeyword(keyword)
+            lifecycleScope.launch {
+                communicateImageSearchNetwork(keyword)
+            }
         }
     }
-    private fun hideKeyboard(view:View){
-        val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+    private fun hideKeyboard(view: View) {
+        val inputMethodManager =
+            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         view.clearFocus()
     }
 
-    private fun smoothScrollToTop(){
+    private fun smoothScrollToTop() {
         binding.recyclerviewImage.smoothScrollToPosition(0)
     }
 
@@ -117,12 +144,16 @@ class SearchFragment : Fragment(), OnItemClickListener {
     private fun updateImageRecyclerView(newDataset: MutableList<Item>) {
         itemAdapter.changeDataset(newDataset)
     }
-    private fun getNewDataset(imageResponse: ImageResponse?, videoResponse: VideoResponse?): MutableList<Item> {
+
+    private fun getNewDataset(
+        imageResponse: ImageResponse?,
+        videoResponse: VideoResponse?
+    ): MutableList<Item> {
         val newDataset = mutableListOf<Item>()
         newDataset += imageResponseToDataset(imageResponse)
         newDataset += videoResponseToDataset(videoResponse)
 
-        newDataset.run{
+        newDataset.run {
             sortBy { it.time }
             reverse()
         }
@@ -137,6 +168,7 @@ class SearchFragment : Fragment(), OnItemClickListener {
         }
         return newDataset
     }
+
     private fun videoResponseToDataset(videoResponse: VideoResponse?): MutableList<Item> {
         Log.d(TAG, "video response to dataset")
         val newDataset = mutableListOf<Item>()
@@ -151,6 +183,7 @@ class SearchFragment : Fragment(), OnItemClickListener {
         super.onResume()
         itemAdapter.notifyDataSetChanged()
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
