@@ -4,7 +4,7 @@ import com.sparta.imagesearch.MainActivity
 import com.sparta.imagesearch.R
 
 object FolderManager {
-    private const val DEFAULT_FOLDER_ID = "0"
+    const val DEFAULT_FOLDER_ID = "0"
     val defaultFolder =
         Folder(id = DEFAULT_FOLDER_ID, name = "기본 폴더", colorId = R.color.folder_color1)
 
@@ -28,9 +28,13 @@ object FolderManager {
     fun deleteFolder(folder: Folder) {
         if (folder == defaultFolder) return
 
+        val deleteItems = mutableListOf<Item>()
         MainActivity.savedItems.forEach {
-            it.unsaveItem()
+            if((it.folder != null) && (it.folder == folder))
+                deleteItems.add(it)
         }
+        deleteItems.forEach { it.unsaveItem() }
+
         folders.remove(folder)
     }
 }

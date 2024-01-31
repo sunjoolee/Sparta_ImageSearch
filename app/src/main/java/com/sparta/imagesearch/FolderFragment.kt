@@ -88,6 +88,12 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
         val deleteFolders = FolderManager.getFolders().filter { folderIdList.contains(it.id) }
         deleteFolders.forEach { FolderManager.deleteFolder(it) }
 
+        if (deleteFolders.find { it.id == FolderManager.getSelectedFolderId() } != null) {
+            FolderManager.setSelectedFolderId(FolderManager.DEFAULT_FOLDER_ID)
+            itemAdapter.changeDataset(
+                getFolderDataset(FolderManager.getSelectedFolderId())
+            )
+        }
         folderAdapter.notifyDataSetChanged()
     }
 
@@ -105,29 +111,34 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
     }
 
     override fun onItemHeartClick(position: Int, item: Item) {
-        //TODO("Not yet implemented")
+        item.unsaveItem()
+        itemAdapter.notifyItemRemoved(position)
     }
 
     override fun onItemHeartLongClick(item: Item) {
         showMoveFolderDialog(item)
     }
 
-    private fun showMoveFolderDialog(item:Item){
+    private fun showMoveFolderDialog(item: Item) {
         val moveDialog = MoveFolderDialog(binding.root.context as AppCompatActivity, item)
         moveDialog.onMoveConfirmListener = this@FolderFragment
         moveDialog.show()
     }
 
-    override fun onMoveConfirm(item:Item, checkedFolderId: String) {
+    override fun onMoveConfirm(item: Item, checkedFolderId: String) {
         item.folder = FolderManager.getFolders().find { it.id == checkedFolderId }!!
         itemAdapter.changeDataset(
             getFolderDataset(FolderManager.getSelectedFolderId())
         )
     }
+
     override fun onResume() {
         Log.d(TAG, "onResume")
         super.onResume()
-        itemAdapter.notifyDataSetChanged()
+
+        itemAdapter.changeDataset(
+            getFolderDataset(FolderManager.getSelectedFolderId())
+        )
     }
 
     override fun onDestroyView() {
