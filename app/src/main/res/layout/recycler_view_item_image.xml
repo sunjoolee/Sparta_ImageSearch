@@ -14,7 +14,7 @@
         android:background="@drawable/shape_rounded"
         android:backgroundTint="@color/theme_bg"
         android:clipToOutline="true"
-        android:src="@drawable/image_sample1"
+        android:src="@drawable/icon_loading"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
