@@ -59,73 +59,6 @@ class ImageAdapter(var dataset: MutableList<Item>) :
         holder.bind(position)
     }
 
-    private fun Holder.bind(position: Int) {
-        when (dataset[position].type) {
-            ItemType.Image -> {
-                val image = dataset[position] as Image
-
-                CoroutineScope(Dispatchers.Default).launch {
-                    setImageView(image.imageUrl)
-                }
-                sourceTextView.text = "[Image]"+image.source
-                timeTextView.text = image.time
-                setHeartImageViewColor(image.folder)
-            }
-            ItemType.Video -> {
-                val video = dataset[position] as Video
-
-                CoroutineScope(Dispatchers.Default).launch {
-                    setImageView(video.thumbnail)
-                }
-                sourceTextView.text = "[Video]"
-                timeTextView.text = video.time
-                setHeartImageViewColor(video.folder)
-            }
-        }
-    }
-
-    private suspend fun Holder.setImageView(thumbnailUrl: String) {
-        lateinit var sourceBitmap: Bitmap
-        val job = CoroutineScope(Dispatchers.Default).launch {
-            Log.d(TAG, "getting sourceBitmap...")
-            sourceBitmap = try {
-                Glide.with(binding.root.context)
-                    .asBitmap()
-                    .load(thumbnailUrl)
-                    .submit()
-                    .get()
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                BitmapFactory.decodeResource(binding.root.resources, R.drawable.icon_bad_wifi)
-            }
-        }
-        runBlocking {
-            job.join()
-        }
-        Log.d(TAG, "got sourceBitmap!")
-
-        withContext(Dispatchers.Main) {
-            val ratio = sourceBitmap.height.toDouble() / sourceBitmap.width.toDouble()
-            val newWidth = 160f.fromDpToPx()
-            val newHeight = (160f.fromDpToPx() * ratio).toInt()
-            val scaledBitmap = createScaledBitmap(sourceBitmap, newWidth, newHeight, true)
-
-            Log.d(TAG, "set scaledBitmap to imageView")
-            imageView.setImageBitmap(scaledBitmap)
-            imageView.clipToOutline = true
-        }
-    }
-
-
-    private fun Holder.setHeartImageViewColor(folder: ImageFolder?) {
-        heartImageView.imageTintList = ColorStateList.valueOf(
-            binding.root.resources.getColor(
-                folder?.colorId ?: R.color.gray
-            )
-        )
-    }
-
     fun changeDataset(newDataset: MutableList<Item>) {
         dataset = newDataset
         notifyDataSetChanged()
@@ -137,5 +70,63 @@ class ImageAdapter(var dataset: MutableList<Item>) :
         val sourceTextView = binding.tvImageSource
         val timeTextView = binding.tvImageTime
         val heartImageView = binding.ivHeart
+        fun bind(position: Int) {
+            val item = dataset[position]
+
+            CoroutineScope(Dispatchers.Default).launch {
+                setImageView(
+                    if (item.type == ItemType.Image) (item as Image).imageUrl
+                    else (item as Video).thumbnail
+                )
+            }
+
+            sourceTextView.text =
+                if (item.type == ItemType.Image) "[Image]" + (item as Image).source
+                else "[Video]"
+            timeTextView.text = item.time
+            setHeartImageViewColor(item.folder)
+        }
+
+        private suspend fun Holder.setImageView(thumbnailUrl: String) {
+            lateinit var sourceBitmap: Bitmap
+            val job = CoroutineScope(Dispatchers.Default).launch {
+                Log.d(TAG, "getting sourceBitmap...")
+                sourceBitmap = try {
+                    Glide.with(binding.root.context)
+                        .asBitmap()
+                        .load(thumbnailUrl)
+                        .submit()
+                        .get()
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    BitmapFactory.decodeResource(binding.root.resources, R.drawable.icon_bad_wifi)
+                }
+            }
+            runBlocking {
+                job.join()
+            }
+            Log.d(TAG, "got sourceBitmap!")
+
+            withContext(Dispatchers.Main) {
+                val ratio = sourceBitmap.height.toDouble() / sourceBitmap.width.toDouble()
+                val newWidth = 160f.fromDpToPx()
+                val newHeight = (160f.fromDpToPx() * ratio).toInt()
+                val scaledBitmap = createScaledBitmap(sourceBitmap, newWidth, newHeight, true)
+
+                Log.d(TAG, "set scaledBitmap to imageView")
+                imageView.setImageBitmap(scaledBitmap)
+                imageView.clipToOutline = true
+            }
+        }
+
+
+        private fun Holder.setHeartImageViewColor(folder: ImageFolder?) {
+            heartImageView.imageTintList = ColorStateList.valueOf(
+                binding.root.resources.getColor(
+                    folder?.colorId ?: R.color.gray
+                )
+            )
+        }
     }
 }
