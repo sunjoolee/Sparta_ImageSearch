@@ -54,14 +54,9 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
 
     override fun onFolderClick(folderId: String) {
         FolderManager.setSelectedFolderId(folderId)
-        itemAdapter.changeDataset(
-            getFolderDataset(FolderManager.getSelectedFolderId())
-        )
+        refreshItemRecyclerView()
     }
 
-    private fun getFolderDataset(folderId: String) = MainActivity.savedItems.filter {
-        it.folder?.id == folderId
-    }.toMutableList()
 
     private fun initMoreButton() {
         binding.ivMore.setOnClickListener {
@@ -90,9 +85,7 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
 
         if (deleteFolders.find { it.id == FolderManager.getSelectedFolderId() } != null) {
             FolderManager.setSelectedFolderId(FolderManager.DEFAULT_FOLDER_ID)
-            itemAdapter.changeDataset(
-                getFolderDataset(FolderManager.getSelectedFolderId())
-            )
+            refreshItemRecyclerView()
         }
         folderAdapter.notifyDataSetChanged()
     }
@@ -127,19 +120,22 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
 
     override fun onMoveConfirm(item: Item, checkedFolderId: String) {
         item.folder = FolderManager.getFolders().find { it.id == checkedFolderId }!!
-        itemAdapter.changeDataset(
-            getFolderDataset(FolderManager.getSelectedFolderId())
-        )
+        refreshItemRecyclerView()
     }
 
     override fun onResume() {
         Log.d(TAG, "onResume")
         super.onResume()
+    }
 
+    private fun refreshItemRecyclerView(){
         itemAdapter.changeDataset(
             getFolderDataset(FolderManager.getSelectedFolderId())
         )
     }
+    private fun getFolderDataset(folderId: String) = MainActivity.savedItems.filter {
+        it.folder?.id == folderId
+    }.toMutableList()
 
     override fun onDestroyView() {
         super.onDestroyView()
