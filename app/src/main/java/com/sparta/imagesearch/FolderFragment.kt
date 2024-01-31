@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.sparta.imagesearch.data.FolderManager
@@ -17,7 +18,8 @@ import com.sparta.imagesearch.recyclerView.OnFolderClickListener
 import com.sparta.imagesearch.recyclerView.OnItemClickListener
 import com.sparta.imagesearch.util.fromDpToPx
 
-class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener {
+class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
+    DeleteFolderDialog.OnConfirmListener {
     private val TAG = "FolderFragment"
 
     private var _binding: FragmentFolderBinding? = null
@@ -66,13 +68,27 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener {
             binding.layoutMore.isVisible = !binding.layoutMore.isVisible
         }
     }
+
     private fun initMoreLayout() {
         binding.tvMoreAdd.setOnClickListener {
-            //TODO 폴더 생성 다이얼로그 표시
+            //TODO 폴더 생성 다이얼로그 표시하기
         }
         binding.tvMoreDelete.setOnClickListener {
-            //TODO 폴더 삭제 다이얼로그 표시
+            showDeleteFolderDialog()
         }
+    }
+
+    private fun showDeleteFolderDialog() {
+        val deleteDialog = DeleteFolderDialog(binding.root.context as AppCompatActivity)
+        deleteDialog.onConfirmListener = this@FolderFragment
+        deleteDialog.show()
+    }
+
+    override fun onConfirm(folderIdList: List<String>) {
+        FolderManager.getFolders().filter { folderIdList.contains(it.id) }
+            .forEach { FolderManager.deleteFolder(it) }
+
+        folderAdapter.notifyDataSetChanged()
     }
 
     private fun initImageRecyclerView() {
@@ -108,4 +124,5 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener {
         super.onDestroyView()
         _binding = null
     }
+
 }
