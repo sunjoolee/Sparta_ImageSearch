@@ -34,7 +34,8 @@ class MainActivity : AppCompatActivity() {
     class MyPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
         override fun getItemCount(): Int = 2
         override fun createFragment(position: Int): Fragment {
-            return if (position == 0) SearchFragment() else FolderFragment()
+            return if (position == 0) SearchFragment()
+            else FolderFragment()
         }
     }
 
