@@ -26,9 +26,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:src="@drawable/icon_search"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/theme_accent" />
 
         <EditText
@@ -39,24 +39,24 @@
             android:hint="@string/search_hint"
             android:maxLines="1"
             android:textColor="@color/white"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_search"
-            app:layout_constraintEnd_toStartOf="@id/btn_search"
             android:textColorHint="@color/white"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_search"
+            app:layout_constraintStart_toEndOf="@id/iv_search"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <Button
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/search"
-            android:textSize="14sp"
             android:backgroundTint="@color/theme_accent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/search"
+            android:textColor="@color/theme_bg"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:textColor="@color/theme_bg"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -71,5 +71,20 @@
         app:layout_constraintTop_toBottomOf="@id/layout_search"
         app:spanCount="2"
         tools:listitem="@layout/recycler_view_item_image" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="48dp"
+        android:backgroundTint="@color/theme_accent"
+        android:src="@drawable/icon_up"
+        android:visibility="invisible"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/theme_bg"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,13 +2,16 @@ package com.sparta.imagesearch
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import com.sparta.imagesearch.data.Image
 import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.Video
@@ -45,6 +48,7 @@ class SearchFragment : Fragment(), OnItemClickListener {
 
         initImageRecyclerView()
         setSearchButtonOnClickListener()
+        initUpButton()
     }
 
     private fun loadUIState(){
@@ -82,7 +86,7 @@ class SearchFragment : Fragment(), OnItemClickListener {
 
     override fun onItemHeartClick(position: Int, item: Item) {
         item.run {
-            if (isSaved()) unsaveItem() else saveItem()
+            if (isSaved()) unSaveItem() else saveItem()
         }
         itemAdapter.notifyItemChanged(position)
     }
@@ -176,6 +180,24 @@ class SearchFragment : Fragment(), OnItemClickListener {
             newDataset.add(Video.createFromVideoDocument(it))
         }
         return newDataset
+    }
+    private fun initUpButton(){
+        binding.recyclerviewImage.setOnScrollListener(object :RecyclerView.OnScrollListener(){
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                    Handler().postDelayed(Runnable {
+                        binding.fabUp.isVisible = false
+                    }, 2500)
+                }
+                else binding.fabUp.isVisible = true
+            }
+        })
+
+        binding.fabUp.setOnClickListener {
+            smoothScrollToTop()
+        }
     }
 
     override fun onResume() {
