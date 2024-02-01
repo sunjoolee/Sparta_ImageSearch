@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.Image
@@ -16,6 +17,7 @@ import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.ItemType
 import com.sparta.imagesearch.data.Video
 import com.sparta.imagesearch.databinding.RecyclerViewItemImageBinding
+import com.sparta.imagesearch.databinding.RecyclerViewItemProgressBinding
 import com.sparta.imagesearch.util.fromDpToPx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,31 +33,67 @@ interface OnItemClickListener {
 }
 
 class ItemAdapter(var dataset: MutableList<Item>) :
-    RecyclerView.Adapter<ItemAdapter.Holder>() {
+    RecyclerView.Adapter<ViewHolder>() {
     private val TAG = "ImageAdapter"
 
     var onItemClickListener: OnItemClickListener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        val binding =
-            RecyclerViewItemImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return Holder(binding)
+    override fun getItemViewType(position: Int): Int {
+        return when(dataset[position].type){
+            ItemType.Image -> 0
+            ItemType.Video -> 1
+            ItemType.ProgressBar -> 2
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        if((viewType==0)||(viewType==1)){
+            val itemBinding =
+                RecyclerViewItemImageBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            return ItemHolder(itemBinding)
+        }
+        else {
+            val progressBinding = RecyclerViewItemProgressBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            return ProgressHolder(progressBinding)
+        }
     }
 
     override fun getItemCount(): Int = dataset.size
 
-    override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.setListeners()
-        holder.bind(position)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        when(holder.itemViewType){
+            0 -> {
+                (holder as ItemHolder).run {
+                    setListeners()
+                    bindImage(position)
+                }
+            }
+            1 -> {
+                (holder as ItemHolder).run{
+                    setListeners()
+                    bindVideo(position)
+                }
+            }
+            2 -> {
+                //no binding needed
+            }
+        }
     }
-
     fun changeDataset(newDataset: MutableList<Item>) {
         dataset = newDataset
         notifyDataSetChanged()
     }
 
-    inner class Holder(val binding: RecyclerViewItemImageBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class ItemHolder(val binding: RecyclerViewItemImageBinding) :
+        ViewHolder(binding.root) {
         private val imageView = binding.ivImage
         private val sourceTextView = binding.tvImageSource
         private val timeTextView = binding.tvImageTime
@@ -73,24 +111,29 @@ class ItemAdapter(var dataset: MutableList<Item>) :
                 true
             }
         }
-        fun bind(position: Int) {
-            val item = dataset[position]
+        fun bindImage(position: Int) {
+            val item = dataset[position] as Image
 
             CoroutineScope(Dispatchers.Default).launch {
-                setImageView(
-                    if (item.type == ItemType.Image) (item as Image).imageUrl
-                    else (item as Video).thumbnail
-                )
+                setImageView(item.imageUrl)
             }
-
-            sourceTextView.text =
-                if (item.type == ItemType.Image) "[Image]" + (item as Image).source
-                else "[Video]"
+            sourceTextView.text ="[Image]" + item.source
             timeTextView.text = item.time
             setHeartImageViewColor(item.folder)
         }
 
-        private suspend fun Holder.setImageView(thumbnailUrl: String) {
+        fun bindVideo(position:Int){
+            val item = dataset[position] as Video
+
+            CoroutineScope(Dispatchers.Default).launch {
+                setImageView(item.thumbnail)
+            }
+            sourceTextView.text = "[Video]"
+            timeTextView.text = item.time
+            setHeartImageViewColor(item.folder)
+        }
+
+        private suspend fun setImageView(thumbnailUrl: String) {
             lateinit var sourceBitmap: Bitmap
             val job = CoroutineScope(Dispatchers.Default).launch {
                 Log.d(TAG, "getting sourceBitmap...")
@@ -124,10 +167,13 @@ class ItemAdapter(var dataset: MutableList<Item>) :
         }
 
 
-        private fun Holder.setHeartImageViewColor(folder: Folder?) {
+        private fun setHeartImageViewColor(folder: Folder?) {
             heartImageView.imageTintList = ColorStateList.valueOf(
                 folder?.color ?:binding.root.resources.getColor(R.color.gray)
             )
         }
     }
+
+    inner class ProgressHolder(val binding: RecyclerViewItemProgressBinding) :
+        ViewHolder(binding.root) {}
 }

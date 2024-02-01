@@ -4,7 +4,8 @@ import com.sparta.imagesearch.MainActivity
 
 enum class ItemType {
     Image,
-    Video
+    Video,
+    ProgressBar
 }
 
 open class Item(
@@ -19,8 +20,12 @@ open class Item(
         MainActivity.savedItems.add(this)
     }
 
-    fun unsaveItem() {
+    fun unSaveItem() {
         MainActivity.savedItems.remove(this)
         this.folder = null
+    }
+
+    companion object{
+       fun newProgressBar():Item = Item(type=ItemType.ProgressBar, time ="")
     }
 }
