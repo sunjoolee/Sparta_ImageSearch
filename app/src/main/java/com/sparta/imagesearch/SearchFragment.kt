@@ -77,6 +77,7 @@ class SearchFragment : Fragment(), OnItemClickListener {
         binding.recyclerviewImage.run {
             adapter = itemAdapter
             addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
+            itemAnimator = null
         }
     }
 
