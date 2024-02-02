@@ -116,7 +116,7 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
 
     override fun onItemHeartClick(position: Int, item: Item) {
         item.unSaveItem()
-        itemAdapter.notifyItemRemoved(position)
+        refreshItemRecyclerView()
     }
 
     override fun onItemHeartLongClick(item: Item) {

@@ -101,13 +101,13 @@ class ItemAdapter(var dataset: MutableList<Item>) :
 
         fun setListeners(){
             itemView.setOnClickListener {
-                onItemClickListener?.onItemImageClick(dataset[position])
+                onItemClickListener?.onItemImageClick(dataset[adapterPosition])
             }
             heartImageView.setOnClickListener {
-                onItemClickListener?.onItemHeartClick(position, dataset[position])
+                onItemClickListener?.onItemHeartClick(adapterPosition, dataset[adapterPosition])
             }
             heartImageView.setOnLongClickListener {
-                onItemClickListener?.onItemHeartLongClick(dataset[position])
+                onItemClickListener?.onItemHeartLongClick(dataset[adapterPosition])
                 true
             }
         }
