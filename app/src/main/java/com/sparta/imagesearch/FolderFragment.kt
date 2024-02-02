@@ -136,6 +136,7 @@ class FolderFragment : Fragment(), OnItemClickListener, OnFolderClickListener,
 
     override fun onResume() {
         Log.d(TAG, "onResume")
+        refreshItemRecyclerView()
         super.onResume()
     }
 
