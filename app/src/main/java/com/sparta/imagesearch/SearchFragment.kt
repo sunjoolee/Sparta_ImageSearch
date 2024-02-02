@@ -33,6 +33,8 @@ class SearchFragment : Fragment(), OnItemClickListener {
     private val binding get() = _binding!!
 
     private lateinit var itemAdapter: ItemAdapter
+    private var searchPage: Int = 1
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,17 +49,16 @@ class SearchFragment : Fragment(), OnItemClickListener {
         loadUIState()
 
         initImageRecyclerView()
-        setSearchButtonOnClickListener()
         initUpButton()
+        initSearchButton()
     }
 
-    private fun loadUIState(){
+    private fun loadUIState() {
         val keyword = loadKeyword()
         binding.etSearch.setText(keyword)
-        lifecycleScope.launch {
-            communicateImageSearchNetwork(keyword)
-        }
+        lifecycleScope.launch { communicateImageSearchNetwork() }
     }
+
     private fun loadKeyword(): String {
         val pref = requireActivity().getSharedPreferences("pref", 0)
         return pref.getString("keyword", "") ?: ""
@@ -72,12 +73,48 @@ class SearchFragment : Fragment(), OnItemClickListener {
 
     private fun initImageRecyclerView() {
         itemAdapter = ItemAdapter(mutableListOf<Item>())
-
         itemAdapter.onItemClickListener = this@SearchFragment
+
         binding.recyclerviewImage.run {
             adapter = itemAdapter
-            addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
             itemAnimator = null
+            addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
+            initOnScrollListener()
+        }
+    }
+
+    private fun RecyclerView.initOnScrollListener() {
+        setOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                setUpButtonVisibility(!(newState == RecyclerView.SCROLL_STATE_IDLE))
+
+                if (!binding.recyclerviewImage.canScrollVertically(1)) {
+                    infiniteScroll()
+                }
+            }
+        })
+    }
+
+    private fun infiniteScroll(){
+        Log.d(TAG, "end of item RecyclerView")
+        lifecycleScope.launch { communicateImageSearchNetwork() }
+    }
+
+    private fun initUpButton() {
+        binding.fabUp.setOnClickListener {
+            smoothScrollToTop()
+        }
+    }
+
+    private fun setUpButtonVisibility(flag: Boolean) {
+        if (flag) {
+            binding.fabUp.isVisible = true
+        } else {
+            Handler().postDelayed(Runnable {
+                binding.fabUp.isVisible = false
+            }, 2500)
         }
     }
 
@@ -96,16 +133,14 @@ class SearchFragment : Fragment(), OnItemClickListener {
         //TODO Not yet implemented
     }
 
-    private fun setSearchButtonOnClickListener() {
+    private fun initSearchButton() {
         binding.btnSearch.setOnClickListener {
             hideKeyboard(it)
             smoothScrollToTop()
 
             val keyword = binding.etSearch.text.toString()
             saveKeyword(keyword)
-            lifecycleScope.launch {
-                communicateImageSearchNetwork(keyword)
-            }
+            lifecycleScope.launch { communicateImageSearchNetwork()}
         }
     }
 
@@ -120,25 +155,28 @@ class SearchFragment : Fragment(), OnItemClickListener {
         binding.recyclerviewImage.smoothScrollToPosition(0)
     }
 
-    private suspend fun communicateImageSearchNetwork(query: String) {
+    private suspend fun communicateImageSearchNetwork() {
+        val keyword = loadKeyword()
+
         var imageResponse: ImageResponse? = null
         var videoResponse: VideoResponse? = null
 
         val job = lifecycleScope.launch {
             try {
-                Log.d(TAG, "getting image response...")
-                imageResponse = SearchClient.searchNetWork.getImageResponse(query)
+                imageResponse =
+                    SearchClient.searchNetWork.getImageResponse(keyword, page = searchPage)
             } catch (e: Exception) {
                 e.printStackTrace()
                 cancel()
             }
             try {
-                Log.d(TAG, "getting video response...")
-                videoResponse = SearchClient.searchNetWork.getVideoResponse(query)
+                videoResponse =
+                    SearchClient.searchNetWork.getVideoResponse(keyword, page = searchPage)
             } catch (e: Exception) {
                 e.printStackTrace()
                 cancel()
             }
+            searchPage++
         }
         job.join()
 
@@ -154,15 +192,14 @@ class SearchFragment : Fragment(), OnItemClickListener {
         imageResponse: ImageResponse?,
         videoResponse: VideoResponse?
     ): MutableList<Item> {
-        val newDataset = mutableListOf<Item>()
-        newDataset += imageResponseToDataset(imageResponse)
-        newDataset += videoResponseToDataset(videoResponse)
-
-        newDataset.run {
+        val newDataset = mutableListOf<Item>().apply {
+            addAll(imageResponseToDataset(imageResponse))
+            addAll(videoResponseToDataset(videoResponse))
             sortBy { it.time }
             reverse()
         }
-        return newDataset.toMutableList()
+
+        return (itemAdapter.dataset + newDataset).toMutableList()
     }
 
     private fun imageResponseToDataset(imageResponse: ImageResponse?): MutableList<Item> {
@@ -181,24 +218,6 @@ class SearchFragment : Fragment(), OnItemClickListener {
             newDataset.add(Video.createFromVideoDocument(it))
         }
         return newDataset
-    }
-    private fun initUpButton(){
-        binding.recyclerviewImage.setOnScrollListener(object :RecyclerView.OnScrollListener(){
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-
-                if(newState == RecyclerView.SCROLL_STATE_IDLE){
-                    Handler().postDelayed(Runnable {
-                        binding.fabUp.isVisible = false
-                    }, 2500)
-                }
-                else binding.fabUp.isVisible = true
-            }
-        })
-
-        binding.fabUp.setOnClickListener {
-            smoothScrollToTop()
-        }
     }
 
     override fun onResume() {
