@@ -1,4 +1,4 @@
-package com.sparta.imagesearch
+package com.sparta.imagesearch.view
 
 import android.app.Dialog
 import android.graphics.Color

@@ -1,6 +1,6 @@
 package com.sparta.imagesearch.data
 
-import com.sparta.imagesearch.MainActivity
+import com.sparta.imagesearch.view.MainActivity
 
 enum class ItemType {
     Image,

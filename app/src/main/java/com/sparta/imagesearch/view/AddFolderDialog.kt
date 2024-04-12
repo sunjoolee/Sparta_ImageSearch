@@ -1,4 +1,4 @@
-package com.sparta.imagesearch
+package com.sparta.imagesearch.view
 
 import android.app.Dialog
 import android.content.res.ColorStateList
@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.github.dhaval2404.colorpicker.ColorPickerDialog
+import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.FolderColor
 import com.sparta.imagesearch.databinding.DialogAddFolderBinding
 
