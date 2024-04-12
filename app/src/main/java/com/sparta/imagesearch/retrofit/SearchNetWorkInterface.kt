@@ -11,12 +11,17 @@ interface SearchNetWorkInterface {
     @GET("image")
     suspend fun getImageResponse(
         @Query("query") query:String,
-        @Query("size") size:Int = 80
+        @Query("size") size:Int = 20,
+        @Query("page") page:Int,
+        @Query("sort") sort:String = "recency"
     ) : ImageResponse
 
     @Headers("Authorization: KakaoAK ${REST_API_KEY}")
     @GET("vclip")
     suspend fun getVideoResponse(
-        @Query("query") query:String
+        @Query("query") query:String,
+        @Query("size") size:Int = 10,
+        @Query("page") page:Int,
+        @Query("sort") sort:String = "recency"
     ) : VideoResponse
 }

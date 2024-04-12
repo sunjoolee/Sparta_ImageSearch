@@ -2,7 +2,6 @@ package com.sparta.imagesearch.data
 
 import android.graphics.Color
 import com.sparta.imagesearch.MainActivity
-import com.sparta.imagesearch.R
 
 object FolderManager {
     const val DEFAULT_FOLDER_ID = "0"
@@ -37,7 +36,7 @@ object FolderManager {
             if ((it.folder != null) && (it.folder == folder))
                 deleteItems.add(it)
         }
-        deleteItems.forEach { it.unsaveItem() }
+        deleteItems.forEach { it.unSaveItem() }
 
         folders.remove(folder)
     }
