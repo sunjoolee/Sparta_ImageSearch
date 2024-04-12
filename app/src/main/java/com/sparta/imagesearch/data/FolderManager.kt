@@ -1,8 +1,7 @@
 package com.sparta.imagesearch.data
 
 import android.graphics.Color
-import com.sparta.imagesearch.MainActivity
-import com.sparta.imagesearch.R
+import com.sparta.imagesearch.view.MainActivity
 
 object FolderManager {
     const val DEFAULT_FOLDER_ID = "0"

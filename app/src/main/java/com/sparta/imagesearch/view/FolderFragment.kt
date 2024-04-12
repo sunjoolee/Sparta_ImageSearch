@@ -1,4 +1,4 @@
-package com.sparta.imagesearch
+package com.sparta.imagesearch.view
 
 import android.os.Bundle
 import android.util.Log

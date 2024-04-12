@@ -1,4 +1,4 @@
-package com.sparta.imagesearch
+package com.sparta.imagesearch.view
 
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -11,6 +11,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
+import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.databinding.ActivityMainBinding
 import com.sparta.imagesearch.databinding.TabCustomViewBinding
