@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sparta.imagesearch.data.Folder
 import com.sparta.imagesearch.data.FolderColor
+import com.sparta.imagesearch.data.FolderId
 import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.ItemType
 import com.sparta.imagesearch.databinding.RecyclerViewItemImageBinding
@@ -85,7 +86,7 @@ class ItemAdapter() : ListAdapter<Item, ItemAdapter.Holder>(ItemDiffCallback) {
             // TODO 폴더 키로 폴더 색 가져오기
             heartImageView.imageTintList = ColorStateList.valueOf(
                 Color.parseColor(
-                    if (folderId == Folder.NO_FOLDER_ID) FolderColor.color0.colorHex
+                    if (folderId == FolderId.NO_FOLDER.id) FolderColor.color0.colorHex
                     else FolderColor.color1.colorHex
                 )
             )
