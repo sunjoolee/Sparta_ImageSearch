@@ -1,26 +1,20 @@
 package com.sparta.imagesearch.data
 
-import com.sparta.imagesearch.view.MainActivity
+import com.squareup.moshi.JsonClass
+import java.util.UUID
 
 enum class ItemType {
-    Image,
-    Video
+    IMAGE_TYPE,
+    VIDEO_TYPE,
+    UNKNOWN
 }
 
-open class Item(
-    val type: ItemType,
-    open var folder: Folder? = null,
-    open val time: String
-) {
-    fun isSaved(): Boolean = (folder != null)
-
-    fun saveItem(folder: Folder? = null) {
-        this.folder = folder ?: FolderManager.defaultFolder
-        MainActivity.savedItems.add(this)
-    }
-
-    fun unsaveItem() {
-        MainActivity.savedItems.remove(this)
-        this.folder = null
-    }
-}
+@JsonClass(generateAdapter = true)
+data class Item(
+    val id: String = UUID.randomUUID().toString(),
+    val itemType: ItemType,
+    val imageUrl: String,
+    val source: String,
+    val time: String,
+    val folderId: String = Folder.NO_FOLDER_ID
+)
