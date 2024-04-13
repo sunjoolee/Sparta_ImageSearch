@@ -1,6 +1,7 @@
 package com.sparta.imagesearch.data
 
 enum class FolderColor(val colorHex: String) {
+    color0("#858585"),
     color1("#FCC233"),
     color2("#F95B19"),
     color3("#CCF919"),
