@@ -3,6 +3,11 @@ package com.sparta.imagesearch.data
 import com.squareup.moshi.JsonClass
 import java.util.UUID
 
+enum class FolderId(val id:String){
+    NO_FOLDER("no_folder_id"),
+    DEFAULT_FOLDER("default_folder_id")
+}
+
 @JsonClass(generateAdapter = true)
 data class Folder(
     val id: String = UUID.randomUUID().toString(),
@@ -10,12 +15,9 @@ data class Folder(
     val colorHex: String
 ) {
     companion object {
-        const val NO_FOLDER_ID = "-1"
-        const val DEFAULT_FOLDER_ID = "0"
-
         fun getDefaultFolder() =
             Folder(
-                id = DEFAULT_FOLDER_ID,
+                id = FolderId.DEFAULT_FOLDER.id,
                 name = "기본 폴더",
                 colorHex = FolderColor.color1.colorHex
             )
