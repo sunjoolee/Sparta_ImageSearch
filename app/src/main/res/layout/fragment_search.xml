@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/theme_bg"
-    tools:context=".view.SearchFragment">
+    tools:context=".view.search.SearchFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_search"
