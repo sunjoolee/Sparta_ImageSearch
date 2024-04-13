@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.view
+package com.sparta.imagesearch.view.main
 
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -6,13 +6,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sparta.imagesearch.R
-import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.databinding.ActivityMainBinding
 import com.sparta.imagesearch.databinding.TabCustomViewBinding
 
@@ -20,29 +17,20 @@ class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
 
-    companion object{
-        val savedItems: MutableList<Item> = mutableListOf()
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initVP2AndTabLayout()
+        initViewPager()
+        initTabLayout()
         customTabLayout()
     }
 
-    class MyPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
-        override fun getItemCount(): Int = 2
-        override fun createFragment(position: Int): Fragment {
-            return if (position == 0) SearchFragment()
-            else FolderFragment()
-        }
+    private fun initViewPager(){
+        binding.viewpager.adapter = MainPagerAdapter(this)
     }
-
-    private fun initVP2AndTabLayout(){
-        binding.viewpager.adapter = MyPagerAdapter(this)
-
+    private fun initTabLayout(){
         TabLayoutMediator(binding.layoutTab, binding.viewpager) { tab, position ->
             tab.text = resources.getText(
                 if (position == 0) R.string.menu_search
@@ -50,6 +38,7 @@ class MainActivity : AppCompatActivity() {
             )
         }.attach()
     }
+
     private fun customTabLayout(){
         binding.layoutTab.run {
             setCustomTabView()
