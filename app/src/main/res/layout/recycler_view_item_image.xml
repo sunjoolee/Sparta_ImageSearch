@@ -11,6 +11,8 @@
         android:id="@+id/iv_image"
         android:layout_width="160dp"
         android:layout_height="wrap_content"
+        android:maxHeight="214dp"
+        android:minHeight="120dp"
         android:background="@drawable/shape_rounded"
         android:backgroundTint="@color/theme_bg"
         android:clipToOutline="true"
