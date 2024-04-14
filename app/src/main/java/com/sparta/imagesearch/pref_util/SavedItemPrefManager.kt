@@ -1,7 +1,9 @@
 package com.sparta.imagesearch.pref_util
 
+import android.util.Log
 import com.sparta.imagesearch.MyApplication
 import com.sparta.imagesearch.data.Folder
+import com.sparta.imagesearch.data.FolderId
 import com.sparta.imagesearch.data.Item
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
@@ -10,6 +12,8 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 
 object SavedItemPrefManager {
+    private val TAG = "SavedItemPrefManager"
+
     private const val SAVED_ITEM_PREF_NAME = "saved_item_shared_preferences"
     private const val SAVED_ITEM_PREF_KEY = "saved_item_pref_key"
 
@@ -28,8 +32,10 @@ object SavedItemPrefManager {
         saveSavedItems(loadSavedItems().filterNot { it.id == item.id })
     }
 
-    fun deleteSavedItemsInFolder(folderId: String) {
-        saveSavedItems(loadSavedItems().filterNot { it.folderId == folderId })
+    fun filterSavedItems(folderIds: List<String>) {
+        saveSavedItems(loadSavedItems().filter {
+            folderIds.contains(it.folderId)
+        })
     }
 
     fun loadSavedItems(): List<Item> {
@@ -42,18 +48,19 @@ object SavedItemPrefManager {
                     savedItems.add(it)
                 }
             }
-        }catch (e:JsonDataException){
+        } catch (e: JsonDataException) {
             e.printStackTrace()
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         return savedItems.toList()
     }
 
     fun saveSavedItems(savedItems: List<Item>) {
+        Log.d(TAG, "saveSavedItems) savedItems.size: ${savedItems.size}")
         val serializedSavedItems = savedItems
             .filterNot {
-                it.folderId == Folder.NO_FOLDER_ID
+                it.folderId == FolderId.NO_FOLDER.id
             }
             .map {
                 moshi.adapter(Item::class.java).toJson(it)
