@@ -28,6 +28,7 @@ class ItemAdapter() : ListAdapter<Item, ItemAdapter.Holder>(ItemDiffCallback) {
     private val TAG = "ImageAdapter"
 
     var onHeartClickListener: OnHeartClickListener? = null
+    var onHeartLongClickListener: OnHeartLongClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding =
@@ -75,8 +76,13 @@ class ItemAdapter() : ListAdapter<Item, ItemAdapter.Holder>(ItemDiffCallback) {
 
         private fun setListeners(item: Item) {
             heartImageView.setOnClickListener {
-                Log.d(TAG, "heartImageView.setOnClickListener)")
+                Log.d(TAG, "heartImageView.onClick) called")
                 onHeartClickListener?.onHeartClick(item)
+            }
+            heartImageView.setOnLongClickListener {
+                Log.d(TAG, "heartImageView.onLongClick) called")
+                onHeartLongClickListener?.onHeartLongClick(item)
+                false
             }
         }
 
