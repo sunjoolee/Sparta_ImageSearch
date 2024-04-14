@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.recyclerView
+package com.sparta.imagesearch.util
 
 import android.graphics.Rect
 import android.view.View
