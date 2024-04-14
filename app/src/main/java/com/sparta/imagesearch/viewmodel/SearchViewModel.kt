@@ -81,7 +81,6 @@ class SearchViewModel : ViewModel() {
                 this + listOf(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
             }
         }
-        SavedItemPrefManager.saveSavedItems(savedItems.value!!)
     }
 
     fun saveState() {
