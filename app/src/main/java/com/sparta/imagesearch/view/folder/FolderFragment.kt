@@ -27,7 +27,7 @@ import com.sparta.imagesearch.viewmodel.FolderViewModel
 class FolderFragment : Fragment(),
     OnHeartClickListener,
     OnHeartLongClickListener,
-    OnFolderClickListener,
+    OnFolderModelClickListener,
     OnDeleteConfirmListener,
     OnMoveConfirmListener,
     OnAddConfirmListener {
@@ -74,11 +74,11 @@ class FolderFragment : Fragment(),
 
     private fun initFolderRecyclerView() {
         folderAdapter = FolderModelAdapter()
-        folderAdapter.onFolderClickListener = this@FolderFragment
+        folderAdapter.onFolderModelClickListener = this@FolderFragment
         binding.recyclerViewFolder.adapter = folderAdapter
     }
 
-    override fun onFolderClick(folderModel: FolderModel) {
+    override fun onFolderModelClick(folderModel: FolderModel) {
         model.selectFolder(folderModel)
     }
 
@@ -124,6 +124,7 @@ class FolderFragment : Fragment(),
     private fun initImageRecyclerView() {
         itemAdapter = ItemAdapter()
         itemAdapter.onHeartClickListener = this@FolderFragment
+        itemAdapter.onHeartLongClickListener = this@FolderFragment
         binding.recyclerviewImage.run {
             adapter = itemAdapter
             addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
