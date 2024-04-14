@@ -6,6 +6,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.sparta.imagesearch.data.Folder
+import com.sparta.imagesearch.data.FolderId
 import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.ItemType
 import com.sparta.imagesearch.pref_util.KeywordPrefManager
@@ -24,6 +25,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class SearchViewModel : ViewModel() {
+    private val TAG = "SearchModel"
+
     private val _keyword = MutableLiveData<String>("")
     val keyword: LiveData<String> get() = _keyword
 
@@ -38,20 +41,13 @@ class SearchViewModel : ViewModel() {
             value = searchItems.value!!.map { item ->
                 savedItems.value!!.find { it.id == item.id }?.let {
                     item.copy(folderId = it.folderId)
-                } ?: item.copy(folderId = Folder.NO_FOLDER_ID)
+                } ?: item.copy(folderId = FolderId.NO_FOLDER.id)
             }
         }
         addSource(searchItems, onChange)
         addSource(savedItems, onChange)
     }
     val resultItems: LiveData<List<Item>> get() = _resultItems
-
-    private val TAG = "MainViewModel"
-
-    init {
-        loadKeyword()
-        loadSavedItems()
-    }
 
     private fun loadKeyword() {
         _keyword.value = KeywordPrefManager.loadKeyword()
@@ -74,7 +70,7 @@ class SearchViewModel : ViewModel() {
 
     private fun saveSavedItems() {
         SavedItemPrefManager.saveSavedItems(savedItems.value!!)
-        Log.d(TAG, "loadSavedItems) size: ${savedItems.value!!.size}")
+        Log.d(TAG, "saveSavedItems) size: ${savedItems.value!!.size}")
     }
 
     fun saveItem(item: Item) {
@@ -82,7 +78,7 @@ class SearchViewModel : ViewModel() {
             if (this.find { it.id == item.id } != null) {
                 this.filterNot { it.id == item.id }
             } else {
-                this + listOf(item.copy(folderId = Folder.DEFAULT_FOLDER_ID))
+                this + listOf(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
             }
         }
         SavedItemPrefManager.saveSavedItems(savedItems.value!!)

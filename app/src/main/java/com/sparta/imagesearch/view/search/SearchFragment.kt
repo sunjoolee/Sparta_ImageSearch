@@ -93,13 +93,13 @@ class SearchFragment : Fragment(), OnHeartClickListener {
 
     override fun onPause() {
         Log.d(TAG, "onPause) called")
-        super.onPause()
         model.saveState()
+        super.onPause()
     }
     override fun onResume() {
         Log.d(TAG, "onResume) called")
-        super.onResume()
         model.loadState()
+        super.onResume()
     }
 
     override fun onDestroyView() {
