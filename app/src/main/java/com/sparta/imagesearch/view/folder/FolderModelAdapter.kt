@@ -1,7 +1,9 @@
 package com.sparta.imagesearch.view.folder
 
+import android.content.ContentValues.TAG
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -17,7 +19,7 @@ interface OnFolderModelClickListener {
 class FolderModelAdapter() :
     ListAdapter<FolderModel, FolderModelAdapter.Holder>(FolderModelDiffCallback) {
 
-    var onFolderClickListener: OnFolderModelClickListener? = null
+    var onFolderModelClickListener: OnFolderModelClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding = RecyclerViewItemFolderBinding.inflate(
@@ -65,7 +67,9 @@ class FolderModelAdapter() :
         }
 
         private fun setListener(folderModel: FolderModel) {
-            onFolderClickListener?.onFolderModelClick(folderModel)
+            itemView.setOnClickListener {
+                onFolderModelClickListener?.onFolderModelClick(folderModel)
+            }
         }
     }
 }
