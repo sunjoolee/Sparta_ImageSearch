@@ -19,10 +19,6 @@ object FolderPrefManager {
     private val type =
         Types.newParameterizedType(List::class.java, String::class.java)
 
-    fun deleteFolder(folderId:String){
-        saveFolders(loadFolders().filterNot { it.id == folderId })
-    }
-
     fun loadFolders(): List<Folder> {
         val folders = mutableListOf<Folder>()
 
@@ -38,7 +34,7 @@ object FolderPrefManager {
             e.printStackTrace()
         }
         catch (e:Exception){
-
+            e.printStackTrace()
         }
         return folders.toList()
     }
