@@ -1,5 +1,6 @@
 package com.sparta.imagesearch.di
 
+import com.sparta.imagesearch.data.source.remote.retrofit.KakaoSearchApi
 import com.sparta.imagesearch.data.source.remote.retrofit.KakaoSearchRetrofit
 import dagger.Module
 import dagger.Provides
@@ -12,5 +13,5 @@ import javax.inject.Singleton
 object RemoteSourceModule {
     @Singleton
     @Provides
-    fun provideKakaoSearchApi() = KakaoSearchRetrofit.kakaoSearchApi
+    fun provideKakaoSearchApi():KakaoSearchApi = KakaoSearchRetrofit.kakaoSearchApi
 }
