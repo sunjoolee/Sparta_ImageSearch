@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.data.local
+package com.sparta.imagesearch.data.source.local.keyword
 
 import com.sparta.imagesearch.MyApplication
 

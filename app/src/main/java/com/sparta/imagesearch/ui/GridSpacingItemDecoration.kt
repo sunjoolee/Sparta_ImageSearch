@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.util
+package com.sparta.imagesearch.ui
 
 import android.graphics.Rect
 import android.view.View

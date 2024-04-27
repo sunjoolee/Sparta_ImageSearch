@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.data
+package com.sparta.imagesearch.data.source.local.folder
 
 import com.squareup.moshi.JsonClass
 import java.util.UUID

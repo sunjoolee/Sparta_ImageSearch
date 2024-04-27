@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui.folder.move
+package com.sparta.imagesearch.ui.folder.dialog.move
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.databinding.RecyclerViewItemFolderDialogBinding
-import com.sparta.imagesearch.ui.folder.FolderDialogModel
-import com.sparta.imagesearch.ui.folder.FolderDialogModelChangePayload
-import com.sparta.imagesearch.ui.folder.FolderDialogModelDiffCallback
-import com.sparta.imagesearch.ui.folder.OnFolderDialogModelClickListener
+import com.sparta.imagesearch.ui.folder.dialog.FolderDialogModel
+import com.sparta.imagesearch.ui.folder.dialog.FolderDialogModelChangePayload
+import com.sparta.imagesearch.ui.folder.dialog.FolderDialogModelDiffCallback
+import com.sparta.imagesearch.ui.folder.dialog.OnFolderDialogModelClickListener
 
 class FolderDialogMoveAdapter() :
     ListAdapter<FolderDialogModel, FolderDialogMoveAdapter.Holder>(FolderDialogModelDiffCallback) {

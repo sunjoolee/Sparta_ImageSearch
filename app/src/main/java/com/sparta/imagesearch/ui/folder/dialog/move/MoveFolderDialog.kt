@@ -1,15 +1,15 @@
-package com.sparta.imagesearch.ui.folder.move
+package com.sparta.imagesearch.ui.folder.dialog.move
 
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
-import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.data.repository.Item
 import com.sparta.imagesearch.databinding.DialogMoveFolderBinding
-import com.sparta.imagesearch.ui.folder.FolderDialogModel
+import com.sparta.imagesearch.ui.folder.dialog.FolderDialogModel
 import com.sparta.imagesearch.ui.folder.FolderModel
-import com.sparta.imagesearch.ui.folder.OnFolderDialogModelClickListener
+import com.sparta.imagesearch.ui.folder.dialog.OnFolderDialogModelClickListener
 
 interface OnMoveConfirmListener {
     fun onMoveConfirm(item: Item, destFolderId: String)

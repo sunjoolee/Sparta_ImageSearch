@@ -1,9 +1,9 @@
-package com.sparta.imagesearch.data.local
+package com.sparta.imagesearch.data.source.local.savedItem
 
 import android.util.Log
 import com.sparta.imagesearch.MyApplication
-import com.sparta.imagesearch.data.FolderId
-import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.data.repository.Item
+import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types

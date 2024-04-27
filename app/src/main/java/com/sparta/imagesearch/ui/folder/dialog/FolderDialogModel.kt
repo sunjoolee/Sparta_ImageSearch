@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui.folder
+package com.sparta.imagesearch.ui.folder.dialog
 
 interface OnFolderDialogModelClickListener {
     fun onFolderDialogModelClick(folderDialogModel: FolderDialogModel)
