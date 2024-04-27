@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.sparta.imagesearch.data.FolderColor
-import com.sparta.imagesearch.data.FolderId
-import com.sparta.imagesearch.data.Item
-import com.sparta.imagesearch.data.ItemType
+import com.sparta.imagesearch.data.source.local.folder.FolderColor
+import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.data.repository.Item
+import com.sparta.imagesearch.data.repository.ItemType
 import com.sparta.imagesearch.databinding.RecyclerViewItemImageBinding
 
 
