@@ -2,12 +2,12 @@ package com.sparta.imagesearch.data.source.remote.retrofit
 
 import com.google.gson.annotations.SerializedName
 
-data class ImageDTO(
-    val imageMeta: ImageMeta,
-    val documents: MutableList<ImageDocument>?
+data class KakaoSearchDTO<T>(
+    val meta: Meta,
+    val documents: MutableList<T>?
 )
 
-data class ImageMeta(
+data class Meta(
     @SerializedName("total_count")
     val totalCount:Int,
     @SerializedName("pageable_count")
@@ -29,4 +29,16 @@ data class  ImageDocument(
     @SerializedName("doc_url")
     val docUrl:String,
     val datetime: String
+)
+
+
+
+data class VideoDocument(
+    val title:String,
+    val url:String,
+    val datetime: String,
+    @SerializedName("play_time")
+    val playTime:Int,
+    val thumbnail:String,
+    val author:String
 )
