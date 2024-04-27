@@ -5,25 +5,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sparta.imagesearch.data.FolderId
-import com.sparta.imagesearch.data.Item
-import com.sparta.imagesearch.data.ItemType
-import com.sparta.imagesearch.data.local.KeywordPrefManager
-import com.sparta.imagesearch.data.local.SavedItemPrefManager
-import com.sparta.imagesearch.data.remote.ImageDocument
-import com.sparta.imagesearch.data.remote.ImageResponse
-import com.sparta.imagesearch.data.remote.SearchClient
-import com.sparta.imagesearch.data.remote.VideoDocument
-import com.sparta.imagesearch.data.remote.VideoResponse
+import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.data.repository.Item
+import com.sparta.imagesearch.data.repository.ItemRepository
+import com.sparta.imagesearch.data.source.local.keyword.KeywordPrefManager
+import com.sparta.imagesearch.data.source.local.savedItem.SavedItemPrefManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class SearchViewModel : ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+    private val itemRepository: ItemRepository
+): ViewModel() {
     private val TAG = "SearchModel"
 
     private val _keyword = MutableLiveData<String>("")
@@ -101,94 +98,9 @@ class SearchViewModel : ViewModel() {
 
     private suspend fun fetchSearchResult() {
         val query = _keyword.value ?: ""
-        if (query.isEmpty()) {
-            withContext(Dispatchers.Main) {
-                _searchItems.value = emptyList()
-            }
-            return
-        }
-
-        var imageResponse: ImageResponse? = null
-        var videoResponse: VideoResponse? = null
-
-        val imageSearchJob = CoroutineScope(Dispatchers.Default).launch {
-            try {
-                Log.d(TAG, "getting image response...")
-                imageResponse = SearchClient.searchNetWork.getImageResponse(query)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                cancel()
-            }
-        }
-        val videoSearchJob = CoroutineScope(Dispatchers.Default).launch {
-            try {
-                Log.d(TAG, "getting video response...")
-                videoResponse = SearchClient.searchNetWork.getVideoResponse(query)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                cancel()
-            }
-        }
-
-        imageSearchJob.join()
-        videoSearchJob.join()
-
-        val newDataset = getNewDataset(imageResponse, videoResponse)
+        val newDataset = itemRepository.getItems(query)
         withContext(Dispatchers.Main) {
             _searchItems.value = newDataset
         }
     }
-
-    private fun getNewDataset(
-        imageResponse: ImageResponse?,
-        videoResponse: VideoResponse?
-    ): MutableList<Item> {
-        val newDataset = mutableListOf<Item>()
-        newDataset += imageResponse?.convertDataset() ?: mutableListOf()
-        newDataset += videoResponse?.convertDataset() ?: mutableListOf()
-
-        newDataset.run {
-            sortWith { item1, item2 ->
-                item1.time.compareTo(item2.time)
-            }
-            reverse()
-        }
-        return newDataset.toMutableList()
-    }
-
-    private fun ImageResponse.convertDataset(): MutableList<Item> {
-        val newDataset = mutableListOf<Item>()
-        documents?.forEach {
-            newDataset.add(it.convert())
-        }
-        return newDataset
-    }
-
-    private fun VideoResponse.convertDataset(): MutableList<Item> {
-        val newDataset = mutableListOf<Item>()
-        documents?.forEach {
-            newDataset.add(it.convert())
-        }
-        return newDataset
-    }
-
-    private fun ImageDocument.convert() =
-        Item(
-            itemType = ItemType.IMAGE_TYPE,
-            imageUrl = image_url,
-            source = display_sitename,
-            time = LocalDateTime
-                .parse(datetime, DateTimeFormatter.ISO_DATE_TIME)
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        )
-
-    private fun VideoDocument.convert() =
-        Item(
-            itemType = ItemType.VIDEO_TYPE,
-            imageUrl = thumbnail,
-            source = author,
-            time = LocalDateTime
-                .parse(datetime, DateTimeFormatter.ISO_DATE_TIME)
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        )
 }
