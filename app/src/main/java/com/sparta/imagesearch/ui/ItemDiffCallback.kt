@@ -1,7 +1,7 @@
 package com.sparta.imagesearch.ui
 
 import androidx.recyclerview.widget.DiffUtil
-import com.sparta.imagesearch.data.repository.Item
+import com.sparta.imagesearch.data.Item
 
 sealed interface ItemChangePayload {
     data class FolderIdChange(val folderId: String) : ItemChangePayload

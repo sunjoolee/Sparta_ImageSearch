@@ -1,5 +1,7 @@
 package com.sparta.imagesearch.data.repository
 
+import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.data.ItemType
 import com.sparta.imagesearch.data.source.remote.retrofit.ImageDocument
 import com.sparta.imagesearch.data.source.remote.retrofit.VideoDocument
 import com.sparta.imagesearch.data.source.remote.retrofit.KakaoSearchApi
