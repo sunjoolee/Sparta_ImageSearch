@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.sparta.imagesearch.data.repository.Item
+import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.databinding.FragmentFolderBinding
 import com.sparta.imagesearch.ui.GridSpacingItemDecoration
 import com.sparta.imagesearch.util.fromDpToPx
@@ -22,8 +22,9 @@ import com.sparta.imagesearch.ui.folder.dialog.delete.DeleteFolderDialog
 import com.sparta.imagesearch.ui.folder.dialog.delete.OnDeleteConfirmListener
 import com.sparta.imagesearch.ui.folder.dialog.move.MoveFolderDialog
 import com.sparta.imagesearch.ui.folder.dialog.move.OnMoveConfirmListener
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class FolderFragment : Fragment(),
     OnHeartClickListener,
     OnHeartLongClickListener,

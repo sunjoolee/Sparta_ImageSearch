@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.sparta.imagesearch.data.repository.Item
+import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.databinding.FragmentSearchBinding
 import com.sparta.imagesearch.ui.GridSpacingItemDecoration
 import com.sparta.imagesearch.ui.ItemAdapter
