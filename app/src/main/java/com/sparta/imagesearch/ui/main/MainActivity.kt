@@ -12,7 +12,9 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.databinding.ActivityMainBinding
 import com.sparta.imagesearch.databinding.TabCustomViewBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
