@@ -1,27 +1,25 @@
-package com.sparta.imagesearch.data.remote
+package com.sparta.imagesearch.data.source.remote.retrofit
 
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
 
-const val REST_API_KEY = "664eaa84ddf5f3df2af539d94a1c9ae9"
-
-interface SearchNetWorkInterface {
-    @Headers("Authorization: KakaoAK $REST_API_KEY")
+interface KakaoSearchApi {
+    @Headers("Authorization: KakaoAK $KAKAO_REST_API_KEY")
     @GET("image")
-    suspend fun getImageResponse(
+    suspend fun getImageDTO(
         @Query("query") query: String,
         @Query("size") size: Int = 20,
         @Query("page") page: Int = 1,
         @Query("sort") sort: String = "recency"
-    ): ImageResponse
+    ): KakaoSearchDTO<ImageDocument>
 
-    @Headers("Authorization: KakaoAK $REST_API_KEY")
+    @Headers("Authorization: KakaoAK $KAKAO_REST_API_KEY")
     @GET("vclip")
-    suspend fun getVideoResponse(
+    suspend fun getVideoDTO(
         @Query("query") query: String,
         @Query("size") size: Int = 10,
         @Query("page") page: Int = 1,
         @Query("sort") sort: String = "recency"
-    ): VideoResponse
+    ): KakaoSearchDTO<VideoDocument>
 }

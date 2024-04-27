@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.data.remote
+package com.sparta.imagesearch.data.source.remote.retrofit
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -6,17 +6,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-
-object SearchClient {
+const val KAKAO_REST_API_KEY = "664eaa84ddf5f3df2af539d94a1c9ae9"
+object KakaoSearchRetrofit {
     private const val SEARCH_BASE_URL = "https://dapi.kakao.com/v2/search/"
 
-    private val searchRetrofit = Retrofit.Builder()
+    private val kakaoSearchRetrofit = Retrofit.Builder()
         .baseUrl(SEARCH_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .client(createOkHttpClient())
         .build()
-    val searchNetWork: SearchNetWorkInterface = searchRetrofit.create(SearchNetWorkInterface::class.java)
-
     private fun createOkHttpClient(): OkHttpClient {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -28,4 +26,6 @@ object SearchClient {
             .addNetworkInterceptor(interceptor)
             .build()
     }
+
+    val kakaoSearchApi = kakaoSearchRetrofit.create(KakaoSearchApi::class.java)
 }
