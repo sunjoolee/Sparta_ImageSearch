@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sparta.imagesearch.data.source.local.folder.FolderId
-import com.sparta.imagesearch.data.repository.Item
+import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.data.repository.ItemRepository
+import com.sparta.imagesearch.data.repository.SavedItemRepository
+import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.data.source.local.keyword.KeywordPrefManager
-import com.sparta.imagesearch.data.source.local.savedItem.SavedItemPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val itemRepository: ItemRepository
-): ViewModel() {
+    private val itemRepository: ItemRepository,
+    private val savedItemRepository: SavedItemRepository,
+) : ViewModel() {
     private val TAG = "SearchModel"
 
     private val _keyword = MutableLiveData<String>("")
@@ -60,12 +61,13 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun loadSavedItems() {
-        _savedItems.value = SavedItemPrefManager.loadSavedItems()
+        _savedItems.value = savedItemRepository.loadSavedItems()
         Log.d(TAG, "loadSavedItems) size: ${savedItems.value!!.size}")
+
     }
 
     private fun saveSavedItems() {
-        SavedItemPrefManager.saveSavedItems(savedItems.value!!)
+        savedItemRepository.saveSavedItems(savedItems.value!!)
         Log.d(TAG, "saveSavedItems) size: ${savedItems.value!!.size}")
     }
 
