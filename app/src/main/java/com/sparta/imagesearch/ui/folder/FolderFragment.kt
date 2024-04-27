@@ -9,19 +9,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.data.repository.Item
 import com.sparta.imagesearch.databinding.FragmentFolderBinding
-import com.sparta.imagesearch.util.GridSpacingItemDecoration
+import com.sparta.imagesearch.ui.GridSpacingItemDecoration
 import com.sparta.imagesearch.util.fromDpToPx
 import com.sparta.imagesearch.ui.ItemAdapter
 import com.sparta.imagesearch.ui.OnHeartClickListener
 import com.sparta.imagesearch.ui.OnHeartLongClickListener
-import com.sparta.imagesearch.ui.folder.add.AddFolderDialog
-import com.sparta.imagesearch.ui.folder.add.OnAddConfirmListener
-import com.sparta.imagesearch.ui.folder.delete.DeleteFolderDialog
-import com.sparta.imagesearch.ui.folder.delete.OnDeleteConfirmListener
-import com.sparta.imagesearch.ui.folder.move.MoveFolderDialog
-import com.sparta.imagesearch.ui.folder.move.OnMoveConfirmListener
+import com.sparta.imagesearch.ui.folder.dialog.add.AddFolderDialog
+import com.sparta.imagesearch.ui.folder.dialog.add.OnAddConfirmListener
+import com.sparta.imagesearch.ui.folder.dialog.delete.DeleteFolderDialog
+import com.sparta.imagesearch.ui.folder.dialog.delete.OnDeleteConfirmListener
+import com.sparta.imagesearch.ui.folder.dialog.move.MoveFolderDialog
+import com.sparta.imagesearch.ui.folder.dialog.move.OnMoveConfirmListener
+
 
 class FolderFragment : Fragment(),
     OnHeartClickListener,

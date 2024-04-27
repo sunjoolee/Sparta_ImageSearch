@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sparta.imagesearch.data.Folder
-import com.sparta.imagesearch.data.FolderId
-import com.sparta.imagesearch.data.Item
-import com.sparta.imagesearch.data.local.FolderPrefManager
-import com.sparta.imagesearch.data.local.SavedItemPrefManager
+import com.sparta.imagesearch.data.source.local.folder.Folder
+import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.data.repository.Item
+import com.sparta.imagesearch.data.source.local.folder.FolderPrefManager
+import com.sparta.imagesearch.data.source.local.savedItem.SavedItemPrefManager
 
 class FolderViewModel : ViewModel() {
     private val TAG = "FolderViewModel"
