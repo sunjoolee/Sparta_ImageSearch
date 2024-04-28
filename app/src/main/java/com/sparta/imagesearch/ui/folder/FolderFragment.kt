@@ -1,5 +1,6 @@
 package com.sparta.imagesearch.ui.folder
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,7 +13,6 @@ import androidx.fragment.app.viewModels
 import com.sparta.imagesearch.data.Item
 import com.sparta.imagesearch.databinding.FragmentFolderBinding
 import com.sparta.imagesearch.ui.GridSpacingItemDecoration
-import com.sparta.imagesearch.util.fromDpToPx
 import com.sparta.imagesearch.ui.ItemAdapter
 import com.sparta.imagesearch.ui.OnHeartClickListener
 import com.sparta.imagesearch.ui.OnHeartLongClickListener
@@ -22,7 +22,9 @@ import com.sparta.imagesearch.ui.folder.dialog.delete.DeleteFolderDialog
 import com.sparta.imagesearch.ui.folder.dialog.delete.OnDeleteConfirmListener
 import com.sparta.imagesearch.ui.folder.dialog.move.MoveFolderDialog
 import com.sparta.imagesearch.ui.folder.dialog.move.OnMoveConfirmListener
+import com.sparta.imagesearch.util.fromDpToPx
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.internal.managers.ViewComponentManager
 
 @AndroidEntryPoint
 class FolderFragment : Fragment(),
@@ -45,7 +47,7 @@ class FolderFragment : Fragment(),
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentFolderBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -100,7 +102,7 @@ class FolderFragment : Fragment(),
     }
 
     private fun showAddFolderDialog() {
-        val addDialog = AddFolderDialog(binding.root.context as AppCompatActivity)
+        val addDialog = AddFolderDialog(getActivityContext() as AppCompatActivity)
         addDialog.onAddConfirmListener = this@FolderFragment
         addDialog.show()
     }
@@ -111,7 +113,7 @@ class FolderFragment : Fragment(),
 
     private fun showDeleteFolderDialog() {
         val deleteDialog = DeleteFolderDialog(
-            binding.root.context as AppCompatActivity,
+            getActivityContext() as AppCompatActivity,
             model.folderModels.value!!
         )
         deleteDialog.onDeleteConfirmListener = this@FolderFragment
@@ -142,7 +144,7 @@ class FolderFragment : Fragment(),
 
     private fun showMoveFolderDialog(item: Item) {
         val moveDialog = MoveFolderDialog(
-            binding.root.context as AppCompatActivity,
+            getActivityContext() as AppCompatActivity,
             item,
             model.folderModels.value!!
         )
@@ -169,5 +171,11 @@ class FolderFragment : Fragment(),
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun getActivityContext(): Context {
+        val context = binding.root.context
+        return if (context is ViewComponentManager.FragmentContextWrapper) context.baseContext
+        else context
     }
 }
