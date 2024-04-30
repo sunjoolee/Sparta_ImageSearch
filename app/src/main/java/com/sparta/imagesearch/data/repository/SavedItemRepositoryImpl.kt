@@ -1,8 +1,9 @@
 package com.sparta.imagesearch.data.repository
 
-import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.entity.Item
 import com.sparta.imagesearch.data.source.local.savedItem.SavedItemDatabase
 import com.sparta.imagesearch.di.ApplicationScope
+import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject

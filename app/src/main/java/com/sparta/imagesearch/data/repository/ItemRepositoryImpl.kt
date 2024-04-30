@@ -1,10 +1,11 @@
 package com.sparta.imagesearch.data.repository
 
-import com.sparta.imagesearch.data.Item
-import com.sparta.imagesearch.data.ItemType
+import com.sparta.imagesearch.entity.Item
+import com.sparta.imagesearch.entity.ItemType
 import com.sparta.imagesearch.data.source.remote.retrofit.ImageDocument
 import com.sparta.imagesearch.data.source.remote.retrofit.VideoDocument
 import com.sparta.imagesearch.data.source.remote.retrofit.KakaoSearchApi
+import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
 import com.sparta.imagesearch.util.formatDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.entity.Item
 import com.sparta.imagesearch.databinding.FragmentFolderBinding
 import com.sparta.imagesearch.ui.GridSpacingItemDecoration
 import com.sparta.imagesearch.ui.ItemAdapter

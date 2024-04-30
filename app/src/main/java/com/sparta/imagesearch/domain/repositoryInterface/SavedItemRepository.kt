@@ -1,6 +1,6 @@
-package com.sparta.imagesearch.data.repository
+package com.sparta.imagesearch.domain.repositoryInterface
 
-import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.entity.Item
 
 interface SavedItemRepository {
     fun saveSavedItems(savedItems: List<Item>)

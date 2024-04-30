@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sparta.imagesearch.data.Item
-import com.sparta.imagesearch.data.repository.ItemRepository
-import com.sparta.imagesearch.data.repository.SavedItemRepository
+import com.sparta.imagesearch.entity.Item
+import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
+import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import com.sparta.imagesearch.data.source.local.folder.FolderId
-import com.sparta.imagesearch.data.source.local.keyword.KeywordPrefManager
+import com.sparta.imagesearch.data.source.local.keyword.KeywordSharedPref
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,12 +47,12 @@ class SearchViewModel @Inject constructor(
     val resultItems: LiveData<List<Item>> get() = _resultItems
 
     private fun loadKeyword() {
-        _keyword.value = KeywordPrefManager.loadKeyword()
+        _keyword.value = KeywordSharedPref.loadKeyword()
         Log.d(TAG, "loadKeyword) keyword: ${_keyword.value}")
     }
 
     private fun saveKeyword() {
-        KeywordPrefManager.saveKeyword(keyword.value!!)
+        KeywordSharedPref.saveKeyword(keyword.value!!)
         Log.d(TAG, "saveKeyword) keyword: ${_keyword.value}")
     }
 

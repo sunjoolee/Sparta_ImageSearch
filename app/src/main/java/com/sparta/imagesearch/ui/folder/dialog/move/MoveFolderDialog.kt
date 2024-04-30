@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
-import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.entity.Item
 import com.sparta.imagesearch.databinding.DialogMoveFolderBinding
 import com.sparta.imagesearch.ui.folder.dialog.FolderDialogModel
 import com.sparta.imagesearch.ui.folder.FolderModel

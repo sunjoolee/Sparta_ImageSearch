@@ -1,8 +1,8 @@
 package com.sparta.imagesearch.di
 
-import com.sparta.imagesearch.data.repository.ItemRepository
+import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
 import com.sparta.imagesearch.data.repository.ItemRepositoryImpl
-import com.sparta.imagesearch.data.repository.SavedItemRepository
+import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import com.sparta.imagesearch.data.repository.SavedItemRepositoryImpl
 import dagger.Binds
 import dagger.Module

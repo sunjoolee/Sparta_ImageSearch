@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.sparta.imagesearch.data.Item
+import com.sparta.imagesearch.entity.Item
 
 @Dao
 interface SavedItemDAO {
