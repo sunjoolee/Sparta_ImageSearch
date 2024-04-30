@@ -5,7 +5,6 @@ import retrofit2.http.Headers
 import retrofit2.http.Query
 
 interface KakaoSearchApi {
-    @Headers("Authorization: KakaoAK $KAKAO_REST_API_KEY")
     @GET("image")
     suspend fun getImageDTO(
         @Query("query") query: String,
@@ -14,7 +13,6 @@ interface KakaoSearchApi {
         @Query("sort") sort: String = "recency"
     ): KakaoSearchDTO<ImageDocument>
 
-    @Headers("Authorization: KakaoAK $KAKAO_REST_API_KEY")
     @GET("vclip")
     suspend fun getVideoDTO(
         @Query("query") query: String,
