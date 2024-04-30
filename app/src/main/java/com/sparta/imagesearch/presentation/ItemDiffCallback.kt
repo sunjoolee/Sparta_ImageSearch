@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui
+package com.sparta.imagesearch.presentation
 
 import androidx.recyclerview.widget.DiffUtil
 import com.sparta.imagesearch.entity.Item

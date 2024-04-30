@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui.folder.dialog.delete
+package com.sparta.imagesearch.presentation.folder.dialog.delete
 
 import android.app.Dialog
 import android.graphics.Color
@@ -6,9 +6,9 @@ import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sparta.imagesearch.databinding.DialogDeleteFolderBinding
-import com.sparta.imagesearch.ui.folder.dialog.FolderDialogModel
-import com.sparta.imagesearch.ui.folder.FolderModel
-import com.sparta.imagesearch.ui.folder.dialog.OnFolderDialogModelClickListener
+import com.sparta.imagesearch.presentation.folder.dialog.FolderDialogModel
+import com.sparta.imagesearch.presentation.folder.FolderModel
+import com.sparta.imagesearch.presentation.folder.dialog.OnFolderDialogModelClickListener
 
 interface OnDeleteConfirmListener {
     fun onDeleteConfirm(folderIdList: List<String>)

@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui.folder.dialog
+package com.sparta.imagesearch.presentation.folder.dialog
 
 import androidx.recyclerview.widget.DiffUtil
 

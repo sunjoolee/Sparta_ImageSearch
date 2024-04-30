@@ -1,10 +1,10 @@
-package com.sparta.imagesearch.ui.main
+package com.sparta.imagesearch.presentation.main
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.sparta.imagesearch.ui.folder.FolderFragment
-import com.sparta.imagesearch.ui.search.SearchFragment
+import com.sparta.imagesearch.presentation.folder.FolderFragment
+import com.sparta.imagesearch.presentation.search.SearchFragment
 
 class MainPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
     override fun getItemCount(): Int = 2

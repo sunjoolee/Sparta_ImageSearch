@@ -1,23 +1,21 @@
-package com.sparta.imagesearch.ui.folder.dialog.delete
+package com.sparta.imagesearch.presentation.folder.dialog.move
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sparta.imagesearch.R
-import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.databinding.RecyclerViewItemFolderDialogBinding
-import com.sparta.imagesearch.ui.folder.dialog.FolderDialogModel
-import com.sparta.imagesearch.ui.folder.dialog.FolderDialogModelChangePayload
-import com.sparta.imagesearch.ui.folder.dialog.FolderDialogModelDiffCallback
-import com.sparta.imagesearch.ui.folder.dialog.OnFolderDialogModelClickListener
+import com.sparta.imagesearch.presentation.folder.dialog.FolderDialogModel
+import com.sparta.imagesearch.presentation.folder.dialog.FolderDialogModelChangePayload
+import com.sparta.imagesearch.presentation.folder.dialog.FolderDialogModelDiffCallback
+import com.sparta.imagesearch.presentation.folder.dialog.OnFolderDialogModelClickListener
 
-class FolderDialogDeleteAdapter() :
-    ListAdapter<FolderDialogModel, FolderDialogDeleteAdapter.Holder>(FolderDialogModelDiffCallback) {
-    private val TAG = "FolderDialogDeleteAdapter"
+class FolderDialogMoveAdapter() :
+    ListAdapter<FolderDialogModel, FolderDialogMoveAdapter.Holder>(FolderDialogModelDiffCallback) {
+    private val TAG = "FolderDialogMoveAdapter"
 
     var onFolderDialogModelClickListener: OnFolderDialogModelClickListener? = null
 
@@ -31,10 +29,7 @@ class FolderDialogDeleteAdapter() :
     override fun getItemCount(): Int = currentList.size
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        with(currentList[position]) {
-            if (position == 0) holder.bindDefault(this)
-            else holder.bind(this)
-        }
+        holder.bind(currentList[position])
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int, payloads: MutableList<Any>) {
@@ -52,43 +47,25 @@ class FolderDialogDeleteAdapter() :
         private val folderImageView = binding.ivFolder
         private val nameTextView = binding.tvFolderName
 
-        fun bindDefault(folderDialogModel: FolderDialogModel) {
-            folderImageView.imageTintList = ColorStateList.valueOf(
-                Color.parseColor(folderDialogModel.colorHex)
-            )
-            nameTextView.text = folderDialogModel.name
-
-            with(itemView.context.getColor(R.color.gray)) {
-                checkImageView.imageTintList = ColorStateList.valueOf(this)
-                nameTextView.setTextColor(this)
-            }
-        }
-
         fun bind(folderDialogModel: FolderDialogModel) {
             folderImageView.imageTintList = ColorStateList.valueOf(
                 Color.parseColor(folderDialogModel.colorHex)
             )
             nameTextView.text = folderDialogModel.name
-
             bindIsChecked(folderDialogModel.isChecked)
 
             setListener(folderDialogModel)
         }
 
         fun bindIsChecked(isChecked: Boolean) {
-            Log.d(TAG, "bindIsChecked) isChecked: $isChecked")
             checkImageView.setImageResource(
-                if (isChecked) R.drawable.icon_select_check
+                if (isChecked) R.drawable.icon_select_full
                 else R.drawable.icon_select_empty
             )
         }
 
         private fun setListener(folderDialogModel: FolderDialogModel) {
             itemView.setOnClickListener {
-                Log.d(TAG, "itemView.onClick) folderDialogModel.id: ${folderDialogModel.id}")
-                if (folderDialogModel.id == FolderId.DEFAULT_FOLDER.id)
-                    return@setOnClickListener
-
                 onFolderDialogModelClickListener?.onFolderDialogModelClick(folderDialogModel)
             }
         }

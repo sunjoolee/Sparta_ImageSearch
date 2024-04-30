@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui.folder
+package com.sparta.imagesearch.presentation.folder
 
 import android.util.Log
 import androidx.lifecycle.LiveData

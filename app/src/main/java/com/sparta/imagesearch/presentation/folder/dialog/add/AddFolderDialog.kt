@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui.folder.dialog.add
+package com.sparta.imagesearch.presentation.folder.dialog.add
 
 import android.app.Dialog
 import android.content.res.ColorStateList

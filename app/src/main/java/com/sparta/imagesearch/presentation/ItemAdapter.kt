@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui
+package com.sparta.imagesearch.presentation
 
 import android.content.res.ColorStateList
 import android.graphics.Color

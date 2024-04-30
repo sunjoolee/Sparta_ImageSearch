@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui.folder
+package com.sparta.imagesearch.presentation.folder
 
 import android.content.Context
 import android.os.Bundle
@@ -12,16 +12,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.sparta.imagesearch.entity.Item
 import com.sparta.imagesearch.databinding.FragmentFolderBinding
-import com.sparta.imagesearch.ui.GridSpacingItemDecoration
-import com.sparta.imagesearch.ui.ItemAdapter
-import com.sparta.imagesearch.ui.OnHeartClickListener
-import com.sparta.imagesearch.ui.OnHeartLongClickListener
-import com.sparta.imagesearch.ui.folder.dialog.add.AddFolderDialog
-import com.sparta.imagesearch.ui.folder.dialog.add.OnAddConfirmListener
-import com.sparta.imagesearch.ui.folder.dialog.delete.DeleteFolderDialog
-import com.sparta.imagesearch.ui.folder.dialog.delete.OnDeleteConfirmListener
-import com.sparta.imagesearch.ui.folder.dialog.move.MoveFolderDialog
-import com.sparta.imagesearch.ui.folder.dialog.move.OnMoveConfirmListener
+import com.sparta.imagesearch.presentation.GridSpacingItemDecoration
+import com.sparta.imagesearch.presentation.ItemAdapter
+import com.sparta.imagesearch.presentation.OnHeartClickListener
+import com.sparta.imagesearch.presentation.OnHeartLongClickListener
+import com.sparta.imagesearch.presentation.folder.dialog.add.AddFolderDialog
+import com.sparta.imagesearch.presentation.folder.dialog.add.OnAddConfirmListener
+import com.sparta.imagesearch.presentation.folder.dialog.delete.DeleteFolderDialog
+import com.sparta.imagesearch.presentation.folder.dialog.delete.OnDeleteConfirmListener
+import com.sparta.imagesearch.presentation.folder.dialog.move.MoveFolderDialog
+import com.sparta.imagesearch.presentation.folder.dialog.move.OnMoveConfirmListener
 import com.sparta.imagesearch.util.fromDpToPx
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.internal.managers.ViewComponentManager
