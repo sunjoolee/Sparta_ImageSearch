@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.ui.search
+package com.sparta.imagesearch.presentation.search
 
 import android.content.Context
 import android.os.Bundle
