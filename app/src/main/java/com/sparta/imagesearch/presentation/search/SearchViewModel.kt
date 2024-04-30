@@ -2,17 +2,19 @@ package com.sparta.imagesearch.presentation.search
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sparta.imagesearch.entity.Item
-import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
-import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.data.source.local.keyword.KeywordSharedPref
+import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
+import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
+import com.sparta.imagesearch.entity.Item
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -24,27 +26,24 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
     private val TAG = "SearchModel"
 
-    private val _keyword = MutableLiveData<String>("")
-    val keyword: LiveData<String> get() = _keyword
+    private val _keyword = MutableStateFlow("")
+    val keyword: StateFlow<String> get() = _keyword
 
-    private val _searchItems = MutableLiveData<List<Item>>(emptyList())
-    val searchItems: LiveData<List<Item>> get() = _searchItems
+    private val _searchItems = MutableStateFlow<List<Item>>(emptyList())
+    val searchItems: StateFlow<List<Item>> get() = _searchItems
 
-    private val _savedItems = MutableLiveData<List<Item>>(emptyList())
-    val savedItems: LiveData<List<Item>> get() = _savedItems
+    private val _savedItems = MutableStateFlow<List<Item>>(emptyList())
+    val savedItems: StateFlow<List<Item>> get() = _savedItems
 
-    private val _resultItems = MediatorLiveData<List<Item>>().apply {
-        val onChange = { _: List<Item> ->
-            value = searchItems.value!!.map { item ->
-                savedItems.value!!.find { it.id == item.id }?.let {
+    private val _resultItems =
+        searchItems.combine(savedItems) { searchItems, savedItems ->
+            searchItems.map { item ->
+                savedItems.find { it.id == item.id }?.let {
                     item.copy(folderId = it.folderId)
                 } ?: item.copy(folderId = FolderId.NO_FOLDER.id)
             }
         }
-        addSource(searchItems, onChange)
-        addSource(savedItems, onChange)
-    }
-    val resultItems: LiveData<List<Item>> get() = _resultItems
+    val resultItems: Flow<List<Item>> get() = _resultItems
 
     private fun loadKeyword() {
         _keyword.value = KeywordSharedPref.loadKeyword()
@@ -72,7 +71,7 @@ class SearchViewModel @Inject constructor(
     }
 
     fun saveItem(item: Item) {
-        _savedItems.value = with(savedItems.value!!) {
+        _savedItems.value = with(savedItems.value) {
             if (this.find { it.id == item.id } != null) {
                 this.filterNot { it.id == item.id }
             } else {
