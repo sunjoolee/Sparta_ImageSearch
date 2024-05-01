@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.data.source.remote.retrofit
+package com.sparta.imagesearch.data.source.remote
 
 import com.sparta.imagesearch.BuildConfig
 import okhttp3.Interceptor
@@ -7,7 +7,6 @@ import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Headers
 import java.util.concurrent.TimeUnit
 object KakaoSearchRetrofit {
     private const val SEARCH_BASE_URL = "https://dapi.kakao.com/v2/search/"

@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.data.source.remote.kakaoSearch
+package com.sparta.imagesearch.data.source.remote
 
 import com.google.gson.annotations.SerializedName
 

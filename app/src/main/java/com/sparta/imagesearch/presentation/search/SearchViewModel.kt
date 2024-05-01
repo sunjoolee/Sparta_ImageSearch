@@ -3,21 +3,24 @@ package com.sparta.imagesearch.presentation.search
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sparta.imagesearch.data.ApiResponse
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.data.source.local.keyword.KeywordSharedPref
+import com.sparta.imagesearch.data.source.remote.ImageDocument
+import com.sparta.imagesearch.data.source.remote.VideoDocument
 import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import com.sparta.imagesearch.entity.Item
+import com.sparta.imagesearch.entity.ItemType
+import com.sparta.imagesearch.util.formatDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -105,9 +108,38 @@ class SearchViewModel @Inject constructor(
 
     private suspend fun fetchSearchResult() {
         val query = _keyword.value ?: ""
-        val newDataset = itemRepository.getItems(query)
-        withContext(Dispatchers.Main) {
-            _searchItems.value = newDataset
+
+        val imageResponseFlow = itemRepository.getImages(query)
+        val videoResponseFlow = itemRepository.getVideos(query)
+
+        imageResponseFlow.combine(videoResponseFlow) {i, v ->
+            val itemList = mutableListOf<Item>()
+            if(i is ApiResponse.Success){
+                itemList.addAll(i.data.documents?.map { it.convert() } ?: emptyList())
+            }
+            if(v is ApiResponse.Success){
+                itemList.addAll(v.data.documents?.map { it.convert() } ?: emptyList())
+            }
+            itemList.toList()
+        }.collect{
+            _searchItems.value = it
         }
+
     }
+
+    private fun ImageDocument.convert() =
+        Item(
+            itemType = ItemType.IMAGE_TYPE,
+            imageUrl = imageUrl,
+            source = displaySitename,
+            time = datetime.formatDate()
+        )
+
+    private fun VideoDocument.convert() =
+        Item(
+            itemType = ItemType.VIDEO_TYPE,
+            imageUrl = thumbnail,
+            source = author,
+            time = datetime.formatDate()
+        )
 }

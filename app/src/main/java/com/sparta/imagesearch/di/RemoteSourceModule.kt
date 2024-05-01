@@ -1,7 +1,7 @@
 package com.sparta.imagesearch.di
 
-import com.sparta.imagesearch.data.source.remote.retrofit.KakaoSearchApi
-import com.sparta.imagesearch.data.source.remote.retrofit.KakaoSearchRetrofit
+import com.sparta.imagesearch.data.source.remote.KakaoSearchApi
+import com.sparta.imagesearch.data.source.remote.KakaoSearchRetrofit
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

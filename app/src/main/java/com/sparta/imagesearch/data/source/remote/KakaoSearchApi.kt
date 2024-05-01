@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.data.source.remote.retrofit
+package com.sparta.imagesearch.data.source.remote
 
 import retrofit2.http.GET
 import retrofit2.http.Headers
