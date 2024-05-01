@@ -1,6 +1,7 @@
 package com.sparta.imagesearch.presentation.search
 
 import android.graphics.Color.parseColor
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -11,17 +12,22 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,27 +44,73 @@ import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderColor
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.entity.Item
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchResultContent(
+    modifier: Modifier = Modifier,
     searchResultItems: List<Item>,
     onHeartClick: (item: Item) -> Unit
 ) {
+    val gridState = rememberLazyStaggeredGridState()
+    val showScrollButton by remember {
+        derivedStateOf {
+            gridState.firstVisibleItemIndex > 0
+        }
+    }
+    val scope = rememberCoroutineScope()
+
     Surface(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalItemSpacing = 8.dp
-        ) {
-            items(items = searchResultItems, key = { it.id }) {
-                SearchResultItem(
-                    item = it,
-                    onHeartClick = onHeartClick
-                )
+        Box {
+            LazyVerticalStaggeredGrid(
+                state = gridState,
+                columns = StaggeredGridCells.Fixed(2),
+                contentPadding = PaddingValues(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalItemSpacing = 8.dp
+            ) {
+                items(items = searchResultItems, key = { it.id }) {
+                    SearchResultItem(
+                        item = it,
+                        onHeartClick = onHeartClick
+                    )
+                }
             }
+            ScrollToTopButton(
+                modifier = modifier.align(Alignment.BottomEnd),
+                showScrollButton = showScrollButton,
+                onClick = {
+                    scope.launch { gridState.animateScrollToItem(0) }
+                }
+            )
+        }
+    }
+}
+
+
+@Composable
+fun ScrollToTopButton(
+    modifier: Modifier = Modifier,
+    showScrollButton: Boolean,
+    onClick: () -> Unit
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = showScrollButton
+    ) {
+        Button(
+            modifier = modifier.padding(8.dp),
+            onClick = onClick
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.icon_up),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(2.dp)
+                    .size(20.dp)
+            )
         }
     }
 }
@@ -93,7 +145,6 @@ fun SearchResultItem(
                     Text(text = item.time)
                     Text(text = item.source)
                 }
-
             }
         }
     }
