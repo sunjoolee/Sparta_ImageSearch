@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.sparta.imagesearch.databinding.FragmentSearchBinding
 import com.sparta.imagesearch.entity.Item
 import com.sparta.imagesearch.presentation.GridSpacingItemDecoration
@@ -50,17 +52,21 @@ class SearchFragment : Fragment(), OnHeartClickListener {
 
     private fun collectStateFlow() {
         lifecycleScope.launch {
-            model.keyword.collect { keyword ->
-                binding.etSearch.setText(keyword)
-            }
-        }
-        lifecycleScope.launch {
-            model.resultItems.stateIn(
-                scope = lifecycleScope,
-                started = SharingStarted.Lazily,
-                initialValue = emptyList()
-            ).collect { resultItems ->
-                itemAdapter.submitList(resultItems)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    model.keyword.collect { keyword ->
+                        binding.etSearch.setText(keyword)
+                    }
+                }
+                launch {
+                    model.resultItems.stateIn(
+                        scope = lifecycleScope,
+                        started = SharingStarted.Lazily,
+                        initialValue = emptyList()
+                    ).collect { resultItems ->
+                        itemAdapter.submitList(resultItems)
+                    }
+                }
             }
         }
     }

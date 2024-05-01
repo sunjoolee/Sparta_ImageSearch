@@ -10,8 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.sparta.imagesearch.entity.Item
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.sparta.imagesearch.databinding.FragmentFolderBinding
+import com.sparta.imagesearch.entity.Item
 import com.sparta.imagesearch.presentation.GridSpacingItemDecoration
 import com.sparta.imagesearch.presentation.ItemAdapter
 import com.sparta.imagesearch.presentation.OnHeartClickListener
@@ -25,6 +28,9 @@ import com.sparta.imagesearch.presentation.folder.dialog.move.OnMoveConfirmListe
 import com.sparta.imagesearch.util.fromDpToPx
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.internal.managers.ViewComponentManager
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FolderFragment : Fragment(),
@@ -41,8 +47,8 @@ class FolderFragment : Fragment(),
 
     private val model by viewModels<FolderViewModel>()
 
-    private lateinit var folderAdapter: FolderModelAdapter
-    private lateinit var itemAdapter: ItemAdapter
+    private var folderAdapter = FolderModelAdapter()
+    private var itemAdapter = ItemAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,28 +61,36 @@ class FolderFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initModelObserver()
-
         initFolderRecyclerView()
         initMoreButton()
         initMoreLayout()
-
         initImageRecyclerView()
+
+        collectStateFlow()
     }
 
-    private fun initModelObserver() {
-        with(model) {
-            resultFolderModels.observe(viewLifecycleOwner) { folderModels ->
-                folderAdapter.submitList(folderModels)
-            }
-            itemsInFolder.observe(viewLifecycleOwner) { folderItems ->
-                itemAdapter.submitList(folderItems)
+    private fun collectStateFlow() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    model.itemsInFolder.collect { folderItems ->
+                        itemAdapter.submitList(folderItems)
+                    }
+                }
+                launch {
+                    model.resultFolderModels.stateIn(
+                        scope = lifecycleScope,
+                        started = SharingStarted.Lazily,
+                        initialValue = model.folderModels.value
+                    ).collect { folderModels ->
+                        folderAdapter.submitList(folderModels)
+                    }
+                }
             }
         }
     }
 
     private fun initFolderRecyclerView() {
-        folderAdapter = FolderModelAdapter()
         folderAdapter.onFolderModelClickListener = this@FolderFragment
         binding.recyclerViewFolder.adapter = folderAdapter
     }
@@ -114,7 +128,7 @@ class FolderFragment : Fragment(),
     private fun showDeleteFolderDialog() {
         val deleteDialog = DeleteFolderDialog(
             getActivityContext() as AppCompatActivity,
-            model.folderModels.value!!
+            model.folderModels.value
         )
         deleteDialog.onDeleteConfirmListener = this@FolderFragment
         deleteDialog.show()
@@ -125,7 +139,6 @@ class FolderFragment : Fragment(),
     }
 
     private fun initImageRecyclerView() {
-        itemAdapter = ItemAdapter()
         itemAdapter.onHeartClickListener = this@FolderFragment
         itemAdapter.onHeartLongClickListener = this@FolderFragment
         binding.recyclerviewImage.run {
@@ -146,7 +159,7 @@ class FolderFragment : Fragment(),
         val moveDialog = MoveFolderDialog(
             getActivityContext() as AppCompatActivity,
             item,
-            model.folderModels.value!!
+            model.folderModels.value
         )
         moveDialog.onMoveConfirmListener = this@FolderFragment
         moveDialog.show()

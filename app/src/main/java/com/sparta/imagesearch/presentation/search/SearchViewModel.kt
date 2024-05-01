@@ -1,8 +1,8 @@
 package com.sparta.imagesearch.presentation.search
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.data.source.local.keyword.KeywordSharedPref
 import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
@@ -11,6 +11,7 @@ import com.sparta.imagesearch.entity.Item
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,10 +31,10 @@ class SearchViewModel @Inject constructor(
     val keyword: StateFlow<String> get() = _keyword
 
     private val _searchItems = MutableStateFlow<List<Item>>(emptyList())
-    val searchItems: StateFlow<List<Item>> get() = _searchItems
+    private val searchItems: StateFlow<List<Item>> get() = _searchItems
 
     private val _savedItems = MutableStateFlow<List<Item>>(emptyList())
-    val savedItems: StateFlow<List<Item>> get() = _savedItems
+    private val savedItems: StateFlow<List<Item>> get() = _savedItems
 
     private val _resultItems =
         searchItems.combine(savedItems) { searchItems, savedItems ->
@@ -45,13 +46,14 @@ class SearchViewModel @Inject constructor(
         }
     val resultItems: Flow<List<Item>> get() = _resultItems
 
+
     private fun loadKeyword() {
         _keyword.value = KeywordSharedPref.loadKeyword()
         Log.d(TAG, "loadKeyword) keyword: ${_keyword.value}")
     }
 
     private fun saveKeyword() {
-        KeywordSharedPref.saveKeyword(keyword.value!!)
+        KeywordSharedPref.saveKeyword(keyword.value)
         Log.d(TAG, "saveKeyword) keyword: ${_keyword.value}")
     }
 
@@ -60,14 +62,18 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun loadSavedItems() {
-        _savedItems.value = savedItemRepository.loadSavedItems()
-        Log.d(TAG, "loadSavedItems) size: ${savedItems.value!!.size}")
+        viewModelScope.launch {
+            savedItemRepository.loadSavedItems().collect{
+                _savedItems.value = it
+            }
+            Log.d(TAG, "loadSavedItems) size: ${savedItems.value.size}")
+        }
 
     }
 
     private fun saveSavedItems() {
-        savedItemRepository.saveSavedItems(savedItems.value!!)
-        Log.d(TAG, "saveSavedItems) size: ${savedItems.value!!.size}")
+        savedItemRepository.saveSavedItems(savedItems.value)
+        Log.d(TAG, "saveSavedItems) size: ${savedItems.value.size}")
     }
 
     fun saveItem(item: Item) {
