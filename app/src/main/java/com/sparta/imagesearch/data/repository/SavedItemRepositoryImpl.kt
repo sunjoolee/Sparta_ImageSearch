@@ -1,10 +1,11 @@
 package com.sparta.imagesearch.data.repository
 
-import com.sparta.imagesearch.entity.Item
 import com.sparta.imagesearch.data.source.local.savedItem.SavedItemDatabase
 import com.sparta.imagesearch.di.ApplicationScope
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
+import com.sparta.imagesearch.entity.Item
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -12,6 +13,8 @@ class SavedItemRepositoryImpl @Inject constructor(
     private val savedItemSource: SavedItemDatabase,
     @ApplicationScope private val scope: CoroutineScope,
 ) : SavedItemRepository {
+    private val TAG = "SavedItemRepositoryImpl"
+
     private val savedItemSourceDAO = savedItemSource.getSavedItemDAO()
     override fun saveSavedItems(savedItems: List<Item>) {
         scope.launch {
@@ -25,21 +28,11 @@ class SavedItemRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun loadSavedItems(): List<Item> {
-        val savedItems = mutableListOf<Item>()
-        scope.launch {
-            savedItems.addAll(savedItemSourceDAO.getAllItems())
-        }
-        return savedItems
-    }
+    override suspend fun loadSavedItems(): Flow<List<Item>> = savedItemSourceDAO.getAllItems()
 
-    override fun loadFolderSavedItems(folderId: String): List<Item> {
-        val folderItems = mutableListOf<Item>()
-        scope.launch {
-            folderItems.addAll(savedItemSourceDAO.getFolderItems(folderId))
-        }
-        return folderItems
-    }
+
+    override suspend fun loadFolderSavedItems(folderId: String): Flow<List<Item>> =
+        savedItemSourceDAO.getFolderItems(folderId)
 
     override fun deleteFolderSavedItems(folderIds: List<String>) {
         scope.launch {
