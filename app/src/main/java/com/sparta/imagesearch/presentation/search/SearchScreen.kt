@@ -1,0 +1,146 @@
+package com.sparta.imagesearch.presentation.search
+
+import android.graphics.Color.parseColor
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.glide.GlideImage
+import com.skydoves.landscapist.glide.GlideImageState
+import com.sparta.imagesearch.R
+import com.sparta.imagesearch.data.source.local.folder.FolderColor
+import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.entity.Item
+
+@Composable
+fun SearchResultContent(
+    searchResultItems: List<Item>,
+    onHeartClick: (item: Item) -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(2),
+            contentPadding = PaddingValues(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalItemSpacing = 8.dp
+        ) {
+            items(items = searchResultItems, key = { it.id }) {
+                SearchResultItem(
+                    item = it,
+                    onHeartClick = onHeartClick
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchResultItem(
+    modifier: Modifier = Modifier,
+    item: Item,
+    onHeartClick: (item: Item) -> Unit
+) {
+    Card {
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SearchResultImage(
+                modifier = modifier,
+                imageUrl = item.imageUrl
+            )
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                SearchResultHeart(
+                    modifier = modifier.align(Alignment.CenterEnd),
+                    folderId = item.folderId,
+                    onHeartClick = { onHeartClick(item) })
+                Column(
+                    modifier = modifier.align(Alignment.TopStart)
+                ) {
+                    Text(text = item.time)
+                    Text(text = item.source)
+                }
+
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchResultImage(
+    imageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    var state by remember { mutableStateOf<GlideImageState>(GlideImageState.None) }
+    if (state !is GlideImageState.Success) {
+        CircularProgressIndicator(
+            modifier = modifier.padding(10.dp)
+        )
+    }
+    GlideImage(
+        imageModel = { imageUrl },
+        imageOptions = ImageOptions(
+            contentScale = ContentScale.FillWidth
+        ),
+        onImageStateChanged = { state = it }
+    )
+}
+
+@Composable
+fun SearchResultHeart(
+    folderId: String,
+    onHeartClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val heartColor = animateColorAsState(
+        targetValue = Color(
+            parseColor(
+                if (folderId != FolderId.NO_FOLDER.id) FolderColor.color1.colorHex
+                else (FolderColor.color0.colorHex)
+            )
+        )
+    )
+
+    Image(
+        painter = painterResource(id = R.drawable.icon_heart),
+        colorFilter = ColorFilter.tint(color = heartColor.value),
+        contentDescription = "",
+        modifier = modifier
+            .scale(1.5f)
+            .clickable { onHeartClick() }
+    )
+}
+

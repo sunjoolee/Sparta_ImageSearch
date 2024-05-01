@@ -14,17 +14,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.sparta.imagesearch.databinding.FragmentSearchBinding
 import com.sparta.imagesearch.entity.Item
-import com.sparta.imagesearch.presentation.GridSpacingItemDecoration
-import com.sparta.imagesearch.presentation.ItemAdapter
 import com.sparta.imagesearch.presentation.OnHeartClickListener
-import com.sparta.imagesearch.util.fromDpToPx
+import com.sparta.imagesearch.presentation.theme.ImageSearchTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SearchFragment : Fragment(), OnHeartClickListener {
+class SearchFragment : Fragment() {
     private val TAG = "SearchFragment"
 
     private var _binding: FragmentSearchBinding? = null
@@ -32,19 +30,18 @@ class SearchFragment : Fragment(), OnHeartClickListener {
 
     private val model by viewModels<SearchViewModel>()
 
-    private var itemAdapter = ItemAdapter()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initImageRecyclerView()
         setSearchButtonOnClickListener()
 
         collectStateFlow()
@@ -63,32 +60,28 @@ class SearchFragment : Fragment(), OnHeartClickListener {
                         scope = lifecycleScope,
                         started = SharingStarted.Lazily,
                         initialValue = emptyList()
-                    ).collect { resultItems ->
-                        itemAdapter.submitList(resultItems)
+                    ).collect {
+                        Log.d(TAG, "collectStateFlow) resultItems collected")
+                        showSearchResultComposeView(it)
                     }
                 }
             }
         }
     }
 
-    private fun initImageRecyclerView() {
-        itemAdapter.onHeartClickListener = this@SearchFragment
-        binding.recyclerviewImage.run {
-            adapter = itemAdapter
-            itemAnimator = null
-            addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
+    private fun showSearchResultComposeView(items: List<Item>) {
+        Log.d(TAG, "showSearchResultComposeView) called, item.size: ${items.size}")
+        binding.composeViewSearchResult.setContent {
+            SearchResultContent(
+                searchResultItems = items,
+                onHeartClick = model::saveItem
+            )
         }
-    }
-
-    override fun onHeartClick(item: Item) {
-        model.saveItem(item)
     }
 
     private fun setSearchButtonOnClickListener() {
         binding.btnSearch.setOnClickListener {
             hideKeyboard(it)
-            smoothScrollToTop()
-
             model.search(binding.etSearch.text.toString())
         }
     }
@@ -98,10 +91,6 @@ class SearchFragment : Fragment(), OnHeartClickListener {
             activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         view.clearFocus()
-    }
-
-    private fun smoothScrollToTop() {
-        binding.recyclerviewImage.smoothScrollToPosition(0)
     }
 
     override fun onPause() {
