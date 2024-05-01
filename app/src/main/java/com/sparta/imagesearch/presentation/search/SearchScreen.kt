@@ -20,9 +20,12 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +38,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.skydoves.landscapist.ImageOptions
@@ -46,8 +50,85 @@ import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.entity.Item
 import kotlinx.coroutines.launch
 
+
 @Composable
-fun SearchResultContent(
+fun SearchScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SearchViewModel
+) {
+    var searchResultItems by remember {
+        mutableStateOf<List<Item>>(emptyList())
+    }
+    LaunchedEffect(Unit) {
+        viewModel.resultItems.collect {
+            searchResultItems = it
+        }
+    }
+
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ImageSearchBar(
+            onSearch = viewModel::search
+        )
+        ImageSearchResultContent(
+            searchResultItems = searchResultItems,
+            onHeartClick = viewModel::saveItem
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ImageSearchBar(
+    modifier: Modifier = Modifier,
+    onSearch: (String) -> Unit
+) {
+    var query by remember { mutableStateOf("") }
+    var searchBarActive by remember { mutableStateOf(false) }
+
+    SearchBar(
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        query = query,
+        onQueryChange = { query = it },
+        onSearch = {
+            onSearch(it)
+            searchBarActive = false
+        },
+        active = searchBarActive,
+        onActiveChange = { searchBarActive = it },
+        leadingIcon = { ImageSearchBarLeadingIcon() },
+        placeholder = { ImageSearchBarPlaceHolder() },
+
+        ) {
+
+    }
+}
+
+@Composable
+fun ImageSearchBarLeadingIcon(
+    modifier: Modifier = Modifier
+) {
+    Image(
+        painter = painterResource(id = R.drawable.icon_search),
+        contentDescription = ""
+    )
+}
+
+@Composable
+fun ImageSearchBarPlaceHolder(
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    Text(
+        modifier = modifier,
+        text = context.getString(R.string.search_hint)
+    )
+}
+
+@Composable
+fun ImageSearchResultContent(
     modifier: Modifier = Modifier,
     searchResultItems: List<Item>,
     onHeartClick: (item: Item) -> Unit
@@ -72,7 +153,7 @@ fun SearchResultContent(
                 verticalItemSpacing = 8.dp
             ) {
                 items(items = searchResultItems, key = { it.id }) {
-                    SearchResultItem(
+                    ImageSearchResultItem(
                         item = it,
                         onHeartClick = onHeartClick
                     )
@@ -116,7 +197,7 @@ fun ScrollToTopButton(
 }
 
 @Composable
-fun SearchResultItem(
+fun ImageSearchResultItem(
     modifier: Modifier = Modifier,
     item: Item,
     onHeartClick: (item: Item) -> Unit
