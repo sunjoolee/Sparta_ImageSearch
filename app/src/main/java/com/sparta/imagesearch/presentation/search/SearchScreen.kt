@@ -3,8 +3,10 @@ package com.sparta.imagesearch.presentation.search
 import android.graphics.Color.parseColor
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,8 +74,8 @@ fun SearchScreen(
         ImageSearchBar(
             onSearch = viewModel::search
         )
-        ImageSearchResultContent(
-            searchResultItems = searchResultItems,
+        ResultItemsContent(
+            resultItems = searchResultItems,
             onHeartClick = viewModel::saveItem
         )
     }
@@ -128,9 +130,9 @@ fun ImageSearchBarPlaceHolder(
 }
 
 @Composable
-fun ImageSearchResultContent(
+fun ResultItemsContent(
     modifier: Modifier = Modifier,
-    searchResultItems: List<Item>,
+    resultItems: List<Item>,
     onHeartClick: (item: Item) -> Unit
 ) {
     val gridState = rememberLazyStaggeredGridState()
@@ -152,8 +154,8 @@ fun ImageSearchResultContent(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalItemSpacing = 8.dp
             ) {
-                items(items = searchResultItems, key = { it.id }) {
-                    ImageSearchResultItem(
+                items(items = resultItems, key = { it.id }) {
+                    ImageSearchItem(
                         item = it,
                         onHeartClick = onHeartClick
                     )
@@ -197,17 +199,18 @@ fun ScrollToTopButton(
 }
 
 @Composable
-fun ImageSearchResultItem(
+fun ImageSearchItem(
     modifier: Modifier = Modifier,
     item: Item,
-    onHeartClick: (item: Item) -> Unit
+    onHeartClick: (item: Item) -> Unit,
+    onHeartLongClick: (item:Item) -> Unit = {}
 ) {
     Card {
         Column(
             modifier = modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SearchResultImage(
+            ItemImage(
                 modifier = modifier,
                 imageUrl = item.imageUrl
             )
@@ -216,10 +219,11 @@ fun ImageSearchResultItem(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                SearchResultHeart(
+                ItemHeart(
                     modifier = modifier.align(Alignment.CenterEnd),
                     folderId = item.folderId,
-                    onHeartClick = { onHeartClick(item) })
+                    onHeartClick = { onHeartClick(item) },
+                    onHeartLongClick = {onHeartLongClick(item)})
                 Column(
                     modifier = modifier.align(Alignment.TopStart)
                 ) {
@@ -232,7 +236,7 @@ fun ImageSearchResultItem(
 }
 
 @Composable
-fun SearchResultImage(
+fun ItemImage(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
@@ -251,11 +255,13 @@ fun SearchResultImage(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchResultHeart(
+fun ItemHeart(
     folderId: String,
+    modifier: Modifier = Modifier,
     onHeartClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onHeartLongClick: () -> Unit = {}
 ) {
     val heartColor = animateColorAsState(
         targetValue = Color(
@@ -272,7 +278,10 @@ fun SearchResultHeart(
         contentDescription = "",
         modifier = modifier
             .scale(1.5f)
-            .clickable { onHeartClick() }
+            .combinedClickable (
+                onClick = onHeartClick,
+                onLongClick = onHeartLongClick
+            )
     )
 }
 

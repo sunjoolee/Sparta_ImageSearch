@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.Surface
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -34,8 +35,6 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FolderFragment : Fragment(),
-    OnHeartClickListener,
-    OnHeartLongClickListener,
     OnFolderModelClickListener,
     OnDeleteConfirmListener,
     OnMoveConfirmListener,
@@ -48,7 +47,6 @@ class FolderFragment : Fragment(),
     private val model by viewModels<FolderViewModel>()
 
     private var folderAdapter = FolderModelAdapter()
-    private var itemAdapter = ItemAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +62,6 @@ class FolderFragment : Fragment(),
         initFolderRecyclerView()
         initMoreButton()
         initMoreLayout()
-        initImageRecyclerView()
 
         collectStateFlow()
     }
@@ -74,7 +71,7 @@ class FolderFragment : Fragment(),
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     model.itemsInFolder.collect { folderItems ->
-                        itemAdapter.submitList(folderItems)
+                        showFolderItemsContent(folderItems)
                     }
                 }
                 launch {
@@ -87,6 +84,16 @@ class FolderFragment : Fragment(),
                     }
                 }
             }
+        }
+    }
+
+    private fun showFolderItemsContent(items: List<Item>){
+        binding.composeViewFolderContent.setContent {
+            FolderItemsContent(
+                folderItems = items,
+                onHeartClick = model::unSaveItem,
+                onHeartLongClick = this@FolderFragment::showMoveFolderDialog
+            )
         }
     }
 
@@ -136,23 +143,6 @@ class FolderFragment : Fragment(),
 
     override fun onDeleteConfirm(folderIdList: List<String>) {
         model.deleteFolders(folderIdList)
-    }
-
-    private fun initImageRecyclerView() {
-        itemAdapter.onHeartClickListener = this@FolderFragment
-        itemAdapter.onHeartLongClickListener = this@FolderFragment
-        binding.recyclerviewImage.run {
-            adapter = itemAdapter
-            addItemDecoration(GridSpacingItemDecoration(2, 16f.fromDpToPx()))
-        }
-    }
-
-    override fun onHeartClick(item: Item) {
-        model.unSaveItem(item)
-    }
-
-    override fun onHeartLongClick(item: Item) {
-        showMoveFolderDialog(item)
     }
 
     private fun showMoveFolderDialog(item: Item) {
