@@ -1,10 +1,9 @@
 package com.sparta.imagesearch.data.repository
 
 import com.sparta.imagesearch.data.ApiResponse
-import com.sparta.imagesearch.data.source.remote.ImageDocument
+import com.sparta.imagesearch.data.source.remote.Document
 import com.sparta.imagesearch.data.source.remote.KakaoSearchApi
 import com.sparta.imagesearch.data.source.remote.KakaoSearchDTO
-import com.sparta.imagesearch.data.source.remote.VideoDocument
 import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -14,17 +13,17 @@ import javax.inject.Inject
 class ItemRepositoryImpl @Inject constructor(
     private val kakaoSearchSource: KakaoSearchApi
 ) : ItemRepository {
-    override suspend fun getImages(query: String): Flow<ApiResponse<KakaoSearchDTO<ImageDocument>>> =
+    override suspend fun getImages(query: String): Flow<ApiResponse<KakaoSearchDTO<Document.ImageDocument>>> =
         handleKakaoSearchDTO {
             kakaoSearchSource.getImageDTO(query)
         }
 
-    override suspend fun getVideos(query: String): Flow<ApiResponse<KakaoSearchDTO<VideoDocument>>> =
+    override suspend fun getVideos(query: String): Flow<ApiResponse<KakaoSearchDTO<Document.VideoDocument>>> =
         handleKakaoSearchDTO {
             kakaoSearchSource.getVideoDTO(query)
         }
 
-    private fun <T> handleKakaoSearchDTO(
+    private fun <T:Document> handleKakaoSearchDTO(
         execute: suspend () -> KakaoSearchDTO<T>
     )
             : Flow<ApiResponse<KakaoSearchDTO<T>>> = flow {

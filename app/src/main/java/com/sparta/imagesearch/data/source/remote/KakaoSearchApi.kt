@@ -1,7 +1,6 @@
 package com.sparta.imagesearch.data.source.remote
 
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.Query
 
 interface KakaoSearchApi {
@@ -11,7 +10,7 @@ interface KakaoSearchApi {
         @Query("size") size: Int = 20,
         @Query("page") page: Int = 1,
         @Query("sort") sort: String = "recency"
-    ): KakaoSearchDTO<ImageDocument>
+    ): KakaoSearchDTO<Document.ImageDocument>
 
     @GET("vclip")
     suspend fun getVideoDTO(
@@ -19,5 +18,5 @@ interface KakaoSearchApi {
         @Query("size") size: Int = 10,
         @Query("page") page: Int = 1,
         @Query("sort") sort: String = "recency"
-    ): KakaoSearchDTO<VideoDocument>
+    ): KakaoSearchDTO<Document.VideoDocument>
 }

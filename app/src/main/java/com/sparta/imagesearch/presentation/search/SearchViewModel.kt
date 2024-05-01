@@ -6,8 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.sparta.imagesearch.data.ApiResponse
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.data.source.local.keyword.KeywordSharedPref
-import com.sparta.imagesearch.data.source.remote.ImageDocument
-import com.sparta.imagesearch.data.source.remote.VideoDocument
+import com.sparta.imagesearch.data.source.remote.Document
 import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import com.sparta.imagesearch.entity.Item
@@ -127,7 +126,7 @@ class SearchViewModel @Inject constructor(
 
     }
 
-    private fun ImageDocument.convert() =
+    private fun Document.ImageDocument.convert() =
         Item(
             itemType = ItemType.IMAGE_TYPE,
             imageUrl = imageUrl,
@@ -135,7 +134,7 @@ class SearchViewModel @Inject constructor(
             time = datetime.formatDate()
         )
 
-    private fun VideoDocument.convert() =
+    private fun Document.VideoDocument.convert() =
         Item(
             itemType = ItemType.VIDEO_TYPE,
             imageUrl = thumbnail,
