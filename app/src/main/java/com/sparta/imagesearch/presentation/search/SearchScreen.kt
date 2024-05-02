@@ -3,14 +3,21 @@ package com.sparta.imagesearch.presentation.search
 import android.graphics.Color.parseColor
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,6 +44,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -50,6 +59,7 @@ import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderColor
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.entity.Item
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -235,24 +245,65 @@ fun ImageSearchItem(
     }
 }
 
+
 @Composable
 fun ItemImage(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
     var state by remember { mutableStateOf<GlideImageState>(GlideImageState.None) }
-    if (state !is GlideImageState.Success) {
-        CircularProgressIndicator(
-            modifier = modifier.padding(10.dp)
+
+    if(state is GlideImageState.None || state is GlideImageState.Loading){
+        Spacer(
+            modifier = modifier
+                .fillMaxWidth()
+                .size(160.dp)
+                .background(brush = shimmerBrush())
         )
     }
+
     GlideImage(
+        modifier = modifier,
         imageModel = { imageUrl },
         imageOptions = ImageOptions(
             contentScale = ContentScale.FillWidth
         ),
-        onImageStateChanged = { state = it }
+        onImageStateChanged = {
+            state = it
+        }
     )
+}
+
+@Composable
+fun shimmerBrush(showShimmer: Boolean = true,targetValue:Float = 1000f): Brush {
+    return if (showShimmer) {
+        val shimmerColors = listOf(
+            Color.LightGray.copy(alpha = 0.8f),
+            Color.LightGray.copy(alpha = 0.2f),
+            Color.LightGray.copy(alpha = 0.8f),
+        )
+
+        val transition = rememberInfiniteTransition(label = "shimmer")
+        val translateAnimation = transition.animateFloat(
+            initialValue = 0f,
+            targetValue = targetValue,
+            animationSpec = infiniteRepeatable(
+                animation = tween(800), repeatMode = RepeatMode.Reverse
+            ),
+            label = "shimmer"
+        )
+        Brush.linearGradient(
+            colors = shimmerColors,
+            start = Offset.Zero,
+            end = Offset(x = translateAnimation.value, y = translateAnimation.value)
+        )
+    } else {
+        Brush.linearGradient(
+            colors = listOf(Color.Transparent,Color.Transparent),
+            start = Offset.Zero,
+            end = Offset.Zero
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -269,7 +320,8 @@ fun ItemHeart(
                 if (folderId != FolderId.NO_FOLDER.id) FolderColor.color1.colorHex
                 else (FolderColor.color0.colorHex)
             )
-        )
+        ),
+        label = "heart_color"
     )
 
     Image(
@@ -278,7 +330,7 @@ fun ItemHeart(
         contentDescription = "",
         modifier = modifier
             .scale(1.5f)
-            .combinedClickable (
+            .combinedClickable(
                 onClick = onHeartClick,
                 onLongClick = onHeartLongClick
             )
