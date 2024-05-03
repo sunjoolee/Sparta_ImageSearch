@@ -1,9 +1,7 @@
 package com.sparta.imagesearch.presentation.folder
 
 import android.graphics.Color.parseColor
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,31 +40,18 @@ import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 
 @Composable
-fun DeleteFolderDialog(
+fun MoveFolderDialog(
     modifier: Modifier = Modifier,
+    curFolderId: String,
     folders: List<FolderModel>,
     onDismissRequest: () -> Unit,
-    deleteFolder: (List<String>) -> Unit
+    moveFolder: (String) -> Unit
 ) {
     val context = LocalContext.current
 
-    val selectedFoldersId = remember { mutableStateListOf<String>() }
+    var selectedFolderId by remember { mutableStateOf(curFolderId) }
 
-    val enableDeleteButton = remember { derivedStateOf { !selectedFoldersId.isEmpty() } }
-
-    var showAlertDialog by remember { mutableStateOf(false) }
-
-    AnimatedVisibility(visible = showAlertDialog) {
-        DeleteAlertDialog(
-            onAlertDismiss = {
-                showAlertDialog = false
-            },
-            onAlertConfirm = {
-                deleteFolder(selectedFoldersId.toList())
-                onDismissRequest()
-            }
-        )
-    }
+    val enableMoveButton = remember { derivedStateOf { selectedFolderId != curFolderId } }
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -84,23 +68,14 @@ fun DeleteFolderDialog(
                 Text(
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    text = context.getString(R.string.delete_folder_title),
+                    text = context.getString(R.string.move_folder_title),
                 )
 
-                DeleteFolderList(
+                MoveFolderList(
                     modifier = modifier.height(300.dp),
                     folders = folders,
-                    selected = { folderId -> selectedFoldersId.contains(folderId) },
-                    onSelect = { folderId ->
-                        with(selectedFoldersId) {
-                            Log.d(
-                                "DeleteFolderDialog",
-                                "folderId: $folderId, contains: ${contains(folderId)}"
-                            )
-                            if (!contains(folderId)) add(folderId)
-                            else remove(folderId)
-                        }
-                    }
+                    selected = { folderId -> selectedFolderId == folderId },
+                    onSelect = { folderId -> selectedFolderId = folderId }
                 )
 
                 Row(
@@ -109,17 +84,20 @@ fun DeleteFolderDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    DeleteDialogCloseButton(
+                    MoveDialogCloseButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.delete_folder_negative),
+                        buttonLabel = context.getString(R.string.move_folder_negative),
                         onClick = onDismissRequest
                     )
                     Spacer(modifier = modifier.size(12.dp))
-                    DeleteDialogConfirmButton(
+                    MoveDialogConfirmButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.delete_folder_positive),
-                        onClick = { showAlertDialog = true },
-                        enabled = enableDeleteButton.value
+                        buttonLabel = context.getString(R.string.move_folder_positive),
+                        onClick = {
+                            moveFolder(selectedFolderId)
+                            onDismissRequest()
+                        },
+                        enabled = enableMoveButton.value
                     )
                 }
             }
@@ -128,7 +106,7 @@ fun DeleteFolderDialog(
 }
 
 @Composable
-fun DeleteFolderList(
+fun MoveFolderList(
     modifier: Modifier = Modifier,
     folders: List<FolderModel>,
     selected: (String) -> Boolean,
@@ -138,7 +116,7 @@ fun DeleteFolderList(
         modifier = modifier
     ) {
         items(items = folders, key = { it.id }) {
-            DeleteFolderItem(
+            MoveFolderItem(
                 folder = it,
                 selected = selected(it.id),
                 onSelect = onSelect
@@ -148,7 +126,7 @@ fun DeleteFolderList(
 }
 
 @Composable
-fun DeleteFolderItem(
+fun MoveFolderItem(
     modifier: Modifier = Modifier,
     folder: FolderModel,
     selected: Boolean,
@@ -160,17 +138,7 @@ fun DeleteFolderItem(
             .fillMaxWidth()
             .height(36.dp)
             .padding(4.dp)
-            .clickable {
-                if (folder.id == FolderId.DEFAULT_FOLDER.id)
-                    Toast
-                        .makeText(
-                            context,
-                            context.getString(R.string.delete_folder_default_toast),
-                            Toast.LENGTH_SHORT
-                        )
-                        .show()
-                else onSelect(folder.id)
-            },
+            .clickable { onSelect(folder.id) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
@@ -183,7 +151,7 @@ fun DeleteFolderItem(
                 Image(
                     modifier = modifier
                         .align(Alignment.Center),
-                    painter = painterResource(id = R.drawable.icon_select_check),
+                    painter = painterResource(id = R.drawable.icon_select_full),
                     colorFilter = ColorFilter.tint(Color.Black),
                     contentDescription = ""
                 )
@@ -209,7 +177,7 @@ fun DeleteFolderItem(
 }
 
 @Composable
-fun DeleteDialogCloseButton(
+fun MoveDialogCloseButton(
     modifier: Modifier = Modifier,
     buttonLabel: String,
     onClick: () -> Unit
@@ -223,7 +191,7 @@ fun DeleteDialogCloseButton(
 }
 
 @Composable
-fun DeleteDialogConfirmButton(
+fun MoveDialogConfirmButton(
     modifier: Modifier = Modifier,
     buttonLabel: String,
     enabled: Boolean,
@@ -235,62 +203,6 @@ fun DeleteDialogConfirmButton(
         enabled = enabled
     ) {
         Text(text = buttonLabel)
-    }
-}
-
-@Composable
-fun DeleteAlertDialog(
-    modifier: Modifier = Modifier,
-    onAlertDismiss: () -> Unit,
-    onAlertConfirm: () -> Unit
-) {
-    val context = LocalContext.current
-    Dialog(
-        onDismissRequest = onAlertDismiss
-    ) {
-        Card(
-            modifier = modifier.height(IntrinsicSize.Min),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                modifier = modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    modifier = modifier
-                        .scale(1.2f)
-                        .padding(bottom = 16.dp),
-                    painter = painterResource(id = R.drawable.icon_warning),
-                    contentDescription = ""
-                )
-                Text(
-                    text = context.getString(R.string.warning_delete_title),
-                )
-                Text(
-                    text = context.getString(R.string.warning_delete_body),
-                )
-                Row(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        onClick = onAlertDismiss
-                    ) {
-                        Text(text = context.getString(R.string.warning_negative))
-                    }
-                    Spacer(modifier = modifier.size(12.dp))
-                    Button(
-                        onClick = onAlertConfirm
-                    ) {
-                        Text(text = context.getString(R.string.warning_positive))
-                    }
-                }
-            }
-        }
     }
 }
 

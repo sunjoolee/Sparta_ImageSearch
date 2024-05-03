@@ -212,7 +212,7 @@ fun ScrollToTopButton(
 fun ImageSearchItem(
     modifier: Modifier = Modifier,
     item: Item,
-    onHeartClick: (item: Item) -> Unit,
+    onHeartClick: (item: Item) -> Unit = {},
     onHeartLongClick: (item:Item) -> Unit = {}
 ) {
     Card {

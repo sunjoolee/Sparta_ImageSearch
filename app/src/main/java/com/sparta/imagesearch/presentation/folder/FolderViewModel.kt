@@ -23,7 +23,7 @@ class FolderViewModel @Inject constructor(
     private val TAG = "FolderViewModel"
 
     private val _selectedFolderId = MutableStateFlow(FolderId.DEFAULT_FOLDER.id)
-    private val selectedFolderId: StateFlow<String> get() = _selectedFolderId
+    val selectedFolderId: StateFlow<String> get() = _selectedFolderId
 
     private val _folderModels = MutableStateFlow<List<FolderModel>>(emptyList())
     val folderModels: StateFlow<List<FolderModel>> get() = _folderModels
