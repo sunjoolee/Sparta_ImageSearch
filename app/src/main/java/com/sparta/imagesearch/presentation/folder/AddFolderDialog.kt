@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,8 @@ fun AddFolderDialog(
 
     var name by remember { mutableStateOf("") }
     var colorHex by remember { mutableStateOf(FolderColor.color1.colorHex) }
+
+    val isNameValid by remember{ derivedStateOf { name.isNotBlank() } }
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -85,10 +88,11 @@ fun AddFolderDialog(
                     AddDialogConfirmButton(
                         modifier = modifier,
                         buttonLabel = context.getString(R.string.add_folder_positive),
+                        isNameValid = isNameValid,
                         onClick = {
                             addFolder(name, colorHex)
                             onDismissRequest()
-                        }
+                        },
                     )
                 }
             }
@@ -257,11 +261,13 @@ fun AddDialogCloseButton(
 fun AddDialogConfirmButton(
     modifier: Modifier = Modifier,
     buttonLabel: String,
+    isNameValid: Boolean,
     onClick: () -> Unit
 ) {
     Button(
         modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
+        enabled = isNameValid
     ) {
         Text(text = buttonLabel)
     }
