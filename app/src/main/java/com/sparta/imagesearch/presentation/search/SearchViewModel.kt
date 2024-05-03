@@ -49,6 +49,10 @@ class SearchViewModel @Inject constructor(
     val resultItems: Flow<List<Item>> get() = _resultItems
 
 
+    init{
+        loadState()
+    }
+
     private fun loadKeyword() {
         _keyword.value = KeywordSharedPref.loadKeyword()
         Log.d(TAG, "loadKeyword) keyword: ${_keyword.value}")
@@ -125,7 +129,10 @@ class SearchViewModel @Inject constructor(
         }
 
     }
-
+    override fun onCleared() {
+        saveState()
+        super.onCleared()
+    }
     private fun Document.ImageDocument.convert() =
         Item(
             itemType = ItemType.IMAGE_TYPE,
@@ -141,4 +148,5 @@ class SearchViewModel @Inject constructor(
             source = author,
             time = datetime.formatDate()
         )
+
 }

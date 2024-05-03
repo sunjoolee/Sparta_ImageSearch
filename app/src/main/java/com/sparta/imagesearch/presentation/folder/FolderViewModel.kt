@@ -38,6 +38,10 @@ class FolderViewModel @Inject constructor(
     private val _itemsInFolder = MutableStateFlow<List<Item>>(emptyList())
     val itemsInFolder: StateFlow<List<Item>> get() = _itemsInFolder
 
+    init{
+        loadState()
+    }
+
     private fun loadFolders() {
         _folderModels.value = FolderPrefManager.loadFolders().map { it.convert() }
         if (folderModels.value.isEmpty())
@@ -99,6 +103,11 @@ class FolderViewModel @Inject constructor(
 
     fun saveState() {
         saveFolders()
+    }
+
+    override fun onCleared() {
+        saveState()
+        super.onCleared()
     }
 
     private fun Folder.convert() =

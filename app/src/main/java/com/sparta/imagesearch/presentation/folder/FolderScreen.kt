@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.entity.Item
@@ -52,7 +53,7 @@ import com.sparta.imagesearch.presentation.search.ImageSearchItem
 @Composable
 fun FolderScreen(
     modifier: Modifier = Modifier,
-    viewModel: FolderViewModel
+    viewModel: FolderViewModel = viewModel(modelClass = FolderViewModel::class.java)
 ) {
     var folders by remember {
         mutableStateOf<List<FolderModel>>(emptyList())
