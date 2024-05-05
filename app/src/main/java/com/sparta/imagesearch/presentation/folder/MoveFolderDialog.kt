@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -57,7 +58,7 @@ fun MoveFolderDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Card(
-            modifier = modifier.height(IntrinsicSize.Min),
+            modifier = modifier,
             shape = RoundedCornerShape(16.dp)
         ) {
             Column(
@@ -72,7 +73,7 @@ fun MoveFolderDialog(
                 )
 
                 MoveFolderList(
-                    modifier = modifier.height(300.dp),
+                    modifier = modifier.padding(top = 8.dp, bottom = 8.dp),
                     folders = folders,
                     selected = { folderId -> selectedFolderId == folderId },
                     onSelect = { folderId -> selectedFolderId = folderId }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -73,7 +75,7 @@ fun DeleteFolderDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Card(
-            modifier = modifier.height(IntrinsicSize.Min),
+            modifier = modifier.heightIn(max = 300.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
             Column(
@@ -88,7 +90,7 @@ fun DeleteFolderDialog(
                 )
 
                 DeleteFolderList(
-                    modifier = modifier.height(300.dp),
+                    modifier = modifier.padding(top = 8.dp, bottom = 8.dp),
                     folders = folders,
                     selected = { folderId -> selectedFoldersId.contains(folderId) },
                     onSelect = { folderId ->
