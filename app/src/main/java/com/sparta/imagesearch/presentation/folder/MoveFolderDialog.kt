@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -48,9 +49,7 @@ fun MoveFolderDialog(
     onDismissRequest: () -> Unit,
     moveFolder: (String) -> Unit
 ) {
-    val context = LocalContext.current
-
-    var selectedFolderId by remember { mutableStateOf(curFolderId) }
+    var (selectedFolderId, setSelectedFolderId) =  remember { mutableStateOf(curFolderId) }
 
     val enableMoveButton = remember { derivedStateOf { selectedFolderId != curFolderId } }
 
@@ -69,14 +68,14 @@ fun MoveFolderDialog(
                 Text(
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    text = context.getString(R.string.move_folder_title),
+                    text = stringResource(id = R.string.move_folder_title),
                 )
 
                 MoveFolderList(
                     modifier = modifier.padding(top = 8.dp, bottom = 8.dp),
                     folders = folders,
                     selected = { folderId -> selectedFolderId == folderId },
-                    onSelect = { folderId -> selectedFolderId = folderId }
+                    onSelect = setSelectedFolderId
                 )
 
                 Row(
@@ -87,13 +86,13 @@ fun MoveFolderDialog(
                 ) {
                     MoveDialogCloseButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.move_folder_negative),
+                        buttonLabel = stringResource(R.string.move_folder_negative),
                         onClick = onDismissRequest
                     )
                     Spacer(modifier = modifier.size(12.dp))
                     MoveDialogConfirmButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.move_folder_positive),
+                        buttonLabel = stringResource(R.string.move_folder_positive),
                         onClick = {
                             moveFolder(selectedFolderId)
                             onDismissRequest()
@@ -133,7 +132,6 @@ fun MoveFolderItem(
     selected: Boolean,
     onSelect: (String) -> Unit
 ) {
-    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -154,14 +152,14 @@ fun MoveFolderItem(
                         .align(Alignment.Center),
                     painter = painterResource(id = R.drawable.icon_select_full),
                     colorFilter = ColorFilter.tint(Color.Black),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.move_folder_icon_select_full_desc)
                 )
             } else {
                 Image(
                     modifier = modifier.align(Alignment.Center),
                     painter = painterResource(id = R.drawable.icon_select_empty),
                     colorFilter = ColorFilter.tint(Color.Black),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.move_folder_icon_select_empty_desc)
                 )
             }
         }

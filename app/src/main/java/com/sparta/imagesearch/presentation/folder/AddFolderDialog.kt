@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -43,10 +44,8 @@ fun AddFolderDialog(
     onDismissRequest: () -> Unit,
     addFolder: (String, String) -> Unit
 ) {
-    val context = LocalContext.current
-
-    var name by remember { mutableStateOf("") }
-    var colorHex by remember { mutableStateOf(FolderColor.color1.colorHex) }
+    var (name, setName) = remember { mutableStateOf("") }
+    var (colorHex, setColorHex) = remember { mutableStateOf(FolderColor.color1.colorHex) }
 
     val isNameValid by remember{ derivedStateOf { name.isNotBlank() } }
 
@@ -65,29 +64,29 @@ fun AddFolderDialog(
                 Text(
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    text = context.getString(R.string.add_folder_title),
+                    text = stringResource(id = R.string.add_folder_title),
                 )
                 FolderNameInput(
                     modifier = modifier.padding(top = 16.dp),
-                    onValueChange = { name = it }
+                    onValueChange = setName
                 )
                 FolderColorSelect(
                     modifier = modifier.padding(top = 16.dp),
                     colorHexes = FolderColor.entries.map { it.colorHex }.drop(1),
-                    onColorSelect = { colorHex = it }
+                    onColorSelect = setColorHex
                 )
                 Row(
                     modifier = modifier.padding(top = 16.dp)
                 ) {
                     AddDialogCloseButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.add_folder_negative),
+                        buttonLabel = stringResource(id = R.string.add_folder_negative),
                         onClick = onDismissRequest
                     )
                     Spacer(modifier = modifier.size(12.dp))
                     AddDialogConfirmButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.add_folder_positive),
+                        buttonLabel = stringResource(id = R.string.add_folder_positive),
                         isNameValid = isNameValid,
                         onClick = {
                             addFolder(name, colorHex)
@@ -105,7 +104,6 @@ fun FolderNameInput(
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit
 ) {
-    val context = LocalContext.current
     var input by remember { mutableStateOf("") }
 
     Row(
@@ -114,7 +112,7 @@ fun FolderNameInput(
     ) {
         Text(
             modifier = modifier.padding(end = 8.dp),
-            text = context.getString(R.string.add_folder_name)
+            text = stringResource(id = R.string.add_folder_name)
         )
         TextField(
             modifier = modifier.height(48.dp),
@@ -126,7 +124,7 @@ fun FolderNameInput(
             },
             placeholder = {
                 FolderNameInputPlaceHolder(
-                    placeHolderText = context.getString(R.string.add_folder_name_hint)
+                    placeHolderText = stringResource(id = R.string.add_folder_name_hint)
                 )
             }
         )
@@ -150,7 +148,6 @@ fun FolderColorSelect(
     colorHexes: List<String>,
     onColorSelect: (String) -> Unit
 ) {
-    val context = LocalContext.current
     var selectedColorHex by remember { mutableStateOf(colorHexes.first()) }
 
     Row(
@@ -167,7 +164,7 @@ fun FolderColorSelect(
             )
             Text(
                 modifier = modifier,
-                text = context.getString(R.string.add_folder_color)
+                text = stringResource(R.string.add_folder_color)
             )
         }
         FolderColorList(
@@ -189,7 +186,7 @@ fun FolderColorList(
 ) {
     val colors = colorHexes.map { Color(parseColor(it)) }
 
-    var selectedColor by remember { mutableStateOf(colors.first()) }
+    var (selectedColor, setSelectedColor) = remember { mutableStateOf(colors.first()) }
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
@@ -197,12 +194,12 @@ fun FolderColorList(
         colors.forEachIndexed { index, color ->
             FolderColorItem(
                 modifier = Modifier
-                    .clickable { selectedColor = color },
+                    .clickable { setSelectedColor(color) },
                 color = color,
                 colorSelected = (selectedColor == color),
                 onClick = {
                     onColorSelect(colorHexes[index])
-                    selectedColor = color
+                    setSelectedColor(color)
                 }
             )
             Spacer(modifier = Modifier.size(4.dp))

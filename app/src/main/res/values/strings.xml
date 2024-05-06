@@ -13,6 +13,8 @@
     <string name="move_folder_title">폴더 이동하기</string>
     <string name="move_folder_negative">닫기</string>
     <string name="move_folder_positive">이동</string>
+    <string name="move_folder_icon_select_full_desc">이동 선택됨</string>
+    <string name="move_folder_icon_select_empty_desc">이동 선택되지 않음</string>
 
     <string name="add_folder_title">폴더 추가하기</string>
     <string name="add_folder_name">폴더 이름</string>
@@ -25,6 +27,8 @@
     <string name="delete_folder_default_toast">기본 폴더는 삭제할 수 없습니다!</string>
     <string name="delete_folder_negative">닫기</string>
     <string name="delete_folder_positive">삭제</string>
+    <string name="delete_folder_icon_select_check_desc">삭제 선택됨</string>
+    <string name="delete_folder_icon_select_empty_desc">삭제 선택되지 않음</string>
 
     <string name="warning_delete_title">삭제한 폴더는 복구할 수 없습니다.</string>
     <string name="warning_delete_body">그래도 삭제하시겠습니까?</string>

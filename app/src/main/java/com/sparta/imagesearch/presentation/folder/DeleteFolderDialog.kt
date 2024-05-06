@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -51,8 +52,6 @@ fun DeleteFolderDialog(
     onDismissRequest: () -> Unit,
     deleteFolder: (List<String>) -> Unit
 ) {
-    val context = LocalContext.current
-
     val selectedFoldersId = remember { mutableStateListOf<String>() }
 
     val enableDeleteButton = remember { derivedStateOf { !selectedFoldersId.isEmpty() } }
@@ -86,7 +85,7 @@ fun DeleteFolderDialog(
                 Text(
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    text = context.getString(R.string.delete_folder_title),
+                    text = stringResource(R.string.delete_folder_title),
                 )
 
                 DeleteFolderList(
@@ -95,10 +94,6 @@ fun DeleteFolderDialog(
                     selected = { folderId -> selectedFoldersId.contains(folderId) },
                     onSelect = { folderId ->
                         with(selectedFoldersId) {
-                            Log.d(
-                                "DeleteFolderDialog",
-                                "folderId: $folderId, contains: ${contains(folderId)}"
-                            )
                             if (!contains(folderId)) add(folderId)
                             else remove(folderId)
                         }
@@ -113,13 +108,13 @@ fun DeleteFolderDialog(
                 ) {
                     DeleteDialogCloseButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.delete_folder_negative),
+                        buttonLabel = stringResource(R.string.delete_folder_negative),
                         onClick = onDismissRequest
                     )
                     Spacer(modifier = modifier.size(12.dp))
                     DeleteDialogConfirmButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.delete_folder_positive),
+                        buttonLabel = stringResource(R.string.delete_folder_positive),
                         onClick = { showAlertDialog = true },
                         enabled = enableDeleteButton.value
                     )
@@ -187,14 +182,14 @@ fun DeleteFolderItem(
                         .align(Alignment.Center),
                     painter = painterResource(id = R.drawable.icon_select_check),
                     colorFilter = ColorFilter.tint(Color.Black),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.delete_folder_icon_select_check_desc)
                 )
             } else {
                 Image(
                     modifier = modifier.align(Alignment.Center),
                     painter = painterResource(id = R.drawable.icon_select_empty),
                     colorFilter = ColorFilter.tint(Color.Black),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.delete_folder_icon_select_empty_desc)
                 )
             }
         }
@@ -246,7 +241,6 @@ fun DeleteAlertDialog(
     onAlertDismiss: () -> Unit,
     onAlertConfirm: () -> Unit
 ) {
-    val context = LocalContext.current
     Dialog(
         onDismissRequest = onAlertDismiss
     ) {
@@ -267,10 +261,10 @@ fun DeleteAlertDialog(
                     contentDescription = ""
                 )
                 Text(
-                    text = context.getString(R.string.warning_delete_title),
+                    text = stringResource(R.string.warning_delete_title),
                 )
                 Text(
-                    text = context.getString(R.string.warning_delete_body),
+                    text = stringResource(R.string.warning_delete_body),
                 )
                 Row(
                     modifier = modifier
@@ -282,13 +276,13 @@ fun DeleteAlertDialog(
                     Button(
                         onClick = onAlertDismiss
                     ) {
-                        Text(text = context.getString(R.string.warning_negative))
+                        Text(text = stringResource(R.string.warning_negative))
                     }
                     Spacer(modifier = modifier.size(12.dp))
                     Button(
                         onClick = onAlertConfirm
                     ) {
-                        Text(text = context.getString(R.string.warning_positive))
+                        Text(text = stringResource(R.string.warning_positive))
                     }
                 }
             }
