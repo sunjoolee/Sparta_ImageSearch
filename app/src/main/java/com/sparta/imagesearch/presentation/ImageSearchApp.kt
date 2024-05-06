@@ -16,8 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.presentation.folder.FolderScreen
 import com.sparta.imagesearch.presentation.search.SearchScreen
@@ -63,8 +63,6 @@ fun MainNavigationBar(
     selectedNavScreen: NavScreen = navScreens[0],
     onNavScreenSelected: (NavScreen) -> Unit = {}
 ) {
-    val context = LocalContext.current
-
     NavigationBar {
         navScreens.forEach { navScreen ->
             NavigationBarItem(
@@ -74,7 +72,7 @@ fun MainNavigationBar(
                         contentDescription = ""
                     )
                 },
-                label = { Text(text = context.getString(navScreen.textRes)) },
+                label = { Text(text = stringResource(navScreen.textRes)) },
                 selected = (selectedNavScreen == navScreen),
                 onClick = { onNavScreenSelected(navScreen) }
             )

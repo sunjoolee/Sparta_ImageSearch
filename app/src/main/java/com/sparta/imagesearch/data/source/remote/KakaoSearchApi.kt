@@ -7,16 +7,16 @@ interface KakaoSearchApi {
     @GET("image")
     suspend fun getImageDTO(
         @Query("query") query: String,
-        @Query("size") size: Int = 20,
         @Query("page") page: Int = 1,
+        @Query("size") pageSize: Int = 10,
         @Query("sort") sort: String = "recency"
-    ): KakaoSearchDTO<Document.ImageDocument>
+    ): KakaoSearchDTO<KakaoDocument.ImageKakaoDocument>
 
     @GET("vclip")
     suspend fun getVideoDTO(
         @Query("query") query: String,
-        @Query("size") size: Int = 10,
         @Query("page") page: Int = 1,
+        @Query("size") pageSize: Int = 10,
         @Query("sort") sort: String = "recency"
-    ): KakaoSearchDTO<Document.VideoDocument>
+    ): KakaoSearchDTO<KakaoDocument.VideoKakaoDocument>
 }

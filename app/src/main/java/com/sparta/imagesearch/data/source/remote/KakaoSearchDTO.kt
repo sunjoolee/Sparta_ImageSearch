@@ -2,7 +2,7 @@ package com.sparta.imagesearch.data.source.remote
 
 import com.google.gson.annotations.SerializedName
 
-data class KakaoSearchDTO<T:Document>(
+data class KakaoSearchDTO<T:KakaoDocument>(
     val meta: Meta,
     val documents: List<T>?
 )
@@ -16,9 +16,9 @@ data class Meta(
     val isEnd: Boolean
 )
 
-sealed interface Document {
+sealed interface KakaoDocument {
 
-    data class ImageDocument(
+    data class ImageKakaoDocument(
         val collection: String,
         @SerializedName("thumbnail_url")
         val thumbnailUrl: String,
@@ -31,9 +31,9 @@ sealed interface Document {
         @SerializedName("doc_url")
         val docUrl: String,
         val datetime: String
-    ):Document
+    ):KakaoDocument
 
-    data class VideoDocument(
+    data class VideoKakaoDocument(
         val title: String,
         val url: String,
         val datetime: String,
@@ -41,5 +41,5 @@ sealed interface Document {
         val playTime: Int,
         val thumbnail: String,
         val author: String
-    ):Document
+    ):KakaoDocument
 }

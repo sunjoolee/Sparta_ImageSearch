@@ -1,6 +1,7 @@
 package com.sparta.imagesearch.presentation.search
 
 import android.graphics.Color.parseColor
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.RepeatMode
@@ -23,10 +24,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
@@ -47,17 +48,20 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.glide.GlideImageState
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderColor
 import com.sparta.imagesearch.data.source.local.folder.FolderId
-import com.sparta.imagesearch.entity.Item
+import com.sparta.imagesearch.domain.Item
 import kotlinx.coroutines.launch
 
 
@@ -66,12 +70,15 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = viewModel(modelClass = SearchViewModel::class.java)
 ) {
-    var searchResultItems by remember {
-        mutableStateOf<List<Item>>(emptyList())
-    }
-    LaunchedEffect(Unit) {
-        viewModel.resultItems.collect {
-            searchResultItems = it
+    val pagingItems = viewModel.itemPagingFlow.collectAsLazyPagingItems()
+
+    val (keywordState, setKeywordState) = remember { mutableStateOf("") }
+
+    LaunchedEffect(viewModel.keyword) {
+        viewModel.keyword.collect {
+            Log.d("SearchScreen", "LaunchedEffect) keyword: $it")
+            setKeywordState(it)
+            pagingItems.refresh()
         }
     }
 
@@ -80,10 +87,12 @@ fun SearchScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ImageSearchBar(
+            query = keywordState,
+            setQuery = setKeywordState,
             onSearch = viewModel::search
         )
         ResultItemsContent(
-            resultItems = searchResultItems,
+            pagingItems = pagingItems,
             onHeartClick = viewModel::saveItem
         )
     }
@@ -93,25 +102,25 @@ fun SearchScreen(
 @Composable
 fun ImageSearchBar(
     modifier: Modifier = Modifier,
+    query: String,
+    setQuery: (String) -> Unit,
     onSearch: (String) -> Unit
 ) {
-    var query by remember { mutableStateOf("") }
-    var searchBarActive by remember { mutableStateOf(false) }
+    var (searchBarActive, setSearchBarActive) = remember { mutableStateOf(false) }
 
     SearchBar(
         modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         query = query,
-        onQueryChange = { query = it },
+        onQueryChange = setQuery,
         onSearch = {
             onSearch(it)
-            searchBarActive = false
+            setSearchBarActive(false)
         },
         active = searchBarActive,
-        onActiveChange = { searchBarActive = it },
+        onActiveChange = setSearchBarActive,
         leadingIcon = { ImageSearchBarLeadingIcon() },
         placeholder = { ImageSearchBarPlaceHolder() },
-
-        ) {
+    ) {
 
     }
 }
@@ -130,17 +139,16 @@ fun ImageSearchBarLeadingIcon(
 fun ImageSearchBarPlaceHolder(
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     Text(
         modifier = modifier,
-        text = context.getString(R.string.search_hint)
+        text = stringResource(R.string.search_hint)
     )
 }
 
 @Composable
 fun ResultItemsContent(
     modifier: Modifier = Modifier,
-    resultItems: List<Item>,
+    pagingItems: LazyPagingItems<Item>,
     onHeartClick: (item: Item) -> Unit
 ) {
     val gridState = rememberLazyStaggeredGridState()
@@ -155,89 +163,81 @@ fun ResultItemsContent(
         modifier = modifier.fillMaxSize()
     ) {
         Box {
-            LazyVerticalStaggeredGrid(
-                state = gridState,
-                columns = StaggeredGridCells.Fixed(2),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalItemSpacing = 8.dp
-            ) {
-                items(items = resultItems, key = { it.id }) {
-                    ImageSearchItem(
-                        item = it,
-                        onHeartClick = onHeartClick
-                    )
+            if (pagingItems.loadState.refresh is LoadState.Loading) {
+                Log.d("SearchScreen", "ResultItemsContent: refresh & loading")
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            } else {
+                LazyVerticalStaggeredGrid(
+                    state = gridState,
+                    columns = StaggeredGridCells.Fixed(2),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalItemSpacing = 8.dp
+                ) {
+                    items(count = pagingItems.itemCount) { index ->
+                        pagingItems[index]?.let {
+                            ImageSearchItem(
+                                item = it,
+                                onHeartClick = onHeartClick
+                            )
+                        }
+                    }
+                    item {
+                        if (pagingItems.loadState.append is LoadState.Loading) {
+                            Log.d("SearchScreen", "ResultItemsContent: append & loading")
+                            CircularProgressIndicator()
+                        }
+                    }
                 }
+                ScrollToTopButton(
+                    modifier = modifier.align(Alignment.BottomEnd),
+                    showScrollButton = showScrollButton,
+                    onClick = {
+                        scope.launch { gridState.animateScrollToItem(0) }
+                    }
+                )
             }
-            ScrollToTopButton(
-                modifier = modifier.align(Alignment.BottomEnd),
-                showScrollButton = showScrollButton,
-                onClick = {
-                    scope.launch { gridState.animateScrollToItem(0) }
-                }
-            )
         }
     }
 }
 
-
-@Composable
-fun ScrollToTopButton(
-    modifier: Modifier = Modifier,
-    showScrollButton: Boolean,
-    onClick: () -> Unit
-) {
-    AnimatedVisibility(
-        modifier = modifier,
-        visible = showScrollButton
-    ) {
-        Button(
-            modifier = modifier.padding(8.dp),
-            onClick = onClick
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.icon_up),
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(2.dp)
-                    .size(20.dp)
-            )
-        }
-    }
-}
 
 @Composable
 fun ImageSearchItem(
     modifier: Modifier = Modifier,
     item: Item,
     onHeartClick: (item: Item) -> Unit = {},
-    onHeartLongClick: (item:Item) -> Unit = {}
+    onHeartLongClick: (item: Item) -> Unit = {}
 ) {
     Card {
         Column(
             modifier = modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ItemImage(
-                modifier = modifier,
-                imageUrl = item.imageUrl
-            )
             Box(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
             ) {
+                ItemImage(
+                    modifier = modifier,
+                    imageUrl = item.imageUrl
+                )
                 ItemHeart(
-                    modifier = modifier.align(Alignment.CenterEnd),
+                    modifier = modifier
+                        .align(Alignment.TopEnd)
+                        .padding(10.dp),
                     folderId = item.folderId,
                     onHeartClick = { onHeartClick(item) },
-                    onHeartLongClick = {onHeartLongClick(item)})
-                Column(
-                    modifier = modifier.align(Alignment.TopStart)
-                ) {
-                    Text(text = item.time)
-                    Text(text = item.source)
-                }
+                    onHeartLongClick = { onHeartLongClick(item) })
+            }
+            Column(
+                modifier = modifier
+                    .padding(8.dp)
+            ) {
+                Text(text = item.time)
+                Text(text = item.source)
             }
         }
     }
@@ -251,7 +251,7 @@ fun ItemImage(
 ) {
     var state by remember { mutableStateOf<GlideImageState>(GlideImageState.None) }
 
-    if(state is GlideImageState.None || state is GlideImageState.Loading){
+    if (state is GlideImageState.None || state is GlideImageState.Loading) {
         Spacer(
             modifier = modifier
                 .fillMaxWidth()
@@ -273,7 +273,7 @@ fun ItemImage(
 }
 
 @Composable
-fun shimmerBrush(showShimmer: Boolean = true,targetValue:Float = 1000f): Brush {
+fun shimmerBrush(showShimmer: Boolean = true, targetValue: Float = 1000f): Brush {
     return if (showShimmer) {
         val shimmerColors = listOf(
             Color.LightGray.copy(alpha = 0.8f),
@@ -297,7 +297,7 @@ fun shimmerBrush(showShimmer: Boolean = true,targetValue:Float = 1000f): Brush {
         )
     } else {
         Brush.linearGradient(
-            colors = listOf(Color.Transparent,Color.Transparent),
+            colors = listOf(Color.Transparent, Color.Transparent),
             start = Offset.Zero,
             end = Offset.Zero
         )
@@ -334,4 +334,30 @@ fun ItemHeart(
             )
     )
 }
+
+@Composable
+fun ScrollToTopButton(
+    modifier: Modifier = Modifier,
+    showScrollButton: Boolean,
+    onClick: () -> Unit
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = showScrollButton
+    ) {
+        Button(
+            modifier = modifier.padding(8.dp),
+            onClick = onClick
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.icon_up),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(2.dp)
+                    .size(20.dp)
+            )
+        }
+    }
+}
+
 

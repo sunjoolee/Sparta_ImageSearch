@@ -5,26 +5,25 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.sparta.imagesearch.entity.Item
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SavedItemDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertItem(item: Item)
+    fun insertSavedItem(savedItem: SavedItemEntity)
 
     @Delete
-    fun deleteItem(item: Item)
+    fun deleteSavedItem(savedItem: SavedItemEntity)
 
     @Query("SELECT * FROM saved_item_table")
-    fun getAllItems(): Flow<List<Item>>
+    fun getAllSavedItems(): Flow<List<SavedItemEntity>>
 
     @Query("SELECT * FROM saved_item_table WHERE folderId = :folderId")
-    fun getFolderItems(folderId:String): Flow<List<Item>>
+    fun getSavedItemsInFolder(folderId:String): Flow<List<SavedItemEntity>>
 
     @Query("DELETE FROM saved_item_table WHERE folderId = :folderId")
-    fun deleteFolderItems(folderId:String)
+    fun deleteSavedItemsInFolder(folderId:String)
 
-    @Query("UPDATE saved_item_table SET folderId = :destFolderId WHERE id = :itemId")
-    fun moveItemFolder(itemId:String, destFolderId:String)
+    @Query("UPDATE saved_item_table SET folderId = :destFolderId WHERE imageUrl = :imageUrl")
+    fun moveSavedItemFolder(imageUrl:String, destFolderId:String)
 }

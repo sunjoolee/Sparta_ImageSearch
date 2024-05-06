@@ -6,12 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.sparta.imagesearch.data.source.local.folder.Folder
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.data.source.local.folder.FolderPrefManager
+import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
-import com.sparta.imagesearch.entity.Item
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,10 +23,10 @@ class FolderViewModel @Inject constructor(
     private val TAG = "FolderViewModel"
 
     private val _selectedFolderId = MutableStateFlow(FolderId.DEFAULT_FOLDER.id)
-    val selectedFolderId: StateFlow<String> get() = _selectedFolderId
+    val selectedFolderId = _selectedFolderId.asStateFlow()
 
     private val _folderModels = MutableStateFlow<List<FolderModel>>(emptyList())
-    val folderModels: StateFlow<List<FolderModel>> get() = _folderModels
+    private val folderModels = _folderModels.asStateFlow()
 
     private val _resultFolderModels =
         folderModels.combine(selectedFolderId) { folderModels, selectedFolderId ->
@@ -36,7 +36,7 @@ class FolderViewModel @Inject constructor(
     val resultFolderModels: Flow<List<FolderModel>> get() = _resultFolderModels
 
     private val _itemsInFolder = MutableStateFlow<List<Item>>(emptyList())
-    val itemsInFolder: StateFlow<List<Item>> get() = _itemsInFolder
+    val itemsInFolder = _itemsInFolder.asStateFlow()
 
     init{
         loadState()
@@ -67,7 +67,7 @@ class FolderViewModel @Inject constructor(
             deleteFolderIdList.contains(it.id)
         }
 
-        savedItemRepository.deleteFolderSavedItems(deleteFolderIdList)
+        savedItemRepository.deleteSavedItemsInFolders(deleteFolderIdList)
     }
 
     fun addFolder(name: String, colorHex: String) {
@@ -77,15 +77,15 @@ class FolderViewModel @Inject constructor(
 
     fun moveFolder(item: Item, destFolderId: String) {
         if (destFolderId == item.folderId) return
-        savedItemRepository.moveSavedItem(item.id, destFolderId)
+        savedItemRepository.moveSavedItem(item.imageUrl, destFolderId)
 
-        _itemsInFolder.value = _itemsInFolder.value.filterNot { it.id == item.id }
+        _itemsInFolder.value = _itemsInFolder.value.filterNot { it.imageUrl == item.imageUrl }
     }
 
     private fun loadItemsInFolder() {
         Log.d(TAG, "loadItemsInFolder) called")
         viewModelScope.launch {
-            savedItemRepository.loadFolderSavedItems(selectedFolderId.value).collect{
+            savedItemRepository.loadSavedItemsInFolder(selectedFolderId.value).collect{
                 _itemsInFolder.value = it
             }
         }
@@ -93,15 +93,15 @@ class FolderViewModel @Inject constructor(
 
     fun unSaveItem(item: Item) {
         savedItemRepository.deleteSavedItem(item)
-        _itemsInFolder.value = _itemsInFolder.value.filterNot { it.id == item.id }
+        _itemsInFolder.value = _itemsInFolder.value.filterNot { it.imageUrl == item.imageUrl }
     }
 
-    fun loadState() {
+    private fun loadState() {
         loadFolders()
         loadItemsInFolder()
     }
 
-    fun saveState() {
+    private fun saveState() {
         saveFolders()
     }
 
