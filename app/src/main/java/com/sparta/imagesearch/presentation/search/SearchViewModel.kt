@@ -3,29 +3,31 @@ package com.sparta.imagesearch.presentation.search
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sparta.imagesearch.data.ApiResponse
+import androidx.paging.Pager
+import androidx.paging.cachedIn
+import androidx.paging.filter
+import androidx.paging.map
+import com.sparta.imagesearch.data.mappers.toItem
 import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.data.source.local.item.ItemEntity
 import com.sparta.imagesearch.data.source.local.keyword.KeywordSharedPref
-import com.sparta.imagesearch.data.source.remote.Document
-import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
+import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
-import com.sparta.imagesearch.entity.Item
-import com.sparta.imagesearch.entity.ItemType
-import com.sparta.imagesearch.util.formatDate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val itemRepository: ItemRepository,
     private val savedItemRepository: SavedItemRepository,
+    itemPager: Pager<Int, ItemEntity>
 ) : ViewModel() {
     private val TAG = "SearchModel"
 
@@ -33,23 +35,31 @@ class SearchViewModel @Inject constructor(
     val keyword: StateFlow<String> get() = _keyword
 
     private val _searchItems = MutableStateFlow<List<Item>>(emptyList())
-    private val searchItems: StateFlow<List<Item>> get() = _searchItems
+    private val searchItems = _searchItems.asStateFlow()
 
     private val _savedItems = MutableStateFlow<List<Item>>(emptyList())
-    private val savedItems: StateFlow<List<Item>> get() = _savedItems
+    private val savedItems = _savedItems.asStateFlow()
 
     private val _resultItems =
         searchItems.combine(savedItems) { searchItems, savedItems ->
             searchItems.map { item ->
-                savedItems.find { it.id == item.id }?.let {
+                savedItems.find { it.imageUrl == item.imageUrl }?.let {
                     item.copy(folderId = it.folderId)
                 } ?: item.copy(folderId = FolderId.NO_FOLDER.id)
             }
         }
     val resultItems: Flow<List<Item>> get() = _resultItems
 
+    var itemPagingFlow = itemPager
+        .flow
+        .map { pagingData ->
+            pagingData
+                .filter { itemEntity -> itemEntity.searchKeyword == _keyword.value }
+                .map { itemEntity -> itemEntity.toItem() }
+        }
+        .cachedIn(viewModelScope)
 
-    init{
+    init {
         loadState()
     }
 
@@ -65,11 +75,12 @@ class SearchViewModel @Inject constructor(
 
     private fun setKeyword(keyword: String) {
         _keyword.value = keyword
+        saveKeyword()
     }
 
     private fun loadSavedItems() {
         viewModelScope.launch {
-            savedItemRepository.loadSavedItems().collect{
+            savedItemRepository.loadSavedItems().collect {
                 _savedItems.value = it
             }
             Log.d(TAG, "loadSavedItems) size: ${savedItems.value.size}")
@@ -84,69 +95,39 @@ class SearchViewModel @Inject constructor(
 
     fun saveItem(item: Item) {
         _savedItems.value = with(savedItems.value) {
-            if (this.find { it.id == item.id } != null) {
-                this.filterNot { it.id == item.id }
+            if (this.find { it.imageUrl == item.imageUrl } != null) {
+                this.filterNot { it.imageUrl == item.imageUrl }
             } else {
                 this + listOf(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
             }
         }
     }
 
-    fun saveState() {
+    private fun saveState() {
+        Log.d(TAG, "saveState) called")
         saveKeyword()
         saveSavedItems()
     }
 
-    fun loadState() {
+    private fun loadState() {
+        Log.d(TAG, "loadState) called")
         loadKeyword()
         loadSavedItems()
     }
 
     fun search(keyword: String) {
         setKeyword(keyword)
-        CoroutineScope(Dispatchers.Default).launch {
+        viewModelScope.launch {
             fetchSearchResult()
         }
     }
 
     private suspend fun fetchSearchResult() {
-        val query = _keyword.value ?: ""
-
-        val imageResponseFlow = itemRepository.getImages(query)
-        val videoResponseFlow = itemRepository.getVideos(query)
-
-        imageResponseFlow.combine(videoResponseFlow) {i, v ->
-            val itemList = mutableListOf<Item>()
-            if(i is ApiResponse.Success){
-                itemList.addAll(i.data.documents?.map { it.convert() } ?: emptyList())
-            }
-            if(v is ApiResponse.Success){
-                itemList.addAll(v.data.documents?.map { it.convert() } ?: emptyList())
-            }
-            itemList.toList()
-        }.collect{
-            _searchItems.value = it
-        }
-
+        // TODO fetch items where search keyword is keyword?
     }
+
     override fun onCleared() {
         saveState()
         super.onCleared()
     }
-    private fun Document.ImageDocument.convert() =
-        Item(
-            itemType = ItemType.IMAGE_TYPE,
-            imageUrl = imageUrl,
-            source = displaySitename,
-            time = datetime.formatDate()
-        )
-
-    private fun Document.VideoDocument.convert() =
-        Item(
-            itemType = ItemType.VIDEO_TYPE,
-            imageUrl = thumbnail,
-            source = author,
-            time = datetime.formatDate()
-        )
-
 }

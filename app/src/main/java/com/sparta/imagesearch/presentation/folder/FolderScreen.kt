@@ -1,7 +1,6 @@
 package com.sparta.imagesearch.presentation.folder
 
 import android.graphics.Color.parseColor
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
@@ -23,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,8 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -46,7 +46,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderId
-import com.sparta.imagesearch.entity.Item
+import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.search.ImageSearchItem
 
 
@@ -87,7 +87,7 @@ fun FolderScreen(
         }
     }
 
-    Surface(modifier = modifier.fillMaxSize()) {
+    Surface(modifier = modifier.fillMaxSize().padding(16.dp)) {
         Box(modifier = modifier) {
             Column(
                 modifier = modifier.align(Alignment.TopStart),
@@ -144,7 +144,7 @@ fun FolderScreen(
                     folders = folders,
                     curFolderId = selectedFolderId,
                     onDismissRequest = { showMoveDialog = false },
-                    moveFolder = {folderId -> viewModel.moveFolder(targetItem!!, folderId)}
+                    moveFolder = { folderId -> viewModel.moveFolder(targetItem!!, folderId) }
                 )
             }
         }
@@ -159,22 +159,24 @@ fun FolderListContent(
     onAddClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp)
-    ) {
-        FolderList(
-            modifier = modifier.fillMaxWidth(0.9f),
-            folders = folders,
-            onFolderClick = onFolderClick
-        )
-        FolderDropDown(
-            modifier = modifier
-                .fillMaxWidth(),
-            onAddClick = onAddClick,
-            onDeleteClick = onDeleteClick
-        )
+    Card{
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp)
+        ) {
+            FolderList(
+                modifier = modifier.fillMaxWidth(0.9f),
+                folders = folders,
+                onFolderClick = onFolderClick
+            )
+            FolderDropDown(
+                modifier = modifier
+                    .fillMaxWidth(),
+                onAddClick = onAddClick,
+                onDeleteClick = onDeleteClick
+            )
+        }
     }
 }
 
@@ -184,22 +186,19 @@ fun FolderList(
     folders: List<FolderModel>,
     onFolderClick: (folder: FolderModel) -> Unit
 ) {
-    Surface(
-        modifier = modifier
+    LazyRow(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        LazyRow(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(items = folders, key = { it.id }) {
-                Folder(
-                    modifier = Modifier.clickable { onFolderClick(it) },
-                    folder = it
-                )
-            }
+        items(items = folders, key = { it.id }) {
+            Folder(
+                modifier = Modifier.clickable { onFolderClick(it) },
+                folder = it
+            )
         }
     }
+
 }
 
 @Composable
@@ -233,6 +232,7 @@ fun Folder(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(4.dp)
+                    .scale(2.0f)
                     .align(Alignment.CenterHorizontally),
                 painter = painterResource(id = R.drawable.icon_dot),
                 colorFilter = ColorFilter.tint(Color.DarkGray),
@@ -249,8 +249,6 @@ fun FolderDropDown(
     onAddClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
-    val context = LocalContext.current
-
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = modifier) {
@@ -271,7 +269,7 @@ fun FolderDropDown(
                         onAddClick()
                         expanded = false
                     },
-                text = context.getString(R.string.more_add_folder)
+                text = stringResource(R.string.more_add_folder)
             )
             Text(
                 modifier = modifier
@@ -279,7 +277,7 @@ fun FolderDropDown(
                         onDeleteClick()
                         expanded = false
                     },
-                text = context.getString(R.string.more_delete_folder)
+                text = stringResource(R.string.more_delete_folder)
             )
         }
     }
@@ -317,7 +315,7 @@ fun FolderItemsContent(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalItemSpacing = 8.dp
         ) {
-            items(items = folderItems, key = { it.id }) { item ->
+            items(items = folderItems, key = { it.imageUrl }) { item ->
                 ImageSearchItem(
                     item = item,
                     onHeartClick = { onHeartClick(item) },

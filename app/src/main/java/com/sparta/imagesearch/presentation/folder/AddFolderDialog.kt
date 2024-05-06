@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,7 +46,7 @@ fun AddFolderDialog(
     var (name, setName) = remember { mutableStateOf("") }
     var (colorHex, setColorHex) = remember { mutableStateOf(FolderColor.color1.colorHex) }
 
-    val isNameValid by remember{ derivedStateOf { name.isNotBlank() } }
+    val isNameValid by remember { derivedStateOf { name.isNotBlank() } }
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -154,8 +153,10 @@ fun FolderColorSelect(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = modifier.padding(end = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = modifier.padding(end = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Image(
                 modifier = modifier.scale(1.2f),
                 painter = painterResource(id = R.drawable.icon_folder),
@@ -231,7 +232,9 @@ fun FolderColorItem(
         )
         if (colorSelected) {
             Image(
-                modifier = modifier.padding(4.dp),
+                modifier = modifier
+                    .padding(4.dp)
+                    .scale(2.0f),
                 painter = painterResource(id = R.drawable.icon_dot),
                 colorFilter = ColorFilter.tint(Color.DarkGray),
                 contentDescription = ""
