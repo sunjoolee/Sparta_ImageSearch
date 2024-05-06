@@ -7,7 +7,7 @@ import com.sparta.imagesearch.data.source.local.folder.Folder
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.data.source.local.folder.FolderPrefManager
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
-import com.sparta.imagesearch.entity.Item
+import com.sparta.imagesearch.domain.Item
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,9 +77,9 @@ class FolderViewModel @Inject constructor(
 
     fun moveFolder(item: Item, destFolderId: String) {
         if (destFolderId == item.folderId) return
-        savedItemRepository.moveSavedItem(item.id, destFolderId)
+        savedItemRepository.moveSavedItem(item.imageUrl, destFolderId)
 
-        _itemsInFolder.value = _itemsInFolder.value.filterNot { it.id == item.id }
+        _itemsInFolder.value = _itemsInFolder.value.filterNot { it.imageUrl == item.imageUrl }
     }
 
     private fun loadItemsInFolder() {
@@ -93,7 +93,7 @@ class FolderViewModel @Inject constructor(
 
     fun unSaveItem(item: Item) {
         savedItemRepository.deleteSavedItem(item)
-        _itemsInFolder.value = _itemsInFolder.value.filterNot { it.id == item.id }
+        _itemsInFolder.value = _itemsInFolder.value.filterNot { it.imageUrl == item.imageUrl }
     }
 
     fun loadState() {

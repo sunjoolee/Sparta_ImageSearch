@@ -1,7 +1,6 @@
 package com.sparta.imagesearch.presentation.folder
 
 import android.graphics.Color.parseColor
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
@@ -46,7 +45,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderId
-import com.sparta.imagesearch.entity.Item
+import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.search.ImageSearchItem
 
 
@@ -317,7 +316,7 @@ fun FolderItemsContent(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalItemSpacing = 8.dp
         ) {
-            items(items = folderItems, key = { it.id }) { item ->
+            items(items = folderItems, key = { it.imageUrl }) { item ->
                 ImageSearchItem(
                     item = item,
                     onHeartClick = { onHeartClick(item) },

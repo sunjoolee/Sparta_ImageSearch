@@ -4,17 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sparta.imagesearch.data.ApiResponse
+import com.sparta.imagesearch.data.mappers.toItem
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.data.source.local.keyword.KeywordSharedPref
-import com.sparta.imagesearch.data.source.remote.Document
-import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
+import com.sparta.imagesearch.domain.Item
+import com.sparta.imagesearch.domain.repositoryInterface.KakaoSearchRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
-import com.sparta.imagesearch.entity.Item
-import com.sparta.imagesearch.entity.ItemType
-import com.sparta.imagesearch.util.formatDate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val itemRepository: ItemRepository,
+    private val kakaoSearchRepository: KakaoSearchRepository,
     private val savedItemRepository: SavedItemRepository,
 ) : ViewModel() {
     private val TAG = "SearchModel"
@@ -41,7 +37,7 @@ class SearchViewModel @Inject constructor(
     private val _resultItems =
         searchItems.combine(savedItems) { searchItems, savedItems ->
             searchItems.map { item ->
-                savedItems.find { it.id == item.id }?.let {
+                savedItems.find { it.imageUrl == item.imageUrl }?.let {
                     item.copy(folderId = it.folderId)
                 } ?: item.copy(folderId = FolderId.NO_FOLDER.id)
             }
@@ -84,27 +80,26 @@ class SearchViewModel @Inject constructor(
 
     fun saveItem(item: Item) {
         _savedItems.value = with(savedItems.value) {
-            if (this.find { it.id == item.id } != null) {
-                this.filterNot { it.id == item.id }
+            if (this.find { it.imageUrl == item.imageUrl } != null) {
+                this.filterNot { it.imageUrl == item.imageUrl }
             } else {
                 this + listOf(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
             }
         }
     }
 
-    fun saveState() {
+    private fun saveState() {
         saveKeyword()
         saveSavedItems()
     }
 
-    fun loadState() {
+    private fun loadState() {
         loadKeyword()
         loadSavedItems()
     }
 
     fun search(keyword: String) {
-        setKeyword(keyword)
-        CoroutineScope(Dispatchers.Default).launch {
+        viewModelScope.launch {
             fetchSearchResult()
         }
     }
@@ -112,16 +107,16 @@ class SearchViewModel @Inject constructor(
     private suspend fun fetchSearchResult() {
         val query = _keyword.value ?: ""
 
-        val imageResponseFlow = itemRepository.getImages(query)
-        val videoResponseFlow = itemRepository.getVideos(query)
+        val imageResponseFlow = kakaoSearchRepository.getImages(query)
+        val videoResponseFlow = kakaoSearchRepository.getVideos(query)
 
         imageResponseFlow.combine(videoResponseFlow) {i, v ->
             val itemList = mutableListOf<Item>()
             if(i is ApiResponse.Success){
-                itemList.addAll(i.data.documents?.map { it.convert() } ?: emptyList())
+                itemList.addAll(i.data.documents?.map { it.toItem() } ?: emptyList())
             }
             if(v is ApiResponse.Success){
-                itemList.addAll(v.data.documents?.map { it.convert() } ?: emptyList())
+                itemList.addAll(v.data.documents?.map { it.toItem() } ?: emptyList())
             }
             itemList.toList()
         }.collect{
@@ -133,20 +128,4 @@ class SearchViewModel @Inject constructor(
         saveState()
         super.onCleared()
     }
-    private fun Document.ImageDocument.convert() =
-        Item(
-            itemType = ItemType.IMAGE_TYPE,
-            imageUrl = imageUrl,
-            source = displaySitename,
-            time = datetime.formatDate()
-        )
-
-    private fun Document.VideoDocument.convert() =
-        Item(
-            itemType = ItemType.VIDEO_TYPE,
-            imageUrl = thumbnail,
-            source = author,
-            time = datetime.formatDate()
-        )
-
 }

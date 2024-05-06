@@ -4,15 +4,15 @@ import com.sparta.imagesearch.data.ApiResponse
 import com.sparta.imagesearch.data.source.remote.Document
 import com.sparta.imagesearch.data.source.remote.KakaoSearchApi
 import com.sparta.imagesearch.data.source.remote.KakaoSearchDTO
-import com.sparta.imagesearch.domain.repositoryInterface.ItemRepository
+import com.sparta.imagesearch.domain.repositoryInterface.KakaoSearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class ItemRepositoryImpl @Inject constructor(
+class KakaoSearchRepositoryImpl @Inject constructor(
     private val kakaoSearchSource: KakaoSearchApi
-) : ItemRepository {
+) : KakaoSearchRepository {
     override suspend fun getImages(query: String): Flow<ApiResponse<KakaoSearchDTO<Document.ImageDocument>>> =
         handleKakaoSearchDTO {
             kakaoSearchSource.getImageDTO(query)

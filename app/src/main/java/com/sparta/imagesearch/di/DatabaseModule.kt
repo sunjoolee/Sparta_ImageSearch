@@ -18,5 +18,5 @@ object DatabaseModule {
     fun provideSavedItemDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(
             context, SavedItemDatabase::class.java, "saved_item_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
 }

@@ -57,7 +57,7 @@ import com.skydoves.landscapist.glide.GlideImageState
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderColor
 import com.sparta.imagesearch.data.source.local.folder.FolderId
-import com.sparta.imagesearch.entity.Item
+import com.sparta.imagesearch.domain.Item
 import kotlinx.coroutines.launch
 
 
@@ -162,7 +162,7 @@ fun ResultItemsContent(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalItemSpacing = 8.dp
             ) {
-                items(items = resultItems, key = { it.id }) {
+                items(items = resultItems, key = { it.imageUrl }) {
                     ImageSearchItem(
                         item = it,
                         onHeartClick = onHeartClick
@@ -211,7 +211,7 @@ fun ImageSearchItem(
     modifier: Modifier = Modifier,
     item: Item,
     onHeartClick: (item: Item) -> Unit = {},
-    onHeartLongClick: (item:Item) -> Unit = {}
+    onHeartLongClick: (item: Item) -> Unit = {}
 ) {
     Card {
         Column(
