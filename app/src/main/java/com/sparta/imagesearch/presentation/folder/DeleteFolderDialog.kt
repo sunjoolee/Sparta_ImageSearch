@@ -1,7 +1,6 @@
 package com.sparta.imagesearch.presentation.folder
 
 import android.graphics.Color.parseColor
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -9,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,24 +23,23 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.util.AlertDialog
 
 @Composable
 fun DeleteFolderDialog(
@@ -51,18 +48,16 @@ fun DeleteFolderDialog(
     onDismissRequest: () -> Unit,
     deleteFolder: (List<String>) -> Unit
 ) {
-    val context = LocalContext.current
-
     val selectedFoldersId = remember { mutableStateListOf<String>() }
 
     val enableDeleteButton = remember { derivedStateOf { !selectedFoldersId.isEmpty() } }
 
-    var showAlertDialog by remember { mutableStateOf(false) }
+    var (showAlertDialog, setShowAlertDialog) = remember { mutableStateOf(false) }
 
     AnimatedVisibility(visible = showAlertDialog) {
         DeleteAlertDialog(
             onAlertDismiss = {
-                showAlertDialog = false
+                setShowAlertDialog(false)
             },
             onAlertConfirm = {
                 deleteFolder(selectedFoldersId.toList())
@@ -86,7 +81,7 @@ fun DeleteFolderDialog(
                 Text(
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    text = context.getString(R.string.delete_folder_title),
+                    text = stringResource(R.string.delete_folder_title),
                 )
 
                 DeleteFolderList(
@@ -95,10 +90,6 @@ fun DeleteFolderDialog(
                     selected = { folderId -> selectedFoldersId.contains(folderId) },
                     onSelect = { folderId ->
                         with(selectedFoldersId) {
-                            Log.d(
-                                "DeleteFolderDialog",
-                                "folderId: $folderId, contains: ${contains(folderId)}"
-                            )
                             if (!contains(folderId)) add(folderId)
                             else remove(folderId)
                         }
@@ -113,14 +104,14 @@ fun DeleteFolderDialog(
                 ) {
                     DeleteDialogCloseButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.delete_folder_negative),
+                        buttonLabel = stringResource(R.string.delete_folder_negative),
                         onClick = onDismissRequest
                     )
                     Spacer(modifier = modifier.size(12.dp))
                     DeleteDialogConfirmButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.delete_folder_positive),
-                        onClick = { showAlertDialog = true },
+                        buttonLabel = stringResource(R.string.delete_folder_positive),
+                        onClick = { setShowAlertDialog(true) },
                         enabled = enableDeleteButton.value
                     )
                 }
@@ -246,54 +237,16 @@ fun DeleteAlertDialog(
     onAlertDismiss: () -> Unit,
     onAlertConfirm: () -> Unit
 ) {
-    val context = LocalContext.current
-    Dialog(
-        onDismissRequest = onAlertDismiss
-    ) {
-        Card(
-            modifier = modifier.height(IntrinsicSize.Min),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                modifier = modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    modifier = modifier
-                        .scale(1.2f)
-                        .padding(bottom = 16.dp),
-                    painter = painterResource(id = R.drawable.icon_warning),
-                    contentDescription = ""
-                )
-                Text(
-                    text = context.getString(R.string.warning_delete_title),
-                )
-                Text(
-                    text = context.getString(R.string.warning_delete_body),
-                )
-                Row(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        onClick = onAlertDismiss
-                    ) {
-                        Text(text = context.getString(R.string.warning_negative))
-                    }
-                    Spacer(modifier = modifier.size(12.dp))
-                    Button(
-                        onClick = onAlertConfirm
-                    ) {
-                        Text(text = context.getString(R.string.warning_positive))
-                    }
-                }
-            }
-        }
-    }
+    AlertDialog(
+        modifier = modifier,
+        iconId = R.drawable.icon_warning,
+        titleId = R.string.warning_delete_title,
+        bodyId = R.string.warning_delete_body,
+        dismissButtonLabelId = R.string.warning_negative,
+        onAlertDismiss = onAlertDismiss,
+        confirmButtonLabelId = R.string.warning_positive,
+        onAlertConfirm = onAlertConfirm,
+    )
 }
 
 
