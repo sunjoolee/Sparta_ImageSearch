@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,17 +43,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.domain.Item
+import com.sparta.imagesearch.presentation.BottomNavItem
+import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.search.ImageSearchItem
 
 
 @Composable
 fun FolderScreen(
     modifier: Modifier = Modifier,
-    viewModel: FolderViewModel = viewModel(modelClass = FolderViewModel::class.java)
+    viewModel: FolderViewModel = hiltViewModel(),
+    navToSearch: () -> Unit
 ) {
     var folders by remember {
         mutableStateOf<List<FolderModel>>(emptyList())
@@ -86,30 +91,34 @@ fun FolderScreen(
         }
     }
 
-    Surface(modifier = modifier.fillMaxSize()) {
-        Box(modifier = modifier) {
-            Column(
-                modifier = modifier.align(Alignment.TopStart),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                FolderListContent(
-                    modifier = modifier.fillMaxHeight(0.1f),
-                    folders = folders,
-                    onFolderClick = viewModel::selectFolder,
-                    onAddClick = { showAddDialog = true },
-                    onDeleteClick = { showDeleteDialog = true }
-                )
-                FolderItemsContent(
-                    modifier = modifier.fillMaxHeight(),
-                    folderItems = itemsInFolder,
-                    onHeartClick = viewModel::unSaveItem,
-                    onHeartLongClick = {
-                        showMoveDialog = true
-                        targetItem = it
-                    }
-                )
-            }
-
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            FolderListContent(
+                modifier = modifier.fillMaxHeight(0.1f),
+                folders = folders,
+                onFolderClick = viewModel::selectFolder,
+                onAddClick = { showAddDialog = true },
+                onDeleteClick = { showDeleteDialog = true }
+            )
+        },
+        bottomBar = {
+            ImageSearchBottomNavBar(
+                selectedNavItem = BottomNavItem.Folder,
+                onNavItemClick = navToSearch
+            )
+        }
+    ) { innerPadding ->
+        Box(modifier = modifier.padding(innerPadding)) {
+            FolderItemsContent(
+                modifier = modifier.fillMaxHeight(),
+                folderItems = itemsInFolder,
+                onHeartClick = viewModel::unSaveItem,
+                onHeartLongClick = {
+                    showMoveDialog = true
+                    targetItem = it
+                }
+            )
             AnimatedVisibility(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -143,7 +152,7 @@ fun FolderScreen(
                     folders = folders,
                     curFolderId = selectedFolderId,
                     onDismissRequest = { showMoveDialog = false },
-                    moveFolder = {folderId -> viewModel.moveFolder(targetItem!!, folderId)}
+                    moveFolder = { folderId -> viewModel.moveFolder(targetItem!!, folderId) }
                 )
             }
         }

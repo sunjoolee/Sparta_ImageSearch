@@ -44,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
@@ -52,6 +53,8 @@ import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderColor
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.domain.Item
+import com.sparta.imagesearch.presentation.BottomNavItem
+import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.util.ShimmerBrush
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -59,7 +62,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    viewModel: SearchViewModel = viewModel(modelClass = SearchViewModel::class.java)
+    viewModel: SearchViewModel = hiltViewModel(),
+    navToFolder: () -> Unit
 ) {
     val (keywordState, setKeywordState) = remember {
         mutableStateOf("")
@@ -91,6 +95,12 @@ fun SearchScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        bottomBar = {
+            ImageSearchBottomNavBar(
+                selectedNavItem = BottomNavItem.Search,
+                onNavItemClick = navToFolder
+            )
+        },
         floatingActionButton = {
             AnimatedVisibility(
                 modifier = modifier.padding(16.dp),
