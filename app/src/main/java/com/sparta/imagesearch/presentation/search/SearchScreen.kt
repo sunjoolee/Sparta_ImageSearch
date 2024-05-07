@@ -45,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.glide.GlideImageState
@@ -55,6 +54,7 @@ import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
+import com.sparta.imagesearch.presentation.ImageSearchItem
 import com.sparta.imagesearch.util.ShimmerBrush
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -194,105 +194,6 @@ fun ResultItemsContent(
 
 }
 
-@Composable
-fun ImageSearchItem(
-    modifier: Modifier = Modifier,
-    item: Item,
-    onHeartClick: (item: Item) -> Unit = {},
-    onHeartLongClick: (item: Item) -> Unit = {}
-) {
-    val folderColor = remember{
-        if(item.folderId == FolderId.NO_FOLDER.id) FolderColor.color0.colorHex
-        else FolderColor.color1.colorHex
-    }
-
-    Card(
-        modifier = modifier
-    ) {
-        Column(
-            modifier = modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = modifier.fillMaxWidth()
-            ) {
-                ItemImage(
-                    modifier = modifier.align(Alignment.Center),
-                    imageUrl = item.imageUrl
-                )
-                ItemHeart(
-                    modifier = modifier
-                        .align(Alignment.TopEnd)
-                        .padding(10.dp)
-                        .scale(1.2f),
-                    folderColor = folderColor,
-                    onHeartClick = { onHeartClick(item) },
-                    onHeartLongClick = { onHeartLongClick(item) })
-
-            }
-            Column(
-                modifier = modifier.padding(8.dp)
-            ) {
-                Text(text = item.time)
-                Text(text = item.source)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun ItemImage(
-    imageUrl: String,
-    modifier: Modifier = Modifier
-) {
-    var state by remember { mutableStateOf<GlideImageState>(GlideImageState.None) }
-
-    if (state is GlideImageState.None || state is GlideImageState.Loading) {
-        Spacer(
-            modifier = modifier
-                .fillMaxWidth()
-                .size(160.dp)
-                .background(brush = ShimmerBrush())
-        )
-    }
-    GlideImage(
-        modifier = modifier,
-        imageModel = { imageUrl },
-        imageOptions = ImageOptions(
-            contentScale = ContentScale.FillWidth
-        ),
-        onImageStateChanged = {
-            state = it
-        }
-    )
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun ItemHeart(
-    modifier: Modifier = Modifier,
-    folderColor: String = FolderColor.color0.colorHex,
-    onHeartClick: () -> Unit,
-    onHeartLongClick: () -> Unit = {}
-) {
-    val heartColor = animateColorAsState(
-        targetValue = Color(parseColor(folderColor)),
-        label = "heart_color"
-    )
-
-    Image(
-        painter = painterResource(id = R.drawable.icon_heart),
-        colorFilter = ColorFilter.tint(color = heartColor.value),
-        contentDescription = "",
-        modifier = modifier
-            .scale(1.5f)
-            .combinedClickable(
-                onClick = onHeartClick,
-                onLongClick = onHeartLongClick
-            )
-    )
-}
 
 @Composable
 fun ScrollToTopFab(

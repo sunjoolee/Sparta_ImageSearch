@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -44,13 +43,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
-import com.sparta.imagesearch.presentation.search.ImageSearchItem
+import com.sparta.imagesearch.presentation.ImageSearchItem
 
 
 @Composable
@@ -188,7 +186,7 @@ fun FolderListContent(
 
 @Composable
 fun FolderList(
-    modifier: Modifier = Modifier.height(IntrinsicSize.Max),
+    modifier: Modifier = Modifier,
     folders: List<FolderModel>,
     onFolderClick: (folder: FolderModel) -> Unit
 ) {
@@ -241,6 +239,7 @@ fun Folder(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(4.dp)
+                    .scale(1.2f)
                     .align(Alignment.CenterHorizontally),
                 painter = painterResource(id = R.drawable.icon_dot),
                 colorFilter = ColorFilter.tint(Color.DarkGray),
@@ -329,9 +328,7 @@ fun FolderItemsContent(
                 ImageSearchItem(
                     item = item,
                     onHeartClick = { onHeartClick(item) },
-                    onHeartLongClick = {
-                        onHeartLongClick(item)
-                    }
+                    onHeartLongClick = { onHeartLongClick(item) }
                 )
             }
         }
