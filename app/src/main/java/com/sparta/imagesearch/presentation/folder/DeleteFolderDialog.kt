@@ -38,21 +38,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.sparta.imagesearch.R
-import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.domain.Folder
+import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.util.AlertDialog
 
 @Composable
 fun DeleteFolderDialog(
     modifier: Modifier = Modifier,
-    folders: List<FolderModel>,
+    folders: List<Folder>,
     onDismissRequest: () -> Unit,
-    deleteFolder: (List<String>) -> Unit
+    deleteFolder: (List<Int>) -> Unit
 ) {
-    val selectedFoldersId = remember { mutableStateListOf<String>() }
+    val selectedFoldersId = remember { mutableStateListOf<Int>() }
 
     val enableDeleteButton = remember { derivedStateOf { !selectedFoldersId.isEmpty() } }
 
-    var (showAlertDialog, setShowAlertDialog) = remember { mutableStateOf(false) }
+    val (showAlertDialog, setShowAlertDialog) = remember { mutableStateOf(false) }
 
     AnimatedVisibility(visible = showAlertDialog) {
         DeleteAlertDialog(
@@ -123,9 +124,9 @@ fun DeleteFolderDialog(
 @Composable
 fun DeleteFolderList(
     modifier: Modifier = Modifier,
-    folders: List<FolderModel>,
-    selected: (String) -> Boolean,
-    onSelect: (String) -> Unit
+    folders: List<Folder>,
+    selected: (Int) -> Boolean,
+    onSelect: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -143,9 +144,9 @@ fun DeleteFolderList(
 @Composable
 fun DeleteFolderItem(
     modifier: Modifier = Modifier,
-    folder: FolderModel,
+    folder: Folder,
     selected: Boolean,
-    onSelect: (String) -> Unit
+    onSelect: (Int) -> Unit
 ) {
     val context = LocalContext.current
     Row(

@@ -1,13 +1,11 @@
 package com.sparta.imagesearch.presentation.folder
 
 import android.graphics.Color.parseColor
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,26 +29,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.sparta.imagesearch.R
-import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.domain.Folder
 
 @Composable
 fun MoveFolderDialog(
     modifier: Modifier = Modifier,
-    curFolderId: String,
-    folders: List<FolderModel>,
+    curFolderId: Int,
+    folders: List<Folder>,
     onDismissRequest: () -> Unit,
-    moveFolder: (String) -> Unit
+    moveFolder: (Int) -> Unit
 ) {
     val context = LocalContext.current
 
-    var selectedFolderId by remember { mutableStateOf(curFolderId) }
+    var selectedFolderId by remember { mutableIntStateOf(curFolderId) }
 
     val enableMoveButton = remember { derivedStateOf { selectedFolderId != curFolderId } }
 
@@ -109,9 +106,9 @@ fun MoveFolderDialog(
 @Composable
 fun MoveFolderList(
     modifier: Modifier = Modifier,
-    folders: List<FolderModel>,
-    selected: (String) -> Boolean,
-    onSelect: (String) -> Unit
+    folders: List<Folder>,
+    selected: (Int) -> Boolean,
+    onSelect: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -129,11 +126,10 @@ fun MoveFolderList(
 @Composable
 fun MoveFolderItem(
     modifier: Modifier = Modifier,
-    folder: FolderModel,
+    folder: Folder,
     selected: Boolean,
-    onSelect: (String) -> Unit
+    onSelect: (Int) -> Unit
 ) {
-    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()

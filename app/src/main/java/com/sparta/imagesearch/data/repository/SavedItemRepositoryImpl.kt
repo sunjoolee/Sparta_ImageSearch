@@ -21,7 +21,7 @@ class SavedItemRepositoryImpl @Inject constructor(
     private val savedItemSourceDAO = savedItemSource.getSavedItemDAO()
     override fun saveSavedItems(items: List<Item>) {
         scope.launch {
-            items.map{it.toSavedItem()}.forEach { savedItemSourceDAO.insertItem(it) }
+            items.map{it.toSavedItem()}.forEach { savedItemSourceDAO.upsertItem(it) }
         }
     }
 
@@ -35,16 +35,16 @@ class SavedItemRepositoryImpl @Inject constructor(
         savedItemSourceDAO.getAllItems().transform { it.map { it.toItem() } }
 
 
-    override suspend fun loadFolderSavedItems(folderId: String): Flow<List<Item>> =
+    override suspend fun loadFolderSavedItems(folderId: Int): Flow<List<Item>> =
         savedItemSourceDAO.getFolderItems(folderId).transform { it.map { it.toItem() } }
 
-    override fun deleteFolderSavedItems(folderIds: List<String>) {
+    override fun deleteFolderSavedItems(folderIds: List<Int>) {
         scope.launch {
             folderIds.forEach { savedItemSourceDAO.deleteFolderItems(it) }
         }
     }
 
-    override fun moveSavedItem(imageUrl: String, destFolderId: String) {
+    override fun moveSavedItem(imageUrl: String, destFolderId: Int) {
         scope.launch {
             savedItemSourceDAO.moveItemFolder(imageUrl, destFolderId)
         }

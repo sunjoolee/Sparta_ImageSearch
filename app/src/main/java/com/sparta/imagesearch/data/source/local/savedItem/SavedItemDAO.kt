@@ -5,13 +5,13 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.sparta.imagesearch.domain.Item
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SavedItemDAO {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertItem(savedItem: SavedItem)
+    @Upsert
+    fun upsertItem(savedItem: SavedItem)
 
     @Delete
     fun deleteItem(savedI: SavedItem)
@@ -20,11 +20,11 @@ interface SavedItemDAO {
     fun getAllItems(): Flow<List<SavedItem>>
 
     @Query("SELECT * FROM saved_item_table WHERE folderId = :folderId")
-    fun getFolderItems(folderId:String): Flow<List<SavedItem>>
+    fun getFolderItems(folderId:Int): Flow<List<SavedItem>>
 
     @Query("DELETE FROM saved_item_table WHERE folderId = :folderId")
-    fun deleteFolderItems(folderId:String)
+    fun deleteFolderItems(folderId:Int)
 
     @Query("UPDATE saved_item_table SET folderId = :destFolderId WHERE imageUrl = :imageUrl")
-    fun moveItemFolder(imageUrl:String, destFolderId:String)
+    fun moveItemFolder(imageUrl:String, destFolderId:Int)
 }

@@ -3,79 +3,74 @@ package com.sparta.imagesearch.presentation.folder
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sparta.imagesearch.data.source.local.folder.Folder
-import com.sparta.imagesearch.data.source.local.folder.FolderId
-import com.sparta.imagesearch.data.source.local.folder.FolderPrefManager
-import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
+import com.sparta.imagesearch.domain.DefaultFolder
+import com.sparta.imagesearch.domain.Folder
+import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
+import com.sparta.imagesearch.domain.repositoryInterface.FolderRepository
+import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FolderViewModel @Inject constructor(
-    private val savedItemRepository: SavedItemRepository
+    private val savedItemRepository: SavedItemRepository,
+    private val folderRepository: FolderRepository
 ) : ViewModel() {
     private val TAG = "FolderViewModel"
 
-    private val _selectedFolderId = MutableStateFlow(FolderId.DEFAULT_FOLDER.id)
-    val selectedFolderId: StateFlow<String> get() = _selectedFolderId
+    private val _selectedFolderId = MutableStateFlow(DefaultFolder.id)
+    val selectedFolderId = _selectedFolderId.asStateFlow()
 
-    private val _folderModels = MutableStateFlow<List<FolderModel>>(emptyList())
-    val folderModels: StateFlow<List<FolderModel>> get() = _folderModels
-
-    private val _resultFolderModels =
-        folderModels.combine(selectedFolderId) { folderModels, selectedFolderId ->
-            loadItemsInFolder()
-            folderModels.map { it.copy(isSelected = (it.id == selectedFolderId)) }
-        }
-    val resultFolderModels: Flow<List<FolderModel>> get() = _resultFolderModels
+    private val _folders = MutableStateFlow<List<Folder>>(emptyList())
+    val folders = _folders.asStateFlow()
 
     private val _itemsInFolder = MutableStateFlow<List<Item>>(emptyList())
-    val itemsInFolder: StateFlow<List<Item>> get() = _itemsInFolder
+    val itemsInFolder = _itemsInFolder.asStateFlow()
 
-    init{
+    init {
         loadState()
     }
 
     private fun loadFolders() {
-        _folderModels.value = FolderPrefManager.loadFolders().map { it.convert() }
-        if (folderModels.value.isEmpty())
-            _folderModels.value =
-                listOf(Folder.getDefaultFolder().convert().copy(isSelected = true))
-        Log.d(TAG, "loadFolders) folderModels.size: ${folderModels.value.size}")
+        Log.d(TAG, "loadFolders) called")
+        viewModelScope.launch {
+            folderRepository.getAllFolders().collect {
+                _folders.value = it
+                Log.d(TAG, "loadFolders) folders.size: ${folders.value.size}")
+            }
+        }
     }
 
     private fun saveFolders() {
-        Log.d(TAG, "saveFolders) folderModels.size: ${folderModels.value.size}")
-        FolderPrefManager.saveFolders(folderModels.value.map { it.convert() })
+        Log.d(TAG, "saveFolders) folders.size: ${folders.value.size}")
+        folderRepository.upsertFolders(folders.value)
     }
 
-    fun selectFolder(folderModel: FolderModel) {
-        _selectedFolderId.value = folderModel.id
+    fun selectFolder(folder: Folder) {
+        _selectedFolderId.value = folder.id
     }
 
-    fun deleteFolders(deleteFolderIdList: List<String>) {
+    fun deleteFolders(deleteFolderIdList: List<Int>) {
         if (deleteFolderIdList.contains(selectedFolderId.value))
             _selectedFolderId.value = FolderId.DEFAULT_FOLDER.id
 
-        _folderModels.value = folderModels.value.filterNot {
+        _folders.value = folders.value.filterNot {
             deleteFolderIdList.contains(it.id)
         }
-
         savedItemRepository.deleteFolderSavedItems(deleteFolderIdList)
     }
 
     fun addFolder(name: String, colorHex: String) {
         val newFolder = Folder(name = name, colorHex = colorHex)
-        _folderModels.value += listOf(newFolder.convert())
+        _folders.value += listOf(newFolder)
     }
 
-    fun moveFolder(item: Item, destFolderId: String) {
+    fun moveFolder(item: Item, destFolderId: Int) {
         if (destFolderId == item.folderId) return
         savedItemRepository.moveSavedItem(item.imageUrl, destFolderId)
 
@@ -85,7 +80,7 @@ class FolderViewModel @Inject constructor(
     private fun loadItemsInFolder() {
         Log.d(TAG, "loadItemsInFolder) called")
         viewModelScope.launch {
-            savedItemRepository.loadFolderSavedItems(selectedFolderId.value).collect{
+            savedItemRepository.loadFolderSavedItems(selectedFolderId.value).collect {
                 _itemsInFolder.value = it
             }
         }
@@ -96,12 +91,12 @@ class FolderViewModel @Inject constructor(
         _itemsInFolder.value = _itemsInFolder.value.filterNot { it.imageUrl == item.imageUrl }
     }
 
-    fun loadState() {
+    private fun loadState() {
         loadFolders()
         loadItemsInFolder()
     }
 
-    fun saveState() {
+    private fun saveState() {
         saveFolders()
     }
 
@@ -109,10 +104,4 @@ class FolderViewModel @Inject constructor(
         saveState()
         super.onCleared()
     }
-
-    private fun Folder.convert() =
-        FolderModel(id, name, colorHex, id == selectedFolderId.value)
-
-    private fun FolderModel.convert() =
-        Folder(id, name, colorHex)
 }

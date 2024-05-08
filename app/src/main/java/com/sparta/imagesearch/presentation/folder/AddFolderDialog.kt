@@ -21,21 +21,19 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.sparta.imagesearch.R
-import com.sparta.imagesearch.data.source.local.folder.FolderColor
+import com.sparta.imagesearch.domain.FolderColor
 import com.sparta.imagesearch.util.DialogButtons
 
 @Composable
@@ -45,7 +43,7 @@ fun AddFolderDialog(
     addFolder: (String, String) -> Unit
 ) {
     val (folderName, setFolderName) = remember { mutableStateOf("") }
-    val (folderColorHex, setFolderColorHex) = remember { mutableStateOf(FolderColor.color1.colorHex) }
+    val (folderColorHex, setFolderColorHex) = remember { mutableStateOf(FolderColor.COLOR1.colorHex) }
 
     val nameValid by remember { derivedStateOf { folderName.isNotBlank() } }
 

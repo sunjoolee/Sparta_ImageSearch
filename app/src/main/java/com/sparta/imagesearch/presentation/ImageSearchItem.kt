@@ -30,8 +30,8 @@ import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.glide.GlideImageState
 import com.sparta.imagesearch.R
-import com.sparta.imagesearch.data.source.local.folder.FolderColor
-import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.domain.FolderColor
+import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.util.ShimmerBrush
 
@@ -43,8 +43,8 @@ fun ImageSearchItem(
     onHeartLongClick: (item: Item) -> Unit = {}
 ) {
     val folderColor = remember {
-        if (item.folderId == FolderId.NO_FOLDER.id) FolderColor.color0.colorHex
-        else FolderColor.color1.colorHex
+        if (item.folderId == FolderId.NO_FOLDER.id) FolderColor.NO_COLOR.colorHex
+        else FolderColor.COLOR1.colorHex
     }
 
     Card(
@@ -113,7 +113,7 @@ fun ItemImage(
 @Composable
 fun ItemHeart(
     modifier: Modifier = Modifier,
-    folderColor: String = FolderColor.color0.colorHex,
+    folderColor: String = FolderColor.NO_COLOR.colorHex,
     onHeartClick: () -> Unit,
     onHeartLongClick: () -> Unit = {}
 ) {

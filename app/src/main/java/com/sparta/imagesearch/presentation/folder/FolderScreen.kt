@@ -44,11 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sparta.imagesearch.R
-import com.sparta.imagesearch.data.source.local.folder.FolderId
+import com.sparta.imagesearch.domain.Folder
+import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
+import okhttp3.internal.isSensitiveHeader
 
 
 @Composable
@@ -58,7 +60,7 @@ fun FolderScreen(
     navToSearch: () -> Unit
 ) {
     var folders by remember {
-        mutableStateOf<List<FolderModel>>(emptyList())
+        mutableStateOf<List<Folder>>(emptyList())
     }
     var selectedFolderId by remember {
         mutableStateOf(FolderId.DEFAULT_FOLDER.id)
@@ -74,7 +76,7 @@ fun FolderScreen(
     var showMoveDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.resultFolderModels.collect {
+        viewModel.folders.collect {
             folders = it
         }
     }
@@ -95,6 +97,7 @@ fun FolderScreen(
             FolderListContent(
                 modifier = modifier.fillMaxHeight(0.1f),
                 folders = folders,
+                selectdFolderId = selectedFolderId,
                 onFolderClick = viewModel::selectFolder,
                 onAddClick = { showAddDialog = true },
                 onDeleteClick = { showDeleteDialog = true }
@@ -160,8 +163,9 @@ fun FolderScreen(
 @Composable
 fun FolderListContent(
     modifier: Modifier = Modifier,
-    folders: List<FolderModel>,
-    onFolderClick: (folder: FolderModel) -> Unit,
+    folders: List<Folder>,
+    selectdFolderId: Int,
+    onFolderClick: (folder: Folder) -> Unit,
     onAddClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
@@ -173,6 +177,7 @@ fun FolderListContent(
         FolderList(
             modifier = modifier.fillMaxWidth(0.9f),
             folders = folders,
+            isSelected = {folderId -> selectdFolderId == folderId},
             onFolderClick = onFolderClick
         )
         FolderDropDown(
@@ -187,8 +192,9 @@ fun FolderListContent(
 @Composable
 fun FolderList(
     modifier: Modifier = Modifier,
-    folders: List<FolderModel>,
-    onFolderClick: (folder: FolderModel) -> Unit
+    folders: List<Folder>,
+    isSelected:(Int) -> Boolean,
+    onFolderClick: (folder: Folder) -> Unit
 ) {
     Surface(
         modifier = modifier
@@ -201,7 +207,8 @@ fun FolderList(
             items(items = folders, key = { it.id }) {
                 Folder(
                     modifier = Modifier.clickable { onFolderClick(it) },
-                    folder = it
+                    folder = it,
+                    isSelected = isSelected(it.id)
                 )
             }
         }
@@ -211,7 +218,8 @@ fun FolderList(
 @Composable
 fun Folder(
     modifier: Modifier = Modifier,
-    folder: FolderModel
+    folder: Folder,
+    isSelected:Boolean
 ) {
     Column(
         modifier = modifier.height(48.dp),
@@ -231,7 +239,7 @@ fun Folder(
             text = folder.name
         )
         AnimatedVisibility(
-            visible = folder.isSelected,
+            visible = isSelected,
             enter = scaleIn(),
             exit = scaleOut()
         ) {

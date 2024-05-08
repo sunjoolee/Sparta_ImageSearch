@@ -5,15 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sparta.imagesearch.data.ApiResponse
 import com.sparta.imagesearch.data.mappers.toItem
-import com.sparta.imagesearch.data.source.local.folder.FolderId
 import com.sparta.imagesearch.data.source.local.keyword.KeywordSharedPref
+import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.KakaoSearchRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,13 +26,13 @@ class SearchViewModel @Inject constructor(
     private val TAG = "SearchModel"
 
     private val _keyword = MutableStateFlow("")
-    val keyword: StateFlow<String> get() = _keyword
+    val keyword = _keyword.asStateFlow()
 
     private val _searchItems = MutableStateFlow<List<Item>>(emptyList())
-    private val searchItems: StateFlow<List<Item>> get() = _searchItems
+    private val searchItems = _searchItems.asStateFlow()
 
     private val _savedItems = MutableStateFlow<List<Item>>(emptyList())
-    private val savedItems: StateFlow<List<Item>> get() = _savedItems
+    private val savedItems = _savedItems.asStateFlow()
 
     private val _resultItems =
         searchItems.combine(savedItems) { searchItems, savedItems ->
@@ -43,7 +43,6 @@ class SearchViewModel @Inject constructor(
             }
         }
     val resultItems: Flow<List<Item>> get() = _resultItems
-
 
     init{
         loadState()
