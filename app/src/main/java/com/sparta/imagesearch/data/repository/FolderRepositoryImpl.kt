@@ -17,7 +17,7 @@ class FolderRepositoryImpl @Inject constructor(
 ) : FolderRepository {
     private val folderDAO = folderSource.getFolderDAO()
 
-    override fun upsertFolders(folders: List<Folder>) =
+    override suspend fun upsertFolders(folders: List<Folder>) =
         folderDAO.upsertFolders(folders.map { it.toFolderEntity() })
 
     override fun getAllFolders(): Flow<List<Folder>> =

@@ -47,8 +47,10 @@ class FolderViewModel @Inject constructor(
     }
 
     private fun saveFolders() {
-        Log.d(TAG, "saveFolders) folders.size: ${folders.value.size}")
-        folderRepository.upsertFolders(folders.value)
+        viewModelScope.launch {
+            Log.d(TAG, "saveFolders) folders.size: ${folders.value.size}")
+            folderRepository.upsertFolders(folders.value)
+        }
     }
 
     fun selectFolder(folder: Folder) {

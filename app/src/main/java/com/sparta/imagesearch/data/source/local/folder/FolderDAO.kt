@@ -12,7 +12,7 @@ interface FolderDAO {
     fun upsertFolder(folder: FolderEntity)
 
     @Upsert
-    fun upsertFolders(folders: List<FolderEntity>)
+    suspend fun upsertFolders(folders: List<FolderEntity>)
 
     @Query("SELECT * FROM folder_table")
     fun getAllFolders(): Flow<List<FolderEntity>>
