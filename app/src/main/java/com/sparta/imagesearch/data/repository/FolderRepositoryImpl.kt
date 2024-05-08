@@ -16,6 +16,9 @@ class FolderRepositoryImpl @Inject constructor(
     private val folderSource: FolderDatabase
 ) : FolderRepository {
     private val folderDAO = folderSource.getFolderDAO()
+    override suspend fun upsertFolder(folder: Folder) {
+        folderDAO.upsertFolder(folder.toFolderEntity())
+    }
 
     override suspend fun upsertFolders(folders: List<Folder>) =
         folderDAO.upsertFolders(folders.map { it.toFolderEntity() })
@@ -29,4 +32,10 @@ class FolderRepositoryImpl @Inject constructor(
                 }
             }
         )
+
+    override fun getFolderById(folderId: Int): Flow<Folder> =
+        folderDAO.getFolderById(folderId).transform { it.toFolder() }
+
+    override suspend fun deleteFoldersById(folderIds: List<Int>) =
+        folderIds.forEach { folderDAO.deleteFolderById(it) }
 }

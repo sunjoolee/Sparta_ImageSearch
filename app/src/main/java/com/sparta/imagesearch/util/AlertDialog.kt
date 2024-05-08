@@ -24,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.sparta.imagesearch.R
 
 @Composable
 fun AlertDialog(
@@ -49,7 +48,7 @@ fun AlertDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                iconId?.let {iconId ->
+                iconId?.let { iconId ->
                     Image(
                         modifier = modifier
                             .scale(1.2f)
@@ -72,15 +71,15 @@ fun AlertDialog(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        onClick = onAlertConfirm
-                    ) {
-                        Text(text = stringResource(confirmButtonLabelId))
-                    }
-                    Spacer(modifier = modifier.size(12.dp))
-                    Button(
                         onClick = onAlertDismiss
                     ) {
                         Text(text = stringResource(dismissButtonLabelId))
+                    }
+                    Spacer(modifier = modifier.size(12.dp))
+                    Button(
+                        onClick = onAlertConfirm
+                    ) {
+                        Text(text = stringResource(confirmButtonLabelId))
                     }
                 }
             }

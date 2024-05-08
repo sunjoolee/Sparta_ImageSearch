@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface SavedItemRepository {
     fun saveSavedItems(items: List<Item>)
     fun deleteSavedItem(item: Item)
-    suspend fun loadSavedItems(): Flow<List<Item>>
-    suspend fun loadFolderSavedItems(folderId: Int): Flow<List<Item>>
-    fun deleteFolderSavedItems(folderIds: List<Int>)
+    suspend fun getAllSavedItems(): Flow<List<Item>>
+    suspend fun getSavedItemsByFolderId(folderId: Int): Flow<List<Item>>
+    fun deleteSavedItemsByFolderId(folderIds: List<Int>)
     fun moveSavedItem(imageUrl: String, destFolderId: Int)
 }

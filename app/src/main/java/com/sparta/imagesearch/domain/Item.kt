@@ -4,5 +4,5 @@ data class Item(
     val imageUrl: String,
     val source: String,
     val time: String,
-    val folderId: Int = 0
+    val folderId: Int = FolderId.NO_FOLDER.id
 )

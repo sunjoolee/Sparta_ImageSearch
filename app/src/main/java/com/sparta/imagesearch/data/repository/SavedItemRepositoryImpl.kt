@@ -31,16 +31,16 @@ class SavedItemRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadSavedItems(): Flow<List<Item>> =
+    override suspend fun getAllSavedItems(): Flow<List<Item>> =
         savedItemSourceDAO.getAllItems().transform { it.map { it.toItem() } }
 
 
-    override suspend fun loadFolderSavedItems(folderId: Int): Flow<List<Item>> =
-        savedItemSourceDAO.getFolderItems(folderId).transform { it.map { it.toItem() } }
+    override suspend fun getSavedItemsByFolderId(folderId: Int): Flow<List<Item>> =
+        savedItemSourceDAO.getSavedItemsByFolderId(folderId).transform { it.map { it.toItem() } }
 
-    override fun deleteFolderSavedItems(folderIds: List<Int>) {
+    override fun deleteSavedItemsByFolderId(folderIds: List<Int>) {
         scope.launch {
-            folderIds.forEach { savedItemSourceDAO.deleteFolderItems(it) }
+            folderIds.forEach { savedItemSourceDAO.deleteSavedItemsByFolderId(it) }
         }
     }
 

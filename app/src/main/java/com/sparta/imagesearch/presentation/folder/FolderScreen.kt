@@ -21,7 +21,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,7 +52,6 @@ import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
-import okhttp3.internal.isSensitiveHeader
 
 
 @Composable
@@ -91,13 +92,17 @@ fun FolderScreen(
         }
     }
 
+    LaunchedEffect(selectedFolderId) {
+        viewModel.loadItemsInFolder()
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             FolderListContent(
                 modifier = modifier.fillMaxHeight(0.1f),
                 folders = folders,
-                selectdFolderId = selectedFolderId,
+                selectedFolderId = selectedFolderId,
                 onFolderClick = viewModel::selectFolder,
                 onAddClick = { showAddDialog = true },
                 onDeleteClick = { showDeleteDialog = true }
@@ -164,28 +169,34 @@ fun FolderScreen(
 fun FolderListContent(
     modifier: Modifier = Modifier,
     folders: List<Folder>,
-    selectdFolderId: Int,
+    selectedFolderId: Int,
     onFolderClick: (folder: Folder) -> Unit,
     onAddClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp)
+    Surface(
+        modifier = Modifier.padding(8.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer
     ) {
-        FolderList(
-            modifier = modifier.fillMaxWidth(0.9f),
-            folders = folders,
-            isSelected = {folderId -> selectdFolderId == folderId},
-            onFolderClick = onFolderClick
-        )
-        FolderDropDown(
-            modifier = modifier
-                .fillMaxWidth(),
-            onAddClick = onAddClick,
-            onDeleteClick = onDeleteClick
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+        ) {
+            FolderList(
+                modifier = modifier.fillMaxWidth(0.9f),
+                folders = folders,
+                isSelected = {folderId -> selectedFolderId == folderId},
+                onFolderClick = onFolderClick
+            )
+            FolderDropDown(
+                modifier = modifier
+                    .fillMaxWidth(),
+                onAddClick = onAddClick,
+                onDeleteClick = onDeleteClick
+            )
+        }
     }
 }
 
@@ -193,24 +204,20 @@ fun FolderListContent(
 fun FolderList(
     modifier: Modifier = Modifier,
     folders: List<Folder>,
-    isSelected:(Int) -> Boolean,
+    isSelected: (Int) -> Boolean,
     onFolderClick: (folder: Folder) -> Unit
 ) {
-    Surface(
-        modifier = modifier
+    LazyRow(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        LazyRow(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(items = folders, key = { it.id }) {
-                Folder(
-                    modifier = Modifier.clickable { onFolderClick(it) },
-                    folder = it,
-                    isSelected = isSelected(it.id)
-                )
-            }
+        items(items = folders, key = { it.id }) {
+            Folder(
+                modifier = Modifier.clickable { onFolderClick(it) },
+                folder = it,
+                isSelected = isSelected(it.id)
+            )
         }
     }
 }
@@ -219,14 +226,14 @@ fun FolderList(
 fun Folder(
     modifier: Modifier = Modifier,
     folder: Folder,
-    isSelected:Boolean
+    isSelected: Boolean
 ) {
     Column(
         modifier = modifier.height(48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            modifier = modifier.scale(1.0f),
+            modifier = modifier.scale(1.3f).padding(bottom = 4.dp),
             painter = painterResource(id = R.drawable.icon_folder),
             colorFilter = ColorFilter.tint(Color(parseColor(folder.colorHex))),
             contentDescription = ""
@@ -247,7 +254,7 @@ fun Folder(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(4.dp)
-                    .scale(1.2f)
+                    .scale(1.5f)
                     .align(Alignment.CenterHorizontally),
                 painter = painterResource(id = R.drawable.icon_dot),
                 colorFilter = ColorFilter.tint(Color.DarkGray),

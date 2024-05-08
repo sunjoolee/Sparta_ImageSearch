@@ -16,4 +16,10 @@ interface FolderDAO {
 
     @Query("SELECT * FROM folder_table")
     fun getAllFolders(): Flow<List<FolderEntity>>
+
+    @Query("SELECT * FROM folder_table WHERE id = :folderId")
+    fun getFolderById(folderId: Int): Flow<FolderEntity>
+
+    @Query("DELETE FROM folder_table WHERE id = :folderId")
+    suspend fun deleteFolderById(folderId: Int)
 }

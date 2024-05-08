@@ -43,7 +43,6 @@ fun AddFolderDialog(
     onDismissRequest: () -> Unit,
     addFolder: (String, String) -> Unit
 ) {
-//    val (folderName, setFolderName) = remember { mutableStateOf("") }
     var folderName by remember { mutableStateOf("") }
     val setFolderName = {it:String -> folderName = it}
 

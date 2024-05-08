@@ -64,7 +64,7 @@ class SearchViewModel @Inject constructor(
 
     private fun loadSavedItems() {
         viewModelScope.launch {
-            savedItemRepository.loadSavedItems().collect{
+            savedItemRepository.getAllSavedItems().collect{
                 _savedItems.value = it
             }
             Log.d(TAG, "loadSavedItems) size: ${savedItems.value.size}")
