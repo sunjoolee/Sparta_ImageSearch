@@ -21,6 +21,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -42,7 +43,10 @@ fun AddFolderDialog(
     onDismissRequest: () -> Unit,
     addFolder: (String, String) -> Unit
 ) {
-    val (folderName, setFolderName) = remember { mutableStateOf("") }
+//    val (folderName, setFolderName) = remember { mutableStateOf("") }
+    var folderName by remember { mutableStateOf("") }
+    val setFolderName = {it:String -> folderName = it}
+
     val (folderColorHex, setFolderColorHex) = remember { mutableStateOf(FolderColor.COLOR1.colorHex) }
 
     val nameValid by remember { derivedStateOf { folderName.isNotBlank() } }
