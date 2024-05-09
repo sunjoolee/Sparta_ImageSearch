@@ -22,12 +22,14 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -48,31 +50,12 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
     navToFolder: () -> Unit
 ) {
-    val (keywordState, setKeywordState) = remember {
-        mutableStateOf("")
-    }
-    var searchResultItems by remember {
-        mutableStateOf<List<Item>>(emptyList())
-    }
+    val searchScreenState by viewModel.state.collectAsState(initial = SearchScreenState())
 
     val gridState = rememberLazyStaggeredGridState()
     val showScrollToTopFab by remember {
         derivedStateOf {
             gridState.firstVisibleItemIndex > 0
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        launch {
-            viewModel.keyword.collect {
-                setKeywordState(it)
-                viewModel.search(keyword = it)
-            }
-        }
-        launch {
-            viewModel.resultItems.collect {
-                searchResultItems = it
-            }
         }
     }
 
@@ -97,14 +80,14 @@ fun SearchScreen(
             modifier = modifier.padding(innerPadding),
         ) {
             ImageSearchBar(
-                onSearch = viewModel::search,
-                query = keywordState,
-                onQueryChange = setKeywordState,
+                onSearch = viewModel::setKeyword,
+                query = searchScreenState.keyword,
+                onQueryChange = viewModel::setKeyword
             )
             ResultItemsContent(
                 modifier = modifier.padding(top = 8.dp),
                 gridState = gridState,
-                resultItems = searchResultItems,
+                resultItems = searchScreenState.resultItems,
                 onHeartClick = viewModel::saveItem
             )
         }

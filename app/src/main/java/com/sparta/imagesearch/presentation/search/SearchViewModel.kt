@@ -11,12 +11,16 @@ import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.KakaoSearchRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class SearchScreenState(
+    val keyword: String = "",
+    val resultItems: List<Item> = emptyList(),
+)
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -26,105 +30,97 @@ class SearchViewModel @Inject constructor(
     private val TAG = "SearchModel"
 
     private val _keyword = MutableStateFlow("")
-    val keyword = _keyword.asStateFlow()
-
     private val _searchItems = MutableStateFlow<List<Item>>(emptyList())
-    private val searchItems = _searchItems.asStateFlow()
-
     private val _savedItems = MutableStateFlow<List<Item>>(emptyList())
-    private val savedItems = _savedItems.asStateFlow()
+    private val _resultItems = MutableStateFlow<List<Item>>(emptyList())
 
-    private val _resultItems =
-        searchItems.combine(savedItems) { searchItems, savedItems ->
-            searchItems.map { item ->
-                savedItems.find { it.imageUrl == item.imageUrl }?.let {
-                    item.copy(folderId = it.folderId)
-                } ?: item.copy(folderId = FolderId.NO_FOLDER.id)
-            }
-        }
-    val resultItems: Flow<List<Item>> get() = _resultItems
+    private val _state = MutableStateFlow<SearchScreenState>(SearchScreenState())
+    val state = _state.asStateFlow()
 
-    init{
-        loadState()
-    }
+    init {
+        initKeyword()
 
-    private fun loadKeyword() {
-        _keyword.value = KeywordSharedPref.loadKeyword()
-        Log.d(TAG, "loadKeyword) keyword: ${_keyword.value}")
-    }
-
-    private fun saveKeyword() {
-        KeywordSharedPref.saveKeyword(keyword.value)
-        Log.d(TAG, "saveKeyword) keyword: ${_keyword.value}")
-    }
-
-    private fun setKeyword(keyword: String) {
-        _keyword.value = keyword
-    }
-
-    private fun loadSavedItems() {
         viewModelScope.launch {
-            savedItemRepository.getAllSavedItems().collect{
-                _savedItems.value = it
+            _keyword.collect {
+                Log.d(TAG, "_keyword.collect) called")
+                loadSearchItems()
             }
-            Log.d(TAG, "loadSavedItems) size: ${savedItems.value.size}")
         }
+        viewModelScope.launch {
+            _searchItems.combine(_savedItems) { searchItems, savedItems ->
+                Log.d(TAG, "searchItems.combine(savedItems) called")
+                searchItems.map { searchItem ->
+                    val savedItem = savedItems.find { it.imageUrl == searchItem.imageUrl }
 
+                    savedItem?.let {
+                        Log.d(TAG, "savedItem found, item url: ${it.imageUrl}")
+                        searchItem.copy(folderId = it.folderId)
+                    } ?: searchItem
+                }
+            }.collect {
+                _resultItems.value = it
+            }
+        }
+        viewModelScope.launch {
+            _keyword.combine(_resultItems) { keyword, resultItems ->
+                SearchScreenState(keyword, resultItems)
+            }.collect {
+                _state.value = it
+            }
+        }
+        viewModelScope.launch {
+            savedItemRepository.getAllSavedItems().collect {
+                _savedItems.value = it
+                Log.d(TAG, "savedItemRepository.getAllSavedItems().collect) size: ${_savedItems.value.size}")
+            }
+        }
     }
 
-    private fun saveSavedItems() {
-        savedItemRepository.saveSavedItems(savedItems.value)
-        Log.d(TAG, "saveSavedItems) size: ${savedItems.value.size}")
+    private fun initKeyword() {
+        _keyword.value = KeywordSharedPref.loadKeyword()
+        Log.d(TAG, "initKeyword) keyword: ${_keyword.value}")
+    }
+
+    fun setKeyword(newKeyword: String) {
+        _keyword.value = newKeyword
+        KeywordSharedPref.saveKeyword(newKeyword)
+        Log.d(TAG, "setKeyword) keyword: ${_keyword.value}")
     }
 
     fun saveItem(item: Item) {
-        _savedItems.value = with(savedItems.value) {
-            if (this.find { it.imageUrl == item.imageUrl } != null) {
-                this.filterNot { it.imageUrl == item.imageUrl }
-            } else {
-                this + listOf(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
+        Log.d(TAG, "saveItem) called, item url: ${item.imageUrl}")
+        Log.d(TAG, "saveItem) saved items size: ${_savedItems.value.size}")
+
+        if (item.folderId == FolderId.NO_FOLDER.id) {
+            Log.d(TAG, "saveItem) add to saved items")
+            _savedItems.value += listOf(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
+            viewModelScope.launch {
+                savedItemRepository.saveSavedItem(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
+            }
+        } else {
+            Log.d(TAG, "saveItem) delete from saved items")
+            _savedItems.value = _savedItems.value.filterNot { it.imageUrl == item.imageUrl }
+            viewModelScope.launch {
+                savedItemRepository.deleteSavedItem(item)
             }
         }
     }
 
-    private fun saveState() {
-        saveKeyword()
-        saveSavedItems()
-    }
-
-    private fun loadState() {
-        loadKeyword()
-        loadSavedItems()
-    }
-
-    fun search(keyword: String) {
-        viewModelScope.launch {
-            fetchSearchResult()
-        }
-    }
-
-    private suspend fun fetchSearchResult() {
-        val query = _keyword.value ?: ""
-
+    private suspend fun loadSearchItems() {
+        val query = _keyword.value
         val imageResponseFlow = kakaoSearchRepository.getImages(query)
         val videoResponseFlow = kakaoSearchRepository.getVideos(query)
-
-        imageResponseFlow.combine(videoResponseFlow) {i, v ->
+        imageResponseFlow.combine(videoResponseFlow) { i, v ->
             val itemList = mutableListOf<Item>()
-            if(i is ApiResponse.Success){
+            if (i is ApiResponse.Success) {
                 itemList.addAll(i.data.documents?.map { it.toItem() } ?: emptyList())
             }
-            if(v is ApiResponse.Success){
+            if (v is ApiResponse.Success) {
                 itemList.addAll(v.data.documents?.map { it.toItem() } ?: emptyList())
             }
-            itemList.toList()
-        }.collect{
+            itemList.toList().sortedBy { it.time }
+        }.collect {
             _searchItems.value = it
         }
-
-    }
-    override fun onCleared() {
-        saveState()
-        super.onCleared()
     }
 }
