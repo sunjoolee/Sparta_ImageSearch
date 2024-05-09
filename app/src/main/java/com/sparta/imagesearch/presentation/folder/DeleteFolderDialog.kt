@@ -41,6 +41,7 @@ import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.Folder
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.util.AlertDialog
+import com.sparta.imagesearch.util.DialogButtons
 
 @Composable
 fun DeleteFolderDialog(
@@ -84,7 +85,6 @@ fun DeleteFolderDialog(
                     textAlign = TextAlign.Center,
                     text = stringResource(R.string.delete_folder_title),
                 )
-
                 DeleteFolderList(
                     modifier = modifier.padding(top = 8.dp, bottom = 8.dp),
                     folders = folders,
@@ -96,26 +96,13 @@ fun DeleteFolderDialog(
                         }
                     }
                 )
-
-                Row(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    DeleteDialogCloseButton(
-                        modifier = modifier,
-                        buttonLabel = stringResource(R.string.delete_folder_negative),
-                        onClick = onDismissRequest
-                    )
-                    Spacer(modifier = modifier.size(12.dp))
-                    DeleteDialogConfirmButton(
-                        modifier = modifier,
-                        buttonLabel = stringResource(R.string.delete_folder_positive),
-                        onClick = { setShowAlertDialog(true) },
-                        enabled = enableDeleteButton.value
-                    )
-                }
+                DialogButtons(
+                    dismissButtonLabelId = R.string.delete_folder_negative,
+                    onDismissRequest = onDismissRequest,
+                    confirmButtonLabelId = R.string.delete_folder_positive,
+                    enableConfirmButton = enableDeleteButton.value,
+                    onConfirmRequest = { setShowAlertDialog(true) }
+                )
             }
         }
     }
@@ -199,36 +186,6 @@ fun DeleteFolderItem(
         Text(
             text = folder.name
         )
-    }
-}
-
-@Composable
-fun DeleteDialogCloseButton(
-    modifier: Modifier = Modifier,
-    buttonLabel: String,
-    onClick: () -> Unit
-) {
-    Button(
-        modifier = modifier,
-        onClick = onClick
-    ) {
-        Text(text = buttonLabel)
-    }
-}
-
-@Composable
-fun DeleteDialogConfirmButton(
-    modifier: Modifier = Modifier,
-    buttonLabel: String,
-    enabled: Boolean,
-    onClick: () -> Unit
-) {
-    Button(
-        modifier = modifier,
-        onClick = onClick,
-        enabled = enabled
-    ) {
-        Text(text = buttonLabel)
     }
 }
 
