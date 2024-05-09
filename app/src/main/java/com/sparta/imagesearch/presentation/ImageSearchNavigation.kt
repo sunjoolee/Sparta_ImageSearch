@@ -14,7 +14,9 @@ object ImageSearchDestinations{
     const val FOLDER_ROUTE = FOLDER_SCREEN
 }
 
-class ImageSearchNavigationActions(private val navController: NavController){
+class ImageSearchNavigationActions(
+    private val navController: NavController
+){
     fun navigateToSearch(){
         navController.navigate(ImageSearchDestinations.SEARCH_ROUTE){
             popUpTo(ImageSearchDestinations.FOLDER_ROUTE){
