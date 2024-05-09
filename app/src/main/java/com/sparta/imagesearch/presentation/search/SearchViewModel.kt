@@ -19,14 +19,14 @@ import javax.inject.Inject
 
 data class SearchScreenState(
     val keyword: String = "",
-    val resultItems: List<Item> = emptyList(),
+    val resultItems: List<Item> = emptyList()
 )
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val kakaoSearchRepository: KakaoSearchRepository,
     private val savedItemRepository: SavedItemRepository,
-) : ViewModel() {
+) : ViewModel(), SearchScreenInputs {
     private val TAG = "SearchModel"
 
     private val _keyword = MutableStateFlow("")
@@ -36,6 +36,8 @@ class SearchViewModel @Inject constructor(
 
     private val _state = MutableStateFlow<SearchScreenState>(SearchScreenState())
     val state = _state.asStateFlow()
+
+    val inputs = this@SearchViewModel
 
     init {
         initKeyword()
@@ -62,16 +64,20 @@ class SearchViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
+            savedItemRepository.getAllSavedItems().collect {
+                _savedItems.value = it
+                Log.d(
+                    TAG,
+                    "savedItemRepository.getAllSavedItems().collect) size: ${_savedItems.value.size}"
+                )
+            }
+        }
+
+        viewModelScope.launch {
             _keyword.combine(_resultItems) { keyword, resultItems ->
                 SearchScreenState(keyword, resultItems)
             }.collect {
                 _state.value = it
-            }
-        }
-        viewModelScope.launch {
-            savedItemRepository.getAllSavedItems().collect {
-                _savedItems.value = it
-                Log.d(TAG, "savedItemRepository.getAllSavedItems().collect) size: ${_savedItems.value.size}")
             }
         }
     }
@@ -81,13 +87,13 @@ class SearchViewModel @Inject constructor(
         Log.d(TAG, "initKeyword) keyword: ${_keyword.value}")
     }
 
-    fun setKeyword(newKeyword: String) {
+    override fun setKeyword(newKeyword: String) {
         _keyword.value = newKeyword
         KeywordSharedPref.saveKeyword(newKeyword)
         Log.d(TAG, "setKeyword) keyword: ${_keyword.value}")
     }
 
-    fun saveItem(item: Item) {
+    override fun saveItem(item: Item) {
         Log.d(TAG, "saveItem) called, item url: ${item.imageUrl}")
         Log.d(TAG, "saveItem) saved items size: ${_savedItems.value.size}")
 

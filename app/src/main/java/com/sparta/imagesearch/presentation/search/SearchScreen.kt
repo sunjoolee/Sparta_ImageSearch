@@ -51,6 +51,7 @@ fun SearchScreen(
     navToFolder: () -> Unit
 ) {
     val searchScreenState by viewModel.state.collectAsState(initial = SearchScreenState())
+    val searchScreenInputs = viewModel.inputs
 
     val gridState = rememberLazyStaggeredGridState()
     val showScrollToTopFab by remember {
@@ -80,15 +81,15 @@ fun SearchScreen(
             modifier = modifier.padding(innerPadding),
         ) {
             ImageSearchBar(
-                onSearch = viewModel::setKeyword,
+                onSearch = searchScreenInputs::setKeyword,
                 query = searchScreenState.keyword,
-                onQueryChange = viewModel::setKeyword
+                onQueryChange = searchScreenInputs::setKeyword
             )
             ResultItemsContent(
                 modifier = modifier.padding(top = 8.dp),
                 gridState = gridState,
                 resultItems = searchScreenState.resultItems,
-                onHeartClick = viewModel::saveItem
+                onHeartClick = searchScreenInputs::saveItem
             )
         }
     }
