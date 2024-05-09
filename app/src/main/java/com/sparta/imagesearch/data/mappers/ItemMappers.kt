@@ -3,7 +3,7 @@ package com.sparta.imagesearch.data.mappers
 import com.sparta.imagesearch.data.source.local.savedItem.SavedItem
 import com.sparta.imagesearch.data.source.remote.Document
 import com.sparta.imagesearch.domain.Item
-import com.sparta.imagesearch.util.formatDate
+import com.sparta.imagesearch.presentation.util.formatDate
 
 fun Document.toItem(): Item =
     when (this) {

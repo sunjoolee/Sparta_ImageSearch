@@ -14,6 +14,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,42 +46,32 @@ class SearchViewModel @Inject constructor(
 
         viewModelScope.launch {
             _keyword.collect {
-                Log.d(TAG, "_keyword.collect) called")
+                Log.d(TAG, "collect keyword) keyword: $it")
                 loadSearchItems()
             }
         }
         viewModelScope.launch {
-            _searchItems.combine(_savedItems) { searchItems, savedItems ->
-                Log.d(TAG, "searchItems.combine(savedItems) called")
+            savedItemRepository.getAllSavedItems().collect {
+                Log.d(TAG, "collect savedItem) size: ${it.size}")
+                _savedItems.value = it
+            }
+        }
+
+        combine(_searchItems, _savedItems) { searchItems, savedItems ->
+            Log.d(TAG, "combine resultItems) savedItems.size: ${savedItems.size}")
+            _resultItems.update {
                 searchItems.map { searchItem ->
                     val savedItem = savedItems.find { it.imageUrl == searchItem.imageUrl }
-
-                    savedItem?.let {
-                        Log.d(TAG, "savedItem found, item url: ${it.imageUrl}")
-                        searchItem.copy(folderId = it.folderId)
-                    } ?: searchItem
+                    if (savedItem != null) searchItem.copy(folderId = savedItem.folderId)
+                    else searchItem
                 }
-            }.collect {
-                _resultItems.value = it
             }
-        }
-        viewModelScope.launch {
-            savedItemRepository.getAllSavedItems().collect {
-                _savedItems.value = it
-                Log.d(
-                    TAG,
-                    "savedItemRepository.getAllSavedItems().collect) size: ${_savedItems.value.size}"
-                )
-            }
-        }
+        }.launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            _keyword.combine(_resultItems) { keyword, resultItems ->
-                SearchScreenState(keyword, resultItems)
-            }.collect {
-                _state.value = it
-            }
-        }
+        combine(_keyword, _resultItems) { keyword, resultItems ->
+            Log.d(TAG, "combine new state)")
+            _state.update { SearchScreenState(keyword, resultItems) }
+        }.launchIn(viewModelScope)
     }
 
     private fun initKeyword() {
@@ -87,25 +79,23 @@ class SearchViewModel @Inject constructor(
         Log.d(TAG, "initKeyword) keyword: ${_keyword.value}")
     }
 
-    override fun setKeyword(newKeyword: String) {
+    override fun updateKeyword(newKeyword: String) {
         _keyword.value = newKeyword
         KeywordSharedPref.saveKeyword(newKeyword)
-        Log.d(TAG, "setKeyword) keyword: ${_keyword.value}")
+        Log.d(TAG, "updateKeyword) keyword: ${_keyword.value}")
     }
 
     override fun saveItem(item: Item) {
         Log.d(TAG, "saveItem) called, item url: ${item.imageUrl}")
         Log.d(TAG, "saveItem) saved items size: ${_savedItems.value.size}")
 
-        if (item.folderId == FolderId.NO_FOLDER.id) {
+        if (_savedItems.value.find { it.imageUrl == item.imageUrl } == null) {
             Log.d(TAG, "saveItem) add to saved items")
-            _savedItems.value += listOf(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
             viewModelScope.launch {
                 savedItemRepository.saveSavedItem(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
             }
         } else {
             Log.d(TAG, "saveItem) delete from saved items")
-            _savedItems.value = _savedItems.value.filterNot { it.imageUrl == item.imageUrl }
             viewModelScope.launch {
                 savedItemRepository.deleteSavedItem(item)
             }

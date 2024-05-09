@@ -1,5 +1,6 @@
 package com.sparta.imagesearch.presentation
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -33,7 +34,7 @@ import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.FolderColor
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
-import com.sparta.imagesearch.util.ShimmerBrush
+import com.sparta.imagesearch.presentation.util.ShimmerBrush
 
 @Composable
 fun ImageSearchItem(
@@ -42,10 +43,10 @@ fun ImageSearchItem(
     onHeartClick: (item: Item) -> Unit = {},
     onHeartLongClick: (item: Item) -> Unit = {}
 ) {
-    val folderColor = remember {
+    val folderColor =
         if (item.folderId == FolderId.NO_FOLDER.id) FolderColor.NO_COLOR.colorHex
         else FolderColor.COLOR1.colorHex
-    }
+
 
     Card(
         modifier = modifier
@@ -67,9 +68,15 @@ fun ImageSearchItem(
                         .padding(10.dp)
                         .scale(1.2f),
                     folderColor = folderColor,
-                    onHeartClick = { onHeartClick(item) },
-                    onHeartLongClick = { onHeartLongClick(item) })
-
+                    onHeartClick = {
+                        Log.d("ImageSearchItem)", "onHeartClick) item url: ${item.imageUrl}")
+                        onHeartClick(item)
+                    },
+                    onHeartLongClick = {
+                        Log.d("ImageSearchItem)", "onHeartLongClick) item url: ${item.imageUrl}")
+                        onHeartLongClick(item)
+                    }
+                )
             }
             Column(
                 modifier = modifier.padding(8.dp)

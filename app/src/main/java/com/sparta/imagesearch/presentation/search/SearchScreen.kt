@@ -21,15 +21,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -81,9 +78,9 @@ fun SearchScreen(
             modifier = modifier.padding(innerPadding),
         ) {
             ImageSearchBar(
-                onSearch = searchScreenInputs::setKeyword,
+                onSearch = searchScreenInputs::updateKeyword,
                 query = searchScreenState.keyword,
-                onQueryChange = searchScreenInputs::setKeyword
+                onQueryChange = searchScreenInputs::updateKeyword
             )
             ResultItemsContent(
                 modifier = modifier.padding(top = 8.dp),
