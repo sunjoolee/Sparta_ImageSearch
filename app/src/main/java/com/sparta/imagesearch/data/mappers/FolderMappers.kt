@@ -9,12 +9,6 @@ fun Folder.toFolderEntity() = FolderEntity(
     colorHex = colorHex
 )
 
-fun DefaultFolder.toFolderEntity() = FolderEntity(
-    id = id,
-    name = name,
-    colorHex = colorHex
-)
-
 fun FolderEntity.toFolder() = Folder(
     id = id,
     name = name,
