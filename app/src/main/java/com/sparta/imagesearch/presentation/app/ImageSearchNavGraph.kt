@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.presentation
+package com.sparta.imagesearch.presentation.app
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

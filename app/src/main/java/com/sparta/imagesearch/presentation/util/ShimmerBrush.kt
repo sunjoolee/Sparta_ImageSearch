@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.util
+package com.sparta.imagesearch.presentation.util
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat

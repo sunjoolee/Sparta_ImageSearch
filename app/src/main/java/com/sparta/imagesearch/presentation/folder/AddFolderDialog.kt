@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.FolderColor
-import com.sparta.imagesearch.util.DialogButtons
+import com.sparta.imagesearch.presentation.util.DialogButtons
 
 @Composable
 fun AddFolderDialog(

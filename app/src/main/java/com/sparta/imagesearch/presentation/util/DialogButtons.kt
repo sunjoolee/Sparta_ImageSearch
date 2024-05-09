@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.util
+package com.sparta.imagesearch.presentation.util
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Row

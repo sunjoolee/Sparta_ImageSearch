@@ -40,8 +40,8 @@ import androidx.compose.ui.window.Dialog
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.Folder
 import com.sparta.imagesearch.domain.FolderId
-import com.sparta.imagesearch.util.AlertDialog
-import com.sparta.imagesearch.util.DialogButtons
+import com.sparta.imagesearch.presentation.util.AlertDialog
+import com.sparta.imagesearch.presentation.util.DialogButtons
 
 @Composable
 fun DeleteFolderDialog(

@@ -1,8 +1,8 @@
-package com.sparta.imagesearch.presentation
+package com.sparta.imagesearch.presentation.app
 
 import androidx.navigation.NavController
-import com.sparta.imagesearch.presentation.ImageSearchScreens.FOLDER_SCREEN
-import com.sparta.imagesearch.presentation.ImageSearchScreens.SEARCH_SCREEN
+import com.sparta.imagesearch.presentation.app.ImageSearchScreens.FOLDER_SCREEN
+import com.sparta.imagesearch.presentation.app.ImageSearchScreens.SEARCH_SCREEN
 
 private object ImageSearchScreens{
     const val SEARCH_SCREEN = "search_screen"

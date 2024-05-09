@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.util
+package com.sparta.imagesearch.presentation.util
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
