@@ -4,10 +4,10 @@ import com.sparta.imagesearch.domain.Item
 import kotlinx.coroutines.flow.Flow
 
 interface SavedItemRepository {
-    fun saveSavedItems(items: List<Item>)
-    fun deleteSavedItem(item: Item)
+    suspend fun saveSavedItem(item: Item)
+    suspend fun deleteSavedItem(item: Item)
     suspend fun getAllSavedItems(): Flow<List<Item>>
     suspend fun getSavedItemsByFolderId(folderId: Int): Flow<List<Item>>
-    fun deleteSavedItemsByFolderId(folderIds: List<Int>)
-    fun moveSavedItem(imageUrl: String, destFolderId: Int)
+    suspend fun deleteSavedItemsByFolderId(folderIds: List<Int>)
+    suspend fun moveSavedItem(imageUrl: String, destFolderId: Int)
 }
