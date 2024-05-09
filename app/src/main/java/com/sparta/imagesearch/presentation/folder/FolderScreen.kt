@@ -28,7 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +47,6 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.Folder
-import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
@@ -60,52 +59,19 @@ fun FolderScreen(
     viewModel: FolderViewModel = hiltViewModel(),
     navToSearch: () -> Unit
 ) {
-    var folders by remember {
-        mutableStateOf<List<Folder>>(emptyList())
-    }
-    var selectedFolderId by remember {
-        mutableStateOf(FolderId.DEFAULT_FOLDER.id)
-    }
-    var itemsInFolder by remember {
-        mutableStateOf<List<Item>>(emptyList())
-    }
-
-    var showAddDialog by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
-
-    var targetItem by remember { mutableStateOf<Item?>(null) }
-    var showMoveDialog by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        viewModel.folders.collect {
-            folders = it
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.selectedFolderId.collect {
-            selectedFolderId = it
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.itemsInFolder.collect {
-            itemsInFolder = it
-        }
-    }
-
-    LaunchedEffect(selectedFolderId) {
-        viewModel.loadItemsInFolder()
-    }
+    val folderScreenState by viewModel.state.collectAsState(initial = FolderScreenState())
+    val folderScreenInputs = viewModel.inputs
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             FolderListContent(
                 modifier = modifier.fillMaxHeight(0.1f),
-                folders = folders,
-                selectedFolderId = selectedFolderId,
-                onFolderClick = viewModel::selectFolder,
-                onAddClick = { showAddDialog = true },
-                onDeleteClick = { showDeleteDialog = true }
+                folders = folderScreenState.folders,
+                selectedFolderId = folderScreenState.selectedFolderId,
+                onFolderClick = folderScreenInputs::selectFolder,
+                onAddClick = folderScreenInputs::toggleShowAddDialog,
+                onDeleteClick = folderScreenInputs::toggleDeleteDialog
             )
         },
         bottomBar = {
@@ -118,47 +84,46 @@ fun FolderScreen(
         Box(modifier = modifier.padding(innerPadding)) {
             FolderItemsContent(
                 modifier = modifier.fillMaxHeight(),
-                folderItems = itemsInFolder,
-                onHeartClick = viewModel::unSaveItem,
+                folderItems = folderScreenState.itemsInFolder,
+                onHeartClick = folderScreenInputs::unSaveItem,
                 onHeartLongClick = {
-                    showMoveDialog = true
-                    targetItem = it
+                    folderScreenInputs.toggleMoveDialog(it)
                 }
             )
             AnimatedVisibility(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .zIndex(1f),
-                visible = showAddDialog
+                visible = folderScreenState.showAddDialog
             ) {
                 AddFolderDialog(
-                    onDismissRequest = { showAddDialog = false },
-                    addFolder = viewModel::addFolder
+                    onDismissRequest = folderScreenInputs::toggleShowAddDialog,
+                    addFolder = folderScreenInputs::addFolder
                 )
             }
             AnimatedVisibility(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .zIndex(1f),
-                visible = showDeleteDialog
+                visible = folderScreenState.showDeleteDialog
             ) {
                 DeleteFolderDialog(
-                    onDismissRequest = { showDeleteDialog = false },
-                    folders = folders,
-                    deleteFolder = viewModel::deleteFolders
+                    onDismissRequest = folderScreenInputs::toggleDeleteDialog,
+                    folders = folderScreenState.folders,
+                    deleteFolder = folderScreenInputs::deleteFolders
                 )
             }
             AnimatedVisibility(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .zIndex(1f),
-                visible = showMoveDialog
+                visible = folderScreenState.showMoveDialog
             ) {
                 MoveFolderDialog(
-                    folders = folders,
-                    curFolderId = selectedFolderId,
-                    onDismissRequest = { showMoveDialog = false },
-                    moveFolder = { folderId -> viewModel.moveFolder(targetItem!!, folderId) }
+                    folders = folderScreenState.folders,
+                    curFolderId = folderScreenState.selectedFolderId,
+                    onDismissRequest = folderScreenInputs::toggleMoveDialog,
+                    moveFolder = folderScreenInputs::moveFolder
                 )
             }
         }
@@ -187,7 +152,7 @@ fun FolderListContent(
             FolderList(
                 modifier = modifier.fillMaxWidth(0.9f),
                 folders = folders,
-                isSelected = {folderId -> selectedFolderId == folderId},
+                isSelected = { folderId -> selectedFolderId == folderId },
                 onFolderClick = onFolderClick
             )
             FolderDropDown(
@@ -210,7 +175,7 @@ fun FolderList(
     LazyRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         items(items = folders, key = { it.id }) {
             Folder(
@@ -229,11 +194,13 @@ fun Folder(
     isSelected: Boolean
 ) {
     Column(
-        modifier = modifier.height(48.dp),
+        modifier = modifier.height(48.dp).padding(horizontal = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            modifier = modifier.scale(1.3f).padding(bottom = 4.dp),
+            modifier = modifier
+                .scale(1.3f)
+                .padding(bottom = 4.dp),
             painter = painterResource(id = R.drawable.icon_folder),
             colorFilter = ColorFilter.tint(Color(parseColor(folder.colorHex))),
             contentDescription = ""
