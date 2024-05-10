@@ -69,7 +69,7 @@ fun FolderScreen(
                 folders = folderScreenState.folders,
                 selectedFolderId = folderScreenState.selectedFolderId,
                 onFolderClick = folderScreenInputs::selectFolder,
-                onAddClick = folderScreenInputs::toggleShowAddDialog,
+                onAddClick = folderScreenInputs::openAddDialog,
                 onDeleteClick = folderScreenInputs::openDeleteDialog
             )
         },
@@ -96,8 +96,7 @@ fun FolderScreen(
                 visible = folderScreenState.showAddDialog
             ) {
                 AddFolderDialog(
-                    onDismissRequest = folderScreenInputs::toggleShowAddDialog,
-                    addFolder = folderScreenInputs::addFolder
+                    onDismissRequest = folderScreenInputs::closeAddDialog
                 )
             }
             AnimatedVisibility(

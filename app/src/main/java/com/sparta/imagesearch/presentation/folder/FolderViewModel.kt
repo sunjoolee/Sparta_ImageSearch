@@ -33,8 +33,8 @@ data class FolderScreenState(
 interface FolderScreenInputs {
     fun selectFolder(folder: Folder)
     fun unSaveItem(item: Item)
-    fun toggleShowAddDialog()
-    fun addFolder(name: String, colorHex: String)
+    fun openAddDialog()
+    fun closeAddDialog()
     fun openDeleteDialog()
     fun closeDeleteDialog()
     fun toggleMoveDialog(targetItem: Item? = null)
@@ -125,10 +125,12 @@ class FolderViewModel @Inject constructor(
         }
     }
 
-    override fun toggleShowAddDialog() {
-        _showAddDialog.value = !_showAddDialog.value
+    override fun openAddDialog(){
+        _showAddDialog.value = true
     }
-
+    override fun closeAddDialog() {
+        _showAddDialog.value = false
+    }
     override fun openDeleteDialog() {
         _showDeleteDialog.value = true
     }
@@ -152,13 +154,6 @@ class FolderViewModel @Inject constructor(
         }
     }
 
-    override fun addFolder(name: String, colorHex: String) {
-        val newFolder = Folder(name = name, colorHex = colorHex)
-        viewModelScope.launch {
-            folderRepository.upsertFolder(newFolder)
-        }
-    }
-
     override fun moveFolder(destFolderId: Int) {
         if (_targetItem.value == null) return
 
@@ -168,5 +163,4 @@ class FolderViewModel @Inject constructor(
             savedItemRepository.moveSavedItem(targetItem.imageUrl, destFolderId)
         }
     }
-
 }

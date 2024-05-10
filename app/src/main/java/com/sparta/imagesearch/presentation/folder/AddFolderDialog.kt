@@ -17,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.FolderColor
 import com.sparta.imagesearch.presentation.util.DialogButtons
@@ -40,15 +42,12 @@ import com.sparta.imagesearch.presentation.util.DialogButtons
 @Composable
 fun AddFolderDialog(
     modifier: Modifier = Modifier,
-    onDismissRequest: () -> Unit,
-    addFolder: (String, String) -> Unit
+    viewModel: AddFolderDialogViewModel = hiltViewModel(),
+    onDismissRequest: () -> Unit
 ) {
-    var folderName by remember { mutableStateOf("") }
-    val setFolderName = {it:String -> folderName = it}
 
-    val (folderColorHex, setFolderColorHex) = remember { mutableStateOf(FolderColor.COLOR1.colorHex) }
-
-    val nameValid by remember { derivedStateOf { folderName.isNotBlank() } }
+    val addFolderDialogState by viewModel.state.collectAsState()
+    val addFolderDialogInputs = viewModel.inputs
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -69,22 +68,25 @@ fun AddFolderDialog(
                 )
                 FolderNameInput(
                     modifier = modifier.padding(top = 16.dp),
-                    value = folderName,
-                    onValueChange = setFolderName
+                    value = addFolderDialogState.folderName,
+                    onValueChange = addFolderDialogInputs::setFolderName
                 )
                 FolderColorSelect(
                     modifier = modifier.padding(top = 16.dp),
                     colorHexes = FolderColor.entries.map { it.colorHex }.drop(1),
-                    selectedColorHex = folderColorHex,
-                    onColorSelect = setFolderColorHex
+                    selectedColorHex = addFolderDialogState.folderColorHex,
+                    onColorSelect = addFolderDialogInputs::setFolderColorHex
                 )
                 DialogButtons(
                     modifier = modifier.padding(top = 16.dp),
                     dismissButtonLabelId = R.string.add_folder_negative,
                     onDismissRequest = onDismissRequest,
                     confirmButtonLabelId = R.string.add_folder_positive,
-                    enableConfirmButton = nameValid,
-                    onConfirmRequest = { addFolder(folderName, folderColorHex) }
+                    enableConfirmButton = addFolderDialogState.nameValid,
+                    onConfirmRequest = {
+                        addFolderDialogInputs.addFolder()
+                        onDismissRequest()
+                    }
                 )
             }
         }
