@@ -7,7 +7,6 @@ interface SavedItemRepository {
     suspend fun saveSavedItem(item: Item)
     suspend fun deleteSavedItem(item: Item)
     suspend fun getAllSavedItems(): Flow<List<Item>>
-    suspend fun getSavedItemsByFolderId(folderId: Int): Flow<List<Item>>
     suspend fun deleteSavedItemsByFolderId(folderIds: List<Int>)
     suspend fun moveSavedItem(imageUrl: String, destFolderId: Int)
 }

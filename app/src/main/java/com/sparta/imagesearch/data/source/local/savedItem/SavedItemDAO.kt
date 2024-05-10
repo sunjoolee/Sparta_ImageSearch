@@ -17,9 +17,6 @@ interface SavedItemDAO {
     @Query("SELECT * FROM saved_item_table")
     fun getAllItems(): Flow<List<SavedItem>>
 
-    @Query("SELECT * FROM saved_item_table WHERE folderId = :folderId")
-    fun getSavedItemsByFolderId(folderId:Int): Flow<List<SavedItem>>
-
     @Query("DELETE FROM saved_item_table WHERE folderId = :folderId")
     fun deleteSavedItemsByFolderId(folderId:Int)
 

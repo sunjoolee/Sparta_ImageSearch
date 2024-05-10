@@ -32,14 +32,6 @@ class SavedItemRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getSavedItemsByFolderId(folderId: Int): Flow<List<Item>> =
-        withContext(Dispatchers.IO) {
-            savedItemSourceDAO.getSavedItemsByFolderId(folderId)
-                .transform {
-                    emit(it.map { savedItem -> savedItem.toItem() })
-                }
-        }
-
     override suspend fun deleteSavedItemsByFolderId(folderIds: List<Int>) =
         withContext(Dispatchers.IO) {
             folderIds.forEach { savedItemSourceDAO.deleteSavedItemsByFolderId(it) }
