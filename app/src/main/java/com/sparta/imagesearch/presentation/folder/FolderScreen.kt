@@ -84,7 +84,7 @@ fun FolderScreen(
         Box(modifier = modifier.padding(innerPadding)) {
             FolderItemsContent(
                 modifier = modifier.fillMaxHeight(),
-                folderItems = folderScreenState.itemsInFolder,
+                folderItems = folderScreenState.savedItemsInFolder,
                 onHeartClick = folderScreenInputs::unSaveItem,
                 onHeartLongClick = {
                     folderScreenInputs.toggleMoveDialog(it)

@@ -1,7 +1,7 @@
 package com.sparta.imagesearch.domain
 
 data class Folder(
-    val id: Int = 0,
+    val id: Int = FolderId.DEFAULT_FOLDER.id,
     val name: String,
     val colorHex: String
 )
