@@ -23,12 +23,14 @@ fun Document.toItem(): Item =
 fun Item.toSavedItem(): SavedItem = SavedItem(
     imageUrl = imageUrl,
     source = source,
-    time = time
+    time = time,
+    folderId = folderId
 )
 
 fun SavedItem.toItem(): Item = Item(
     imageUrl = imageUrl,
     source = source,
-    time = time
+    time = time,
+    folderId = folderId
 )
 
