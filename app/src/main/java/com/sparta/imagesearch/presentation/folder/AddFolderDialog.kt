@@ -18,11 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -82,7 +78,7 @@ fun AddFolderDialog(
                     dismissButtonLabelId = R.string.add_folder_negative,
                     onDismissRequest = onDismissRequest,
                     confirmButtonLabelId = R.string.add_folder_positive,
-                    enableConfirmButton = addFolderDialogState.nameValid,
+                    enableConfirmButton = addFolderDialogState.confirmButtonEnabled,
                     onConfirmRequest = {
                         addFolderDialogInputs.addFolder()
                         onDismissRequest()

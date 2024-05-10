@@ -19,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -31,25 +32,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.Folder
+import com.sparta.imagesearch.domain.Item
 
 @Composable
 fun MoveFolderDialog(
     modifier: Modifier = Modifier,
-    curFolderId: Int,
-    folders: List<Folder>,
-    onDismissRequest: () -> Unit,
-    moveFolder: (Int) -> Unit
+    viewModel: MoveFolderDialogViewModel = hiltViewModel(),
+    targetItem: Item?,
+    onDismissRequest: () -> Unit
 ) {
-    val context = LocalContext.current
+    val moveFolderDialogState by viewModel.state.collectAsState()
+    val moveFolderDialogInputs = viewModel.inputs
 
-    var selectedFolderId by remember { mutableIntStateOf(curFolderId) }
-
-    val enableMoveButton = remember { derivedStateOf { selectedFolderId != curFolderId } }
+    if(targetItem == null) onDismissRequest()
+    else moveFolderDialogInputs.setTargetItem(targetItem)
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -66,14 +69,14 @@ fun MoveFolderDialog(
                 Text(
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    text = context.getString(R.string.move_folder_title),
+                    text = stringResource(R.string.move_folder_title),
                 )
 
                 MoveFolderList(
                     modifier = modifier.padding(top = 8.dp, bottom = 8.dp),
-                    folders = folders,
-                    selected = { folderId -> selectedFolderId == folderId },
-                    onSelect = { folderId -> selectedFolderId = folderId }
+                    folders = moveFolderDialogState.folders,
+                    targetFolderId = moveFolderDialogState.targetFolderId,
+                    onSelect = moveFolderDialogInputs::selectTargetFolderId
                 )
 
                 Row(
@@ -84,18 +87,18 @@ fun MoveFolderDialog(
                 ) {
                     MoveDialogCloseButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.move_folder_negative),
+                        buttonLabel = stringResource(R.string.move_folder_negative),
                         onClick = onDismissRequest
                     )
                     Spacer(modifier = modifier.size(12.dp))
                     MoveDialogConfirmButton(
                         modifier = modifier,
-                        buttonLabel = context.getString(R.string.move_folder_positive),
+                        buttonLabel = stringResource(R.string.move_folder_positive),
                         onClick = {
-                            moveFolder(selectedFolderId)
+                            moveFolderDialogInputs.moveFolder()
                             onDismissRequest()
                         },
-                        enabled = enableMoveButton.value
+                        enabled = moveFolderDialogState.enableConfirmButton
                     )
                 }
             }
@@ -107,7 +110,7 @@ fun MoveFolderDialog(
 fun MoveFolderList(
     modifier: Modifier = Modifier,
     folders: List<Folder>,
-    selected: (Int) -> Boolean,
+    targetFolderId: Int,
     onSelect: (Int) -> Unit
 ) {
     LazyColumn(
@@ -116,7 +119,7 @@ fun MoveFolderList(
         items(items = folders, key = { it.id }) {
             MoveFolderItem(
                 folder = it,
-                selected = selected(it.id),
+                selected = (targetFolderId == it.id),
                 onSelect = onSelect
             )
         }

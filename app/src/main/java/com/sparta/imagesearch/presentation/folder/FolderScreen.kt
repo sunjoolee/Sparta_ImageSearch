@@ -85,9 +85,7 @@ fun FolderScreen(
                 modifier = modifier.fillMaxHeight(),
                 folderItems = folderScreenState.savedItemsInFolder,
                 onHeartClick = folderScreenInputs::unSaveItem,
-                onHeartLongClick = {
-                    folderScreenInputs.toggleMoveDialog(it)
-                }
+                onHeartLongClick = folderScreenInputs::openMoveDialog
             )
             AnimatedVisibility(
                 modifier = Modifier
@@ -116,10 +114,8 @@ fun FolderScreen(
                 visible = folderScreenState.showMoveDialog
             ) {
                 MoveFolderDialog(
-                    folders = folderScreenState.folders,
-                    curFolderId = folderScreenState.selectedFolderId,
-                    onDismissRequest = folderScreenInputs::toggleMoveDialog,
-                    moveFolder = folderScreenInputs::moveFolder
+                    targetItem = folderScreenState.targetItem,
+                    onDismissRequest = folderScreenInputs::closeMoveDialog,
                 )
             }
         }

@@ -26,8 +26,8 @@ data class FolderScreenState(
     val savedItemsInFolder: List<Item> = emptyList(),
     val showAddDialog: Boolean = false,
     val showDeleteDialog: Boolean = false,
-    val targetItem: Item? = null,
     val showMoveDialog: Boolean = false,
+    val targetItem: Item? = null
 )
 
 interface FolderScreenInputs {
@@ -37,8 +37,8 @@ interface FolderScreenInputs {
     fun closeAddDialog()
     fun openDeleteDialog()
     fun closeDeleteDialog()
-    fun toggleMoveDialog(targetItem: Item? = null)
-    fun moveFolder(destFolderId: Int)
+    fun openMoveDialog(targetItem: Item)
+    fun closeMoveDialog()
 }
 
 @HiltViewModel
@@ -54,8 +54,8 @@ class FolderViewModel @Inject constructor(
     private val _savedItemsInFolder = MutableStateFlow<List<Item>>(emptyList())
     private val _showAddDialog = MutableStateFlow<Boolean>(false)
     private val _showDeleteDialog = MutableStateFlow<Boolean>(false)
-    private val _targetItem = MutableStateFlow<Item?>(null)
     private val _showMoveDialog = MutableStateFlow<Boolean>(false)
+    private val _targetItem = MutableStateFlow<Item?>(null)
 
     private val _state = MutableStateFlow(FolderScreenState())
     val state = _state.asStateFlow()
@@ -100,16 +100,18 @@ class FolderViewModel @Inject constructor(
             _savedItemsInFolder,
             _showAddDialog,
             _showDeleteDialog,
-            _showMoveDialog
+            _showMoveDialog,
+            _targetItem
         ) { folders, selectedFolderId, itemsInFolder,
-            showAddDialog, showDeleteDialog, showMoveDialog ->
+            showAddDialog, showDeleteDialog, showMoveDialog, targetItem->
             _state.value = FolderScreenState(
                 folders = folders,
                 selectedFolderId = selectedFolderId,
                 savedItemsInFolder = itemsInFolder,
                 showAddDialog = showAddDialog,
                 showDeleteDialog = showDeleteDialog,
-                showMoveDialog = showMoveDialog
+                showMoveDialog = showMoveDialog,
+                targetItem = targetItem
             )
         }.launchIn(viewModelScope)
     }
@@ -142,25 +144,14 @@ class FolderViewModel @Inject constructor(
         }
     }
 
-    override fun toggleMoveDialog(targetItem: Item?) {
-        if (targetItem == null) return
-
-        if (!_showMoveDialog.value) {
-            _showMoveDialog.value = true
-            _targetItem.value = targetItem
-        } else {
-            _showMoveDialog.value = false
-            _targetItem.value = null
-        }
+    override fun openMoveDialog(targetItem: Item) {
+        _showMoveDialog.value = true
+        _targetItem.value = targetItem
     }
 
-    override fun moveFolder(destFolderId: Int) {
-        if (_targetItem.value == null) return
-
-        val targetItem = _targetItem.value!!
-        if (destFolderId == targetItem.folderId) return
-        viewModelScope.launch {
-            savedItemRepository.moveSavedItem(targetItem.imageUrl, destFolderId)
-        }
+    override fun closeMoveDialog() {
+        _showMoveDialog.value = false
+        _targetItem.value = null
     }
+
 }

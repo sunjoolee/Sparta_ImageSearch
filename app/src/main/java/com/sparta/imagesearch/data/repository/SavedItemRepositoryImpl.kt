@@ -7,7 +7,6 @@ import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -37,8 +36,8 @@ class SavedItemRepositoryImpl @Inject constructor(
             folderIds.forEach { savedItemSourceDAO.deleteSavedItemsByFolderId(it) }
         }
 
-    override suspend fun moveSavedItem(imageUrl: String, destFolderId: Int) =
+    override suspend fun moveSavedItem(imageUrl: String, targetFolderId: Int) =
         withContext(Dispatchers.IO) {
-            savedItemSourceDAO.moveItemFolder(imageUrl, destFolderId)
+            savedItemSourceDAO.moveItemFolder(imageUrl, targetFolderId)
         }
 }
