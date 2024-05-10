@@ -30,6 +30,17 @@ data class FolderScreenState(
     val showMoveDialog: Boolean = false,
 )
 
+interface FolderScreenInputs {
+    fun selectFolder(folder: Folder)
+    fun unSaveItem(item: Item)
+    fun toggleShowAddDialog()
+    fun addFolder(name: String, colorHex: String)
+    fun openDeleteDialog()
+    fun closeDeleteDialog()
+    fun toggleMoveDialog(targetItem: Item? = null)
+    fun moveFolder(destFolderId: Int)
+}
+
 @HiltViewModel
 class FolderViewModel @Inject constructor(
     private val savedItemRepository: SavedItemRepository,
@@ -70,11 +81,17 @@ class FolderViewModel @Inject constructor(
         }
 
         combine(_selectedFolderId, _savedItems) { selectedFolderId, savedItems ->
-            Log.d(TAG, "combine savedItemsInFolder) selectedFolderId: $selectedFolderId, savedItems: ${savedItems}")
+            Log.d(
+                TAG,
+                "combine savedItemsInFolder) selectedFolderId: $selectedFolderId, savedItems: ${savedItems}"
+            )
             _savedItemsInFolder.update {
                 savedItems.filter { it.folderId == selectedFolderId }
             }
-            Log.d(TAG, "combine savedItemsInFolder) savedItemsInFolder: ${_savedItemsInFolder.value}")
+            Log.d(
+                TAG,
+                "combine savedItemsInFolder) savedItemsInFolder: ${_savedItemsInFolder.value}"
+            )
         }.launchIn(viewModelScope)
 
         combine(
@@ -111,9 +128,18 @@ class FolderViewModel @Inject constructor(
     override fun toggleShowAddDialog() {
         _showAddDialog.value = !_showAddDialog.value
     }
-    override fun toggleDeleteDialog() {
-        _showDeleteDialog.value = !_showDeleteDialog.value
+
+    override fun openDeleteDialog() {
+        _showDeleteDialog.value = true
     }
+
+    override fun closeDeleteDialog() {
+        _showDeleteDialog.update {
+            if (it) _selectedFolderId.value = FolderId.DEFAULT_FOLDER.id
+            false
+        }
+    }
+
     override fun toggleMoveDialog(targetItem: Item?) {
         if (targetItem == null) return
 
@@ -130,16 +156,6 @@ class FolderViewModel @Inject constructor(
         val newFolder = Folder(name = name, colorHex = colorHex)
         viewModelScope.launch {
             folderRepository.upsertFolder(newFolder)
-        }
-    }
-
-    override fun deleteFolders(deleteFolderIdList: List<Int>) {
-        if (deleteFolderIdList.contains(_selectedFolderId.value))
-            _selectedFolderId.value = FolderId.DEFAULT_FOLDER.id
-
-        viewModelScope.launch {
-            folderRepository.deleteFoldersById(deleteFolderIdList)
-            savedItemRepository.deleteSavedItemsByFolderId(deleteFolderIdList)
         }
     }
 

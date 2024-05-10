@@ -2,8 +2,7 @@ package com.sparta.imagesearch.presentation.folder
 
 import android.graphics.Color.parseColor
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -35,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -71,7 +70,7 @@ fun FolderScreen(
                 selectedFolderId = folderScreenState.selectedFolderId,
                 onFolderClick = folderScreenInputs::selectFolder,
                 onAddClick = folderScreenInputs::toggleShowAddDialog,
-                onDeleteClick = folderScreenInputs::toggleDeleteDialog
+                onDeleteClick = folderScreenInputs::openDeleteDialog
             )
         },
         bottomBar = {
@@ -108,9 +107,7 @@ fun FolderScreen(
                 visible = folderScreenState.showDeleteDialog
             ) {
                 DeleteFolderDialog(
-                    onDismissRequest = folderScreenInputs::toggleDeleteDialog,
-                    folders = folderScreenState.folders,
-                    deleteFolder = folderScreenInputs::deleteFolders
+                    onDismissRequest = folderScreenInputs::closeDeleteDialog
                 )
             }
             AnimatedVisibility(
@@ -140,24 +137,21 @@ fun FolderListContent(
     onDeleteClick: () -> Unit
 ) {
     Surface(
-        modifier = Modifier.padding(8.dp),
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceContainer
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             FolderList(
-                modifier = modifier.fillMaxWidth(0.9f),
+                modifier = modifier.fillMaxWidth(0.85f),
                 folders = folders,
                 isSelected = { folderId -> selectedFolderId == folderId },
                 onFolderClick = onFolderClick
             )
             FolderDropDown(
-                modifier = modifier
-                    .fillMaxWidth(),
+                modifier = modifier.fillMaxWidth(),
                 onAddClick = onAddClick,
                 onDeleteClick = onDeleteClick
             )
@@ -172,17 +166,22 @@ fun FolderList(
     isSelected: (Int) -> Boolean,
     onFolderClick: (folder: Folder) -> Unit
 ) {
-    LazyRow(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = RoundedCornerShape(16.dp)
     ) {
-        items(items = folders, key = { it.id }) {
-            Folder(
-                modifier = Modifier.clickable { onFolderClick(it) },
-                folder = it,
-                isSelected = isSelected(it.id)
-            )
+        LazyRow(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            items(items = folders, key = { it.id }) {
+                Folder(
+                    modifier = Modifier.clickable { onFolderClick(it) },
+                    folder = it,
+                    isSelected = isSelected(it.id)
+                )
+            }
         }
     }
 }
@@ -193,14 +192,16 @@ fun Folder(
     folder: Folder,
     isSelected: Boolean
 ) {
+    val dotAlpha = animateFloatAsState(
+        targetValue = if (isSelected) 1.0f else 0.0f, label = "dot_alpha"
+    )
+
     Column(
-        modifier = modifier.height(48.dp).padding(horizontal = 8.dp),
+        modifier = modifier.padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            modifier = modifier
-                .scale(1.3f)
-                .padding(bottom = 4.dp),
+            modifier = modifier.scale(1.2f),
             painter = painterResource(id = R.drawable.icon_folder),
             colorFilter = ColorFilter.tint(Color(parseColor(folder.colorHex))),
             contentDescription = ""
@@ -212,24 +213,18 @@ fun Folder(
             overflow = TextOverflow.Ellipsis,
             text = folder.name
         )
-        AnimatedVisibility(
-            visible = isSelected,
-            enter = scaleIn(),
-            exit = scaleOut()
-        ) {
-            Image(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-                    .scale(1.5f)
-                    .align(Alignment.CenterHorizontally),
-                painter = painterResource(id = R.drawable.icon_dot),
-                colorFilter = ColorFilter.tint(Color.DarkGray),
-                contentDescription = ""
-            )
-        }
+        Image(
+            modifier = modifier
+                .alpha(dotAlpha.value)
+                .fillMaxWidth()
+                .padding(4.dp)
+                .scale(1.5f)
+                .align(Alignment.CenterHorizontally),
+            painter = painterResource(id = R.drawable.icon_dot),
+            colorFilter = ColorFilter.tint(Color.DarkGray),
+            contentDescription = ""
+        )
     }
-
 }
 
 @Composable
