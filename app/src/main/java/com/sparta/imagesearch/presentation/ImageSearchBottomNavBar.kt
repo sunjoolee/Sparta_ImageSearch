@@ -2,14 +2,27 @@ package com.sparta.imagesearch.presentation
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sparta.imagesearch.R
+import com.sparta.imagesearch.presentation.theme.Padding
+import com.sparta.imagesearch.presentation.util.SelectIndicator
 
 
 @Composable
@@ -18,28 +31,58 @@ fun ImageSearchBottomNavBar(
     selectedNavItem: BottomNavItem,
     onNavItemClick: () -> Unit
 ) {
-    NavigationBar {
-        bottomNavItems.forEach { navItem ->
-            NavigationBarItem(
-                icon = {
-                    Image(
-                        painter = painterResource(id = navItem.iconRes),
-                        contentDescription = ""
-                    )
-                },
-                label = { Text(text = stringResource(id = navItem.textRes)) },
-                selected = (selectedNavItem == navItem),
-                onClick = {
-                    if(navItem != selectedNavItem) onNavItemClick()
-                }
-            )
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = colorResource(id = R.color.theme_secondary)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            bottomNavItems.forEach { navItem ->
+                ImageSearchBottomNavItem(
+                    iconId = navItem.iconId,
+                    labelId = navItem.labelId,
+                    selected = (selectedNavItem == navItem),
+                    onClick = {
+                        if (navItem != selectedNavItem) onNavItemClick()
+                    }
+                )
+            }
         }
     }
 }
 
+@Composable
+fun ImageSearchBottomNavItem(
+    @DrawableRes iconId: Int,
+    @StringRes labelId: Int,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .padding(vertical = Padding.medium)
+            .clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier.padding(bottom = Padding.small),
+            painter = painterResource(id = iconId),
+            colorFilter = ColorFilter.tint(
+                if (selected) colorResource(id = R.color.theme_accent) else Color.Gray
+            ),
+            contentDescription = ""
+        )
+        Text(
+            color = if (selected) Color.White else Color.Gray,
+            text = stringResource(id = labelId)
+        )
+    }
+}
+
 sealed class BottomNavItem(
-    @DrawableRes val iconRes: Int,
-    @StringRes val textRes: Int
+    @DrawableRes val iconId: Int,
+    @StringRes val labelId: Int
 ) {
     data object Search : BottomNavItem(R.drawable.icon_search, R.string.menu_search)
     data object Folder : BottomNavItem(R.drawable.icon_folder, R.string.menu_folder)
