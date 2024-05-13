@@ -2,6 +2,16 @@ package com.sparta.imagesearch.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
+//<color name="theme_bg">#1F334B</color>
+//<color name="theme_secondary">#14293E</color>
+//<color name="theme_accent">#F95B19</color>
+//
+//<color name="folder_color1">#FCC233</color>
+//<color name="folder_color2">#F95B19</color>
+//<color name="folder_color3">#CCF919</color>
+//<color name="folder_color4">#F919E2</color>
+//<color name="folder_color5">#7CF6F6</color>
+
 val primaryLight = Color(0xFF466464)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFBEDEDE)

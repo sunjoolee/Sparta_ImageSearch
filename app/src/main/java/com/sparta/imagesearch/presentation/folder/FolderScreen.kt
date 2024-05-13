@@ -50,6 +50,8 @@ import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
+import com.sparta.imagesearch.presentation.util.SelectIndicator
+import com.sparta.imagesearch.presentation.util.hexToColor
 
 
 @Composable
@@ -187,7 +189,7 @@ fun Folder(
     folder: Folder,
     isSelected: Boolean
 ) {
-    val dotAlpha = animateFloatAsState(
+    val indicatorAlpha = animateFloatAsState(
         targetValue = if (isSelected) 1.0f else 0.0f, label = "dot_alpha"
     )
 
@@ -198,7 +200,7 @@ fun Folder(
         Image(
             modifier = modifier.scale(1.2f),
             painter = painterResource(id = R.drawable.icon_folder),
-            colorFilter = ColorFilter.tint(Color(parseColor(folder.colorHex))),
+            colorFilter = ColorFilter.tint(folder.colorHex.hexToColor()),
             contentDescription = ""
         )
         Text(
@@ -208,16 +210,8 @@ fun Folder(
             overflow = TextOverflow.Ellipsis,
             text = folder.name
         )
-        Image(
-            modifier = modifier
-                .alpha(dotAlpha.value)
-                .fillMaxWidth()
-                .padding(4.dp)
-                .scale(1.5f)
-                .align(Alignment.CenterHorizontally),
-            painter = painterResource(id = R.drawable.icon_dot),
-            colorFilter = ColorFilter.tint(Color.DarkGray),
-            contentDescription = ""
+        SelectIndicator(
+            alpha = indicatorAlpha.value
         )
     }
 }
