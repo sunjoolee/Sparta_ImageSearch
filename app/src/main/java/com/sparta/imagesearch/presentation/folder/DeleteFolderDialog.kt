@@ -61,8 +61,8 @@ fun DeleteFolderDialog(
         dialogPosButton = DialogButton.PositiveDialogButton(
             labelId = R.string.delete_folder_positive,
             onClick = {
-                deleteFolderDialogInputs.clearDeleteFoldersId()
                 deleteFolderDialogInputs.deleteFolders()
+                deleteFolderDialogInputs.clearDeleteFoldersId()
                 onDismissRequest()
             }
         ),
