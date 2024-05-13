@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -47,6 +48,7 @@ import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
+import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.util.SelectIndicator
 import com.sparta.imagesearch.presentation.util.hexToColor
 
@@ -62,8 +64,9 @@ fun FolderScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = colorResource(id = R.color.theme_bg),
         topBar = {
-            FolderListContent(
+            FolderListTopBar(
                 modifier = modifier.fillMaxHeight(0.1f),
                 folders = folderScreenState.folders,
                 selectedFolderId = folderScreenState.selectedFolderId,
@@ -122,7 +125,7 @@ fun FolderScreen(
 }
 
 @Composable
-fun FolderListContent(
+fun FolderListTopBar(
     modifier: Modifier = Modifier,
     folders: List<Folder>,
     selectedFolderId: Int,
@@ -131,15 +134,16 @@ fun FolderListContent(
     onDeleteClick: () -> Unit
 ) {
     Surface(
+        color = Color.Transparent,
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp)
+            .padding(horizontal = Padding.default)
+            .padding(top = Padding.default)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
             FolderList(
-                modifier = modifier.fillMaxWidth(0.85f),
+                modifier = modifier.fillMaxWidth(0.9f),
                 folders = folders,
                 isSelected = { folderId -> selectedFolderId == folderId },
                 onFolderClick = onFolderClick
@@ -161,16 +165,16 @@ fun FolderList(
     onFolderClick: (folder: Folder) -> Unit
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = colorResource(id = R.color.theme_secondary),
         shape = RoundedCornerShape(16.dp)
     ) {
         LazyRow(
             modifier = modifier,
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.Start
         ) {
             items(items = folders, key = { it.id }) {
-                Folder(
+                FolderListItem(
                     modifier = Modifier.clickable { onFolderClick(it) },
                     folder = it,
                     isSelected = isSelected(it.id)
@@ -181,7 +185,7 @@ fun FolderList(
 }
 
 @Composable
-fun Folder(
+fun FolderListItem(
     modifier: Modifier = Modifier,
     folder: Folder,
     isSelected: Boolean
@@ -205,6 +209,7 @@ fun Folder(
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
+            color = Color.White,
             text = folder.name
         )
         SelectIndicator(
@@ -220,12 +225,14 @@ fun FolderDropDown(
     onDeleteClick: () -> Unit
 ) {
     val context = LocalContext.current
-
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
         FolderDropDownIcon(
-            modifier = modifier.align(Alignment.Center),
+            modifier = modifier.scale(3.5f),
             onClick = { expanded = true }
         )
 
@@ -264,8 +271,8 @@ fun FolderDropDownIcon(
         modifier = modifier
             .padding(1.dp)
             .clickable { onClick() },
-        painter = painterResource(id = R.drawable.icon_more),
-        colorFilter = ColorFilter.tint(Color.DarkGray),
+        painter = painterResource(id = R.drawable.icon_menu),
+        colorFilter = ColorFilter.tint(Color.White),
         contentDescription = ""
     )
 }
@@ -279,6 +286,7 @@ fun FolderItemsContent(
     onHeartLongClick: (item: Item) -> Unit
 ) {
     Surface(
+        color = Color.Transparent,
         modifier = modifier.fillMaxSize()
     ) {
         LazyVerticalStaggeredGrid(

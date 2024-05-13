@@ -24,13 +24,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +51,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -84,6 +89,8 @@ fun SearchScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = colorResource(id = R.color.theme_bg),
+        contentColor = Color.White,
         bottomBar = {
             ImageSearchBottomNavBar(
                 selectedNavItem = BottomNavItem.Search,
@@ -136,6 +143,15 @@ fun ImageSearchBar(
             .background(Color.Transparent)
             .padding(horizontal = 16.dp)
             .padding(top = 8.dp),
+        colors = SearchBarDefaults.colors(
+            containerColor = colorResource(id = R.color.theme_secondary),
+            dividerColor = colorResource(id = R.color.theme_accent),
+            inputFieldColors = TextFieldDefaults.colors(
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                cursorColor = colorResource(id = R.color.theme_accent)
+            )
+        ),
         query = query,
         onQueryChange = onQueryChange,
         onSearch = {
@@ -146,7 +162,9 @@ fun ImageSearchBar(
         onActiveChange = setSearchBarActive,
         leadingIcon = {
             Image(
+                modifier = Modifier.scale(1.5f),
                 painter = painterResource(id = R.drawable.icon_search),
+                colorFilter = ColorFilter.tint(colorResource(id = R.color.theme_accent)),
                 contentDescription = ""
             )
         },
@@ -195,6 +213,10 @@ fun ScrollToTopFab(
     Box {
         Button(
             modifier = modifier,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.theme_accent),
+                contentColor = colorResource(id = R.color.theme_secondary)
+            ),
             onClick = {
                 scope.launch { gridState.animateScrollToItem(0) }
             }
