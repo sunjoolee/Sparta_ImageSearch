@@ -2,9 +2,7 @@ package com.sparta.imagesearch.presentation.util.dialog
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sparta.imagesearch.domain.Folder
 import com.sparta.imagesearch.presentation.util.dialog.dalog_content.AlertDialogContent

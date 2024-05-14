@@ -3,12 +3,16 @@ package com.sparta.imagesearch.presentation.util.dialog
 import androidx.annotation.StringRes
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import com.sparta.imagesearch.R
+import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
+import com.sparta.imagesearch.presentation.theme.ImageSearchTheme
+import com.sparta.imagesearch.presentation.theme.disabled
 
 sealed class DialogButton{
     abstract val labelId: Int
@@ -46,11 +50,10 @@ fun PositiveDialogButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            //TODO change color resource to theme color
-            containerColor = colorResource(id = R.color.theme_accent),
-            contentColor = colorResource(id = R.color.theme_secondary),
-            disabledContainerColor = Color.LightGray,
-            disabledContentColor = Color.DarkGray
+            containerColor = ImageSearchColorScheme.defaultScheme.tertiary,
+            contentColor = ImageSearchColorScheme.defaultScheme.onTertiary,
+            disabledContainerColor = ImageSearchColorScheme.defaultScheme.disabled,
+            disabledContentColor = ImageSearchColorScheme.defaultScheme.onDisabled
         ),
         enabled = enabled
     ){
@@ -63,9 +66,8 @@ fun NegativeDialogButton(@StringRes labelId: Int, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            //TODO change color resource to theme color
-            containerColor = colorResource(id = R.color.theme_secondary),
-            contentColor = colorResource(id = R.color.white),
+            containerColor = ImageSearchColorScheme.defaultScheme.primary,
+            contentColor = ImageSearchColorScheme.defaultScheme.onPrimary,
         )
     ){
         Text(text = stringResource(id = labelId))

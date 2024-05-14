@@ -62,8 +62,15 @@ import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
+import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
+import com.sparta.imagesearch.presentation.theme.Padding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+val GRID_CELL_MIN_SIZE = 128.dp
+val GRID_CELL_FIZED = 2
+val SEARCH_BAR_ICON_SCALE = 1.5f
+val FAB_ICON_SIZE = 20.dp
 
 @Composable
 fun SearchScreen(
@@ -76,9 +83,9 @@ fun SearchScreen(
 
     val gridCellConfiguration =
         if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            StaggeredGridCells.Adaptive(minSize = 128.dp)
+            StaggeredGridCells.Adaptive(minSize = GRID_CELL_MIN_SIZE)
         } else {
-            StaggeredGridCells.Fixed(2)
+            StaggeredGridCells.Fixed(GRID_CELL_FIZED)
         }
     val gridState = rememberLazyStaggeredGridState()
     val showScrollToTopFab by remember {
@@ -89,8 +96,8 @@ fun SearchScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = colorResource(id = R.color.theme_bg),
-        contentColor = Color.White,
+        containerColor = ImageSearchColorScheme.defaultScheme.background,
+        contentColor = ImageSearchColorScheme.defaultScheme.onBackground,
         bottomBar = {
             ImageSearchBottomNavBar(
                 selectedNavItem = BottomNavItem.Search,
@@ -99,7 +106,7 @@ fun SearchScreen(
         },
         floatingActionButton = {
             AnimatedVisibility(
-                modifier = modifier.padding(16.dp),
+                modifier = modifier.padding(Padding.default),
                 visible = showScrollToTopFab
             ) {
                 ScrollToTopFab(gridState = gridState)
@@ -116,7 +123,7 @@ fun SearchScreen(
                 onSearch = searchScreenInputs::updateKeyword
             )
             ResultItemsContent(
-                modifier = modifier.padding(top = 8.dp),
+                modifier = modifier.padding(top = Padding.medium),
                 gridCells = gridCellConfiguration,
                 gridState = gridState,
                 resultItems = searchScreenState.resultItems,
@@ -141,15 +148,15 @@ fun ImageSearchBar(
     SearchBar(
         modifier = modifier
             .background(Color.Transparent)
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp),
+            .padding(horizontal = Padding.default)
+            .padding(top = Padding.medium),
         colors = SearchBarDefaults.colors(
-            containerColor = colorResource(id = R.color.theme_secondary),
-            dividerColor = colorResource(id = R.color.theme_accent),
+            containerColor = ImageSearchColorScheme.defaultScheme.surface,
+            dividerColor = ImageSearchColorScheme.defaultScheme.tertiary,
             inputFieldColors = TextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                cursorColor = colorResource(id = R.color.theme_accent)
+                focusedTextColor = ImageSearchColorScheme.defaultScheme.onSurface,
+                unfocusedTextColor = ImageSearchColorScheme.defaultScheme.onSurface,
+                cursorColor = ImageSearchColorScheme.defaultScheme.tertiary
             )
         ),
         query = query,
@@ -162,9 +169,9 @@ fun ImageSearchBar(
         onActiveChange = setSearchBarActive,
         leadingIcon = {
             Image(
-                modifier = Modifier.scale(1.5f),
+                modifier = Modifier.scale(SEARCH_BAR_ICON_SCALE),
                 painter = painterResource(id = R.drawable.icon_search),
-                colorFilter = ColorFilter.tint(colorResource(id = R.color.theme_accent)),
+                colorFilter = ColorFilter.tint(ImageSearchColorScheme.defaultScheme.tertiary),
                 contentDescription = ""
             )
         },
@@ -189,9 +196,9 @@ fun ResultItemsContent(
         LazyVerticalStaggeredGrid(
             state = gridState,
             columns = gridCells,
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalItemSpacing = 8.dp
+            contentPadding = PaddingValues(Padding.default),
+            horizontalArrangement = Arrangement.spacedBy(Padding.medium),
+            verticalItemSpacing = Padding.medium
         ) {
             items(items = resultItems, key = { it.imageUrl }) {
                 ImageSearchItem(
@@ -214,8 +221,8 @@ fun ScrollToTopFab(
         Button(
             modifier = modifier,
             colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.theme_accent),
-                contentColor = colorResource(id = R.color.theme_secondary)
+                containerColor = ImageSearchColorScheme.defaultScheme.tertiary,
+                contentColor = ImageSearchColorScheme.defaultScheme.onTertiary
             ),
             onClick = {
                 scope.launch { gridState.animateScrollToItem(0) }
@@ -225,8 +232,8 @@ fun ScrollToTopFab(
                 painter = painterResource(id = R.drawable.icon_up),
                 contentDescription = "",
                 modifier = Modifier
-                    .padding(2.dp)
-                    .size(20.dp)
+                    .padding(Padding.xSmall)
+                    .size(FAB_ICON_SIZE)
             )
         }
     }

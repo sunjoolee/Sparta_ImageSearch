@@ -26,7 +26,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.skydoves.landscapist.ImageOptions
@@ -36,7 +35,13 @@ import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.FolderColor
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
+import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
+import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.util.ShimmerBrush
+
+val ITEM_HEART_SCALE = 1.2f
+val ITEM_HEART_ICON_SCALE = 1.5f
+val ITEM_IMAGE_SHIMMER_SIZE = 160.dp
 
 @Composable
 fun ImageSearchItem(
@@ -52,8 +57,8 @@ fun ImageSearchItem(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.theme_secondary),
-            contentColor = Color.White
+            containerColor = ImageSearchColorScheme.defaultScheme.surface,
+            contentColor = ImageSearchColorScheme.defaultScheme.onSurface
         )
     ) {
         Column(
@@ -70,8 +75,8 @@ fun ImageSearchItem(
                 ItemHeart(
                     modifier = modifier
                         .align(Alignment.TopEnd)
-                        .padding(10.dp)
-                        .scale(1.2f),
+                        .padding(Padding.medium)
+                        .scale(ITEM_HEART_SCALE),
                     folderColor = folderColor,
                     onHeartClick = {
                         Log.d("ImageSearchItem)", "onHeartClick) item url: ${item.imageUrl}")
@@ -84,7 +89,7 @@ fun ImageSearchItem(
                 )
             }
             Column(
-                modifier = modifier.padding(8.dp)
+                modifier = modifier.padding(Padding.medium)
             ) {
                 Text(text = item.time)
                 Text(text = item.source)
@@ -105,7 +110,7 @@ fun ItemImage(
         Spacer(
             modifier = modifier
                 .fillMaxWidth()
-                .size(160.dp)
+                .size(ITEM_IMAGE_SHIMMER_SIZE)
                 .background(brush = ShimmerBrush())
         )
     }
@@ -139,7 +144,7 @@ fun ItemHeart(
         colorFilter = ColorFilter.tint(color = heartColor.value),
         contentDescription = "",
         modifier = modifier
-            .scale(1.5f)
+            .scale(ITEM_HEART_ICON_SCALE)
             .combinedClickable(
                 onClick = onHeartClick,
                 onLongClick = onHeartLongClick

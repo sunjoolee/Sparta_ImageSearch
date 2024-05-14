@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sparta.imagesearch.R
+import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.util.SelectIndicator
 
@@ -33,7 +35,8 @@ fun ImageSearchBottomNavBar(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = colorResource(id = R.color.theme_secondary)
+        color = ImageSearchColorScheme.defaultScheme.surface,
+        contentColor = ImageSearchColorScheme.defaultScheme.onSurface
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -69,12 +72,15 @@ fun ImageSearchBottomNavItem(
             modifier = Modifier.padding(bottom = Padding.small),
             painter = painterResource(id = iconId),
             colorFilter = ColorFilter.tint(
-                if (selected) colorResource(id = R.color.theme_accent) else Color.Gray
+                if (selected) ImageSearchColorScheme.defaultScheme.tertiary
+                else ImageSearchColorScheme.defaultScheme.disabled
             ),
             contentDescription = ""
         )
         Text(
-            color = if (selected) Color.White else Color.Gray,
+            color =
+            if (selected) ImageSearchColorScheme.defaultScheme.onSurface
+            else ImageSearchColorScheme.defaultScheme.disabled,
             text = stringResource(id = labelId)
         )
     }

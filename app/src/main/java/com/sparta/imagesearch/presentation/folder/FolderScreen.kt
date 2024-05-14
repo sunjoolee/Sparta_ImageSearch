@@ -1,16 +1,21 @@
 package com.sparta.imagesearch.presentation.folder
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -35,7 +40,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,10 +52,13 @@ import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
+import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.util.SelectIndicator
 import com.sparta.imagesearch.presentation.util.hexToColor
 
+val FOLDER_LIST_ITEM_IMAGE_SCALE = 1.2f
+val FOLDER_DROP_DOWN_ICON_SCALE = 3.5f
 
 @Composable
 fun FolderScreen(
@@ -64,10 +71,9 @@ fun FolderScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = colorResource(id = R.color.theme_bg),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             FolderListTopBar(
-                modifier = modifier.fillMaxHeight(0.1f),
                 folders = folderScreenState.folders,
                 selectedFolderId = folderScreenState.selectedFolderId,
                 onFolderClick = folderScreenInputs::selectFolder,
@@ -148,6 +154,7 @@ fun FolderListTopBar(
                 isSelected = { folderId -> selectedFolderId == folderId },
                 onFolderClick = onFolderClick
             )
+            Spacer(modifier = Modifier.padding(start = Padding.default))
             FolderDropDown(
                 modifier = modifier.fillMaxWidth(),
                 onAddClick = onAddClick,
@@ -165,13 +172,15 @@ fun FolderList(
     onFolderClick: (folder: Folder) -> Unit
 ) {
     Surface(
-        color = colorResource(id = R.color.theme_secondary),
+        color = ImageSearchColorScheme.defaultScheme.surface,
+        contentColor = ImageSearchColorScheme.defaultScheme.onSurface,
         shape = RoundedCornerShape(16.dp)
     ) {
         LazyRow(
             modifier = modifier,
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.spacedBy(Padding.default),
+            contentPadding = PaddingValues(Padding.default)
         ) {
             items(items = folders, key = { it.id }) {
                 FolderListItem(
@@ -195,11 +204,11 @@ fun FolderListItem(
     )
 
     Column(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            modifier = modifier.scale(1.2f),
+            modifier = modifier.scale(FOLDER_LIST_ITEM_IMAGE_SCALE),
             painter = painterResource(id = R.drawable.icon_folder),
             colorFilter = ColorFilter.tint(folder.colorHex.hexToColor()),
             contentDescription = ""
@@ -209,12 +218,9 @@ fun FolderListItem(
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            color = Color.White,
             text = folder.name
         )
-        SelectIndicator(
-            alpha = indicatorAlpha.value
-        )
+        SelectIndicator(alpha = indicatorAlpha.value)
     }
 }
 
@@ -228,22 +234,23 @@ fun FolderDropDown(
     var expanded by remember { mutableStateOf(false) }
 
     Box(
-        modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        modifier = modifier.fillMaxWidth().padding(top = Padding.large),
+        contentAlignment = Alignment.Center,
     ) {
         FolderDropDownIcon(
-            modifier = modifier.scale(3.5f),
+            modifier = Modifier.fillMaxWidth(),
             onClick = { expanded = true }
         )
-
         DropdownMenu(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier
+                .background(color = ImageSearchColorScheme.defaultScheme.dropdown),
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             Text(
                 modifier = modifier
-                    .padding(bottom = 8.dp)
+                    .padding(horizontal = Padding.medium)
+                    .padding(vertical = Padding.small)
                     .clickable {
                         onAddClick()
                         expanded = false
@@ -252,6 +259,8 @@ fun FolderDropDown(
             )
             Text(
                 modifier = modifier
+                    .padding(horizontal = Padding.medium)
+                    .padding(bottom = Padding.small)
                     .clickable {
                         onDeleteClick()
                         expanded = false
@@ -269,10 +278,9 @@ fun FolderDropDownIcon(
 ) {
     Image(
         modifier = modifier
-            .padding(1.dp)
             .clickable { onClick() },
         painter = painterResource(id = R.drawable.icon_menu),
-        colorFilter = ColorFilter.tint(Color.White),
+        colorFilter = ColorFilter.tint(ImageSearchColorScheme.defaultScheme.onDropDown),
         contentDescription = ""
     )
 }
@@ -291,9 +299,9 @@ fun FolderItemsContent(
     ) {
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalItemSpacing = 8.dp
+            contentPadding = PaddingValues(Padding.default),
+            horizontalArrangement = Arrangement.spacedBy(Padding.medium),
+            verticalItemSpacing = Padding.medium
         ) {
             items(items = folderItems, key = { it.imageUrl }) { item ->
                 ImageSearchItem(

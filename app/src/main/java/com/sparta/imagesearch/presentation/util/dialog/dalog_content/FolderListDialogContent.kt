@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,12 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.Folder
 import com.sparta.imagesearch.domain.FolderId
+import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.util.dialog.FOLDER_ITEM_HEIGHT_DP
 import com.sparta.imagesearch.presentation.util.dialog.FOLDER_SELECT_ICON_SCALE
@@ -74,8 +75,8 @@ fun FolderItem(
         modifier = Modifier.padding(bottom = Padding.medium),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.theme_secondary),
-            contentColor = colorResource(id = R.color.white)
+            containerColor = ImageSearchColorScheme.defaultScheme.surface,
+            contentColor = ImageSearchColorScheme.defaultScheme.onSurface
         )
     ) {
         Row(

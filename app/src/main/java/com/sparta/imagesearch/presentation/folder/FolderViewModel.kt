@@ -153,5 +153,4 @@ class FolderViewModel @Inject constructor(
         _showMoveDialog.value = false
         _targetItem.value = null
     }
-
 }
