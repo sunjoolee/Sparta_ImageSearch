@@ -9,12 +9,11 @@ import com.sparta.imagesearch.domain.DefaultFolder
 import com.sparta.imagesearch.domain.Folder
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
-import com.sparta.imagesearch.domain.repositoryInterface.FolderRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
+import com.sparta.imagesearch.domain.usecase.GetFoldersUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,7 +22,7 @@ import javax.inject.Inject
 data class FolderScreenState(
     val folders: List<Folder> = emptyList(),
     val selectedFolderId: Int = FolderId.DEFAULT_FOLDER.id,
-    val savedItemsInFolder: List<Item> = emptyList(),
+    val selectedFolderItems:List<Item> = emptyList(),
     val showAddDialog: Boolean = false,
     val showDeleteDialog: Boolean = false,
     val showMoveDialog: Boolean = false,
@@ -43,15 +42,13 @@ interface FolderScreenInputs {
 
 @HiltViewModel
 class FolderViewModel @Inject constructor(
-    private val savedItemRepository: SavedItemRepository,
-    private val folderRepository: FolderRepository
+    private val getFoldersUsecase: GetFoldersUsecase,
+    private val savedItemRepository: SavedItemRepository
 ) : ViewModel(), FolderScreenInputs {
     private val TAG = this::class.java.simpleName
 
     private val _folders = MutableStateFlow<List<Folder>>(emptyList())
     private val _selectedFolderId = MutableStateFlow(FolderId.DEFAULT_FOLDER.id)
-    private val _savedItems = MutableStateFlow<List<Item>>(emptyList())
-    private val _savedItemsInFolder = MutableStateFlow<List<Item>>(emptyList())
     private val _showAddDialog = MutableStateFlow<Boolean>(false)
     private val _showDeleteDialog = MutableStateFlow<Boolean>(false)
     private val _showMoveDialog = MutableStateFlow<Boolean>(false)
@@ -64,8 +61,7 @@ class FolderViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            folderRepository.getAllFolders().collect { folders ->
-                Log.d(TAG, "collect folders) folders.size: ${folders.size}")
+            getFoldersUsecase.invoke().collect { folders ->
                 _folders.update {
                     if (folders.find { it.id == FolderId.DEFAULT_FOLDER.id } == null)
                         listOf(DefaultFolder.toFolder()) + folders
@@ -73,41 +69,20 @@ class FolderViewModel @Inject constructor(
                 }
             }
         }
-        viewModelScope.launch {
-            savedItemRepository.getAllSavedItems().collect {
-                Log.d(TAG, "collect savedItems) savedItems.size: ${it.size}")
-                _savedItems.value = it
-            }
-        }
-
-        combine(_selectedFolderId, _savedItems) { selectedFolderId, savedItems ->
-            Log.d(
-                TAG,
-                "combine savedItemsInFolder) selectedFolderId: $selectedFolderId, savedItems: ${savedItems}"
-            )
-            _savedItemsInFolder.update {
-                savedItems.filter { it.folderId == selectedFolderId }
-            }
-            Log.d(
-                TAG,
-                "combine savedItemsInFolder) savedItemsInFolder: ${_savedItemsInFolder.value}"
-            )
-        }.launchIn(viewModelScope)
 
         combine(
             _folders,
             _selectedFolderId,
-            _savedItemsInFolder,
             _showAddDialog,
             _showDeleteDialog,
             _showMoveDialog,
             _targetItem
-        ) { folders, selectedFolderId, itemsInFolder,
+        ) { folders, selectedFolderId,
             showAddDialog, showDeleteDialog, showMoveDialog, targetItem->
             _state.value = FolderScreenState(
                 folders = folders,
                 selectedFolderId = selectedFolderId,
-                savedItemsInFolder = itemsInFolder,
+                selectedFolderItems = folders.find { it.id == selectedFolderId }?.items ?: emptyList(),
                 showAddDialog = showAddDialog,
                 showDeleteDialog = showDeleteDialog,
                 showMoveDialog = showMoveDialog,
