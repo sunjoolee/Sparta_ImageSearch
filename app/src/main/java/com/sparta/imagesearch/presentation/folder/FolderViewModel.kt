@@ -11,7 +11,6 @@ import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.FolderRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
-import com.sparta.imagesearch.domain.usecase.GetFoldersUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
