@@ -1,14 +1,16 @@
 package com.sparta.imagesearch.presentation.search
 
 import android.util.Log
+import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sparta.imagesearch.data.ApiResponse
 import com.sparta.imagesearch.data.mappers.toItem
-import com.sparta.imagesearch.data.source.local.keyword.KeywordSharedPref
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.KakaoSearchRepository
+import com.sparta.imagesearch.domain.repositoryInterface.KeywordRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +30,7 @@ data class SearchScreenState(
 class SearchViewModel @Inject constructor(
     private val kakaoSearchRepository: KakaoSearchRepository,
     private val savedItemRepository: SavedItemRepository,
+    private val keywordRepository: KeywordRepository
 ) : ViewModel(), SearchScreenInputs {
     private val TAG = this::class.java.simpleName
 
@@ -42,8 +45,11 @@ class SearchViewModel @Inject constructor(
     val inputs = this@SearchViewModel
 
     init {
-        initKeyword()
-
+        viewModelScope.launch {
+            keywordRepository.getKeyword().collect {
+                _keyword.value = it
+            }
+        }
         viewModelScope.launch {
             _keyword.collect {
                 Log.d(TAG, "collect keyword) keyword: $it")
@@ -74,14 +80,11 @@ class SearchViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun initKeyword() {
-        _keyword.value = KeywordSharedPref.loadKeyword()
-        Log.d(TAG, "initKeyword) keyword: ${_keyword.value}")
-    }
-
     override fun updateKeyword(newKeyword: String) {
         _keyword.value = newKeyword
-        KeywordSharedPref.saveKeyword(newKeyword)
+        viewModelScope.launch {
+            keywordRepository.setKeyword(newKeyword)
+        }
         Log.d(TAG, "updateKeyword) keyword: ${_keyword.value}")
     }
 

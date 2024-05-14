@@ -55,13 +55,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
     implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
-
-    implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
@@ -77,15 +75,11 @@ dependencies {
     ksp 'com.squareup.moshi:moshi-kotlin-codegen:1.15.1'
     implementation 'com.squareup.moshi:moshi-adapters:1.15.1'
 
-    implementation "androidx.paging:paging-runtime-ktx:3.2.1"
-    implementation "androidx.paging:paging-compose:3.2.1"
-
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
     implementation 'com.github.skydoves:landscapist-glide:2.3.3'
 
-    implementation 'com.github.Dhaval2404:ColorPicker:2.3'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -110,9 +104,11 @@ dependencies {
     implementation platform('androidx.compose:compose-bom:2024.05.00')
     androidTestImplementation platform('androidx.compose:compose-bom:2024.05.00')
     implementation 'androidx.compose.material3:material3:1.2.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0'
 
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+    implementation 'androidx.datastore:datastore-preferences:1.1.1'
 }
