@@ -2,15 +2,12 @@ package com.sparta.imagesearch.presentation.search
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,9 +17,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,31 +24,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sparta.imagesearch.R
@@ -62,8 +47,8 @@ import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
-import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
 import com.sparta.imagesearch.presentation.theme.Padding
+import com.sparta.imagesearch.presentation.theme.scheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -96,8 +81,8 @@ fun SearchScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = ImageSearchColorScheme.defaultScheme.background,
-        contentColor = ImageSearchColorScheme.defaultScheme.onBackground,
+        containerColor = MaterialTheme.scheme.background,
+        contentColor = MaterialTheme.scheme.onBackground,
         bottomBar = {
             ImageSearchBottomNavBar(
                 selectedNavItem = BottomNavItem.Search,
@@ -151,12 +136,12 @@ fun ImageSearchBar(
             .padding(horizontal = Padding.default)
             .padding(top = Padding.medium),
         colors = SearchBarDefaults.colors(
-            containerColor = ImageSearchColorScheme.defaultScheme.surface,
-            dividerColor = ImageSearchColorScheme.defaultScheme.tertiary,
+            containerColor = MaterialTheme.scheme.surface,
+            dividerColor = MaterialTheme.scheme.tertiary,
             inputFieldColors = TextFieldDefaults.colors(
-                focusedTextColor = ImageSearchColorScheme.defaultScheme.onSurface,
-                unfocusedTextColor = ImageSearchColorScheme.defaultScheme.onSurface,
-                cursorColor = ImageSearchColorScheme.defaultScheme.tertiary
+                focusedTextColor = MaterialTheme.scheme.onSurface,
+                unfocusedTextColor = MaterialTheme.scheme.onSurface,
+                cursorColor = MaterialTheme.scheme.tertiary
             )
         ),
         query = query,
@@ -171,7 +156,7 @@ fun ImageSearchBar(
             Image(
                 modifier = Modifier.scale(SEARCH_BAR_ICON_SCALE),
                 painter = painterResource(id = R.drawable.icon_search),
-                colorFilter = ColorFilter.tint(ImageSearchColorScheme.defaultScheme.tertiary),
+                colorFilter = ColorFilter.tint(MaterialTheme.scheme.tertiary),
                 contentDescription = ""
             )
         },
@@ -221,8 +206,8 @@ fun ScrollToTopFab(
         Button(
             modifier = modifier,
             colors = ButtonDefaults.buttonColors(
-                containerColor = ImageSearchColorScheme.defaultScheme.tertiary,
-                contentColor = ImageSearchColorScheme.defaultScheme.onTertiary
+                containerColor = MaterialTheme.scheme.tertiary,
+                contentColor = MaterialTheme.scheme.onTertiary
             ),
             onClick = {
                 scope.launch { gridState.animateScrollToItem(0) }

@@ -46,29 +46,34 @@ data class ImageSearchColors(
     val onSurface get() = material.onSurface
 }
 
+sealed class ImageSearchColorScheme {
+    abstract val lightScheme: ImageSearchColors
+    abstract val darkScheme: ImageSearchColors
 
-data object ImageSearchColorScheme {
-    val defaultScheme = ImageSearchColors(
-        material = darkColorScheme(
-            primary = primary,
-            onPrimary = onPrimary,
-            tertiary = tertiary,
-            onTertiary = onTertiary,
-            background = background,
-            onBackground = onBackground,
-            surface = surface,
-            onSurface = onSurface
-        ),
-        disabled = disabled,
-        onDisabled = onDisabled,
-        dropdown = dropdown,
-        onDropDown = onDropDown,
-        basicFolderColor1 = basicFolderColor1,
-        basicFolderColor2 = basicFolderColor2,
-        basicFolderColor3 = basicFolderColor3,
-        basicFolderColor4 = basicFolderColor4,
-        basicFolderColor5 = basicFolderColor5
-    )
+    data object Main : ImageSearchColorScheme() {
+        override val lightScheme = ImageSearchColors(
+            material = darkColorScheme(
+                primary = primary,
+                onPrimary = onPrimary,
+                tertiary = tertiary,
+                onTertiary = onTertiary,
+                background = background,
+                onBackground = onBackground,
+                surface = surface,
+                onSurface = onSurface
+            ),
+            disabled = disabled,
+            onDisabled = onDisabled,
+            dropdown = dropdown,
+            onDropDown = onDropDown,
+            basicFolderColor1 = basicFolderColor1,
+            basicFolderColor2 = basicFolderColor2,
+            basicFolderColor3 = basicFolderColor3,
+            basicFolderColor4 = basicFolderColor4,
+            basicFolderColor5 = basicFolderColor5
+        )
+        override val darkScheme = lightScheme
+    }
 }
 
 

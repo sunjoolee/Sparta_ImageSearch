@@ -6,13 +6,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import com.sparta.imagesearch.R
-import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
-import com.sparta.imagesearch.presentation.theme.ImageSearchTheme
 import com.sparta.imagesearch.presentation.theme.disabled
+import com.sparta.imagesearch.presentation.theme.scheme
 
 sealed class DialogButton{
     abstract val labelId: Int
@@ -50,10 +46,10 @@ fun PositiveDialogButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = ImageSearchColorScheme.defaultScheme.tertiary,
-            contentColor = ImageSearchColorScheme.defaultScheme.onTertiary,
-            disabledContainerColor = ImageSearchColorScheme.defaultScheme.disabled,
-            disabledContentColor = ImageSearchColorScheme.defaultScheme.onDisabled
+            containerColor = MaterialTheme.scheme.tertiary,
+            contentColor = MaterialTheme.scheme.onTertiary,
+            disabledContainerColor = MaterialTheme.scheme.disabled,
+            disabledContentColor = MaterialTheme.scheme.onDisabled
         ),
         enabled = enabled
     ){
@@ -66,8 +62,8 @@ fun NegativeDialogButton(@StringRes labelId: Int, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = ImageSearchColorScheme.defaultScheme.primary,
-            contentColor = ImageSearchColorScheme.defaultScheme.onPrimary,
+            containerColor = MaterialTheme.scheme.primary,
+            contentColor = MaterialTheme.scheme.onPrimary,
         )
     ){
         Text(text = stringResource(id = labelId))
