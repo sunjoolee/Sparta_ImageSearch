@@ -1,6 +1,5 @@
 package com.sparta.imagesearch.presentation.folder
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sparta.imagesearch.domain.Folder
@@ -18,7 +17,7 @@ import javax.inject.Inject
 data class DeleteFolderDialogState(
     val folders: List<Folder> = emptyList(),
     val deleteFoldersId: List<Int> = emptyList(),
-    val confirmButtonEnabled: Boolean = false
+    val canDeleteFolders: Boolean = false
 )
 
 interface DeleteFolderDialogInputs {

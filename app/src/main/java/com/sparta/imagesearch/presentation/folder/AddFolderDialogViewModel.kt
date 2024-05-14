@@ -16,7 +16,7 @@ import javax.inject.Inject
 data class AddFolderDialogState(
     val folderName: String = "",
     val folderColorHex: String = FolderColor.COLOR1.colorHex,
-    val confirmButtonEnabled: Boolean = false
+    val canAddFolder: Boolean = false
 )
 
 

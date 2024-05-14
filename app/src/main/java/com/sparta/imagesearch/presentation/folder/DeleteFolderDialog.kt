@@ -64,7 +64,8 @@ fun DeleteFolderDialog(
                 deleteFolderDialogInputs.deleteFolders()
                 deleteFolderDialogInputs.clearDeleteFoldersId()
                 onDismissRequest()
-            }
+            },
+            enabled = deleteFolderDialogState.canDeleteFolders
         ),
         onDismissRequest = onDismissRequest
     )

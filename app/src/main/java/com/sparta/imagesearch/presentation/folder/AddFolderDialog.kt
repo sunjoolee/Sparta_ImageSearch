@@ -40,7 +40,8 @@ fun AddFolderDialog(
             onClick = {
                 addFolderDialogInputs.addFolder()
                 onDismissRequest()
-            }
+            },
+            enabled = addFolderDialogState.canAddFolder
         ),
         onDismissRequest = onDismissRequest
     )

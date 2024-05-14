@@ -28,6 +28,7 @@ fun BaseDialog(
     dialogContent: DialogContent,
     dialogNegButton: DialogButton? = null,
     dialogPosButton: DialogButton,
+    enablePosButton: Boolean = true,
     onDismissRequest: () -> Unit,
 ) {
     Dialog(
