@@ -31,7 +31,7 @@ interface AddFolderDialogInputs {
 class AddFolderDialogViewModel @Inject constructor(
     private val folderRepository: FolderRepository
 ) : ViewModel(), AddFolderDialogInputs {
-    private val TAG = "AddFolderDialogViewModel"
+    private val TAG = this::class.java.simpleName
 
     private val _folderName = MutableStateFlow("")
     private val _folderColorHex = MutableStateFlow(FolderColor.COLOR1.colorHex)

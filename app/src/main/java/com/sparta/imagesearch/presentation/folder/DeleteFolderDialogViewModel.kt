@@ -31,7 +31,7 @@ class DeleteFolderDialogViewModel @Inject constructor(
     private val folderRepository: FolderRepository,
     private val savedItemRepository: SavedItemRepository
 ) : ViewModel(), DeleteFolderDialogInputs {
-    private val TAG = "DeleteFolderDialogViewModel"
+    private val TAG = this::class.java.simpleName
 
     private val _folders = MutableStateFlow<List<Folder>>(emptyList())
     private val _deleteFoldersId = MutableStateFlow<List<Int>>(emptyList())

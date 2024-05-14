@@ -11,6 +11,7 @@ import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.FolderRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
+import com.sparta.imagesearch.domain.usecase.GetFoldersUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,7 +47,7 @@ class FolderViewModel @Inject constructor(
     private val savedItemRepository: SavedItemRepository,
     private val folderRepository: FolderRepository
 ) : ViewModel(), FolderScreenInputs {
-    private val TAG = "FolderViewModel"
+    private val TAG = this::class.java.simpleName
 
     private val _folders = MutableStateFlow<List<Folder>>(emptyList())
     private val _selectedFolderId = MutableStateFlow(FolderId.DEFAULT_FOLDER.id)

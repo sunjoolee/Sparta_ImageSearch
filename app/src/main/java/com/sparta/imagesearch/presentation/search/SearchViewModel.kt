@@ -29,7 +29,7 @@ class SearchViewModel @Inject constructor(
     private val kakaoSearchRepository: KakaoSearchRepository,
     private val savedItemRepository: SavedItemRepository,
 ) : ViewModel(), SearchScreenInputs {
-    private val TAG = "SearchModel"
+    private val TAG = this::class.java.simpleName
 
     private val _keyword = MutableStateFlow("")
     private val _searchItems = MutableStateFlow<List<Item>>(emptyList())

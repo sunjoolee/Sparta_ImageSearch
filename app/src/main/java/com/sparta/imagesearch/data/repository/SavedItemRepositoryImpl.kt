@@ -14,7 +14,7 @@ import javax.inject.Inject
 class SavedItemRepositoryImpl @Inject constructor(
     private val savedItemSource: SavedItemDatabase
 ) : SavedItemRepository {
-    private val TAG = "SavedItemRepositoryImpl"
+    private val TAG = this::class.java.simpleName
 
     private val savedItemSourceDAO = savedItemSource.getSavedItemDAO()
     override suspend fun saveSavedItem(item: Item) = withContext(Dispatchers.IO) {
