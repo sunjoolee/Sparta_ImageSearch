@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.Folder
 import com.sparta.imagesearch.domain.FolderId
-import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
 import com.sparta.imagesearch.presentation.theme.Padding
+import com.sparta.imagesearch.presentation.theme.scheme
 import com.sparta.imagesearch.presentation.util.dialog.FOLDER_ITEM_HEIGHT_DP
 import com.sparta.imagesearch.presentation.util.dialog.FOLDER_SELECT_ICON_SCALE
 import com.sparta.imagesearch.presentation.util.hexToColor
@@ -75,8 +75,8 @@ fun FolderItem(
         modifier = Modifier.padding(bottom = Padding.medium),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = ImageSearchColorScheme.defaultScheme.surface,
-            contentColor = ImageSearchColorScheme.defaultScheme.onSurface
+            containerColor = MaterialTheme.scheme.surface,
+            contentColor = MaterialTheme.scheme.onSurface
         )
     ) {
         Row(

@@ -2,7 +2,6 @@ package com.sparta.imagesearch.presentation
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,15 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sparta.imagesearch.R
-import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
 import com.sparta.imagesearch.presentation.theme.Padding
-import com.sparta.imagesearch.presentation.util.SelectIndicator
+import com.sparta.imagesearch.presentation.theme.scheme
 
 
 @Composable
@@ -35,8 +31,8 @@ fun ImageSearchBottomNavBar(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = ImageSearchColorScheme.defaultScheme.surface,
-        contentColor = ImageSearchColorScheme.defaultScheme.onSurface
+        color = MaterialTheme.scheme.surface,
+        contentColor = MaterialTheme.scheme.onSurface
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -72,15 +68,15 @@ fun ImageSearchBottomNavItem(
             modifier = Modifier.padding(bottom = Padding.small),
             painter = painterResource(id = iconId),
             colorFilter = ColorFilter.tint(
-                if (selected) ImageSearchColorScheme.defaultScheme.tertiary
-                else ImageSearchColorScheme.defaultScheme.disabled
+                if (selected) MaterialTheme.scheme.tertiary
+                else MaterialTheme.scheme.disabled
             ),
             contentDescription = ""
         )
         Text(
             color =
-            if (selected) ImageSearchColorScheme.defaultScheme.onSurface
-            else ImageSearchColorScheme.defaultScheme.disabled,
+            if (selected) MaterialTheme.scheme.onSurface
+            else MaterialTheme.scheme.disabled,
             text = stringResource(id = labelId)
         )
     }

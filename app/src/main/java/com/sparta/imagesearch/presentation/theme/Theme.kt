@@ -21,9 +21,12 @@ import androidx.core.view.WindowCompat
 
 @Composable
 fun ImageSearchTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = ImageSearchColorScheme.defaultScheme
+    val colorScheme =
+        if(darkTheme) ImageSearchColorScheme.Main.darkScheme
+        else ImageSearchColorScheme.Main.lightScheme
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -34,7 +37,7 @@ fun ImageSearchTheme(
     }
 
     MaterialTheme(
-        colorScheme = ImageSearchColorScheme.defaultScheme.material,
+        colorScheme = colorScheme.material,
         typography = AppTypography,
         content = content
     )

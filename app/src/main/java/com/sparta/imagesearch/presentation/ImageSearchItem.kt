@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,8 +36,8 @@ import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.FolderColor
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
-import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
 import com.sparta.imagesearch.presentation.theme.Padding
+import com.sparta.imagesearch.presentation.theme.scheme
 import com.sparta.imagesearch.presentation.util.ShimmerBrush
 
 val ITEM_HEART_SCALE = 1.2f
@@ -57,8 +58,8 @@ fun ImageSearchItem(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = ImageSearchColorScheme.defaultScheme.surface,
-            contentColor = ImageSearchColorScheme.defaultScheme.onSurface
+            containerColor = MaterialTheme.scheme.surface,
+            contentColor = MaterialTheme.scheme.onSurface
         )
     ) {
         Column(

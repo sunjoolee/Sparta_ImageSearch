@@ -50,8 +50,8 @@ import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.BottomNavItem
 import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
-import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
 import com.sparta.imagesearch.presentation.theme.Padding
+import com.sparta.imagesearch.presentation.theme.scheme
 import com.sparta.imagesearch.presentation.util.SelectIndicator
 import com.sparta.imagesearch.presentation.util.hexToColor
 
@@ -170,8 +170,8 @@ fun FolderList(
     onFolderClick: (folder: Folder) -> Unit
 ) {
     Surface(
-        color = ImageSearchColorScheme.defaultScheme.surface,
-        contentColor = ImageSearchColorScheme.defaultScheme.onSurface,
+        color = MaterialTheme.scheme.surface,
+        contentColor = MaterialTheme.scheme.onSurface,
         shape = RoundedCornerShape(16.dp)
     ) {
         LazyRow(
@@ -241,7 +241,7 @@ fun FolderDropDown(
         )
         DropdownMenu(
             modifier = Modifier
-                .background(color = ImageSearchColorScheme.defaultScheme.dropdown),
+                .background(color = MaterialTheme.scheme.dropdown),
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
@@ -278,7 +278,7 @@ fun FolderDropDownIcon(
         modifier = modifier
             .clickable { onClick() },
         painter = painterResource(id = R.drawable.icon_menu),
-        colorFilter = ColorFilter.tint(ImageSearchColorScheme.defaultScheme.onDropDown),
+        colorFilter = ColorFilter.tint(MaterialTheme.scheme.onDropDown),
         contentDescription = ""
     )
 }

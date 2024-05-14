@@ -9,16 +9,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.sparta.imagesearch.R
-import com.sparta.imagesearch.presentation.theme.ImageSearchColorScheme
 import com.sparta.imagesearch.presentation.theme.Padding
+import com.sparta.imagesearch.presentation.theme.scheme
 
 @Composable
 fun BaseDialog(
@@ -36,8 +36,8 @@ fun BaseDialog(
         Card(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = ImageSearchColorScheme.defaultScheme.background,
-                contentColor = ImageSearchColorScheme.defaultScheme.onBackground
+                containerColor = MaterialTheme.scheme.background,
+                contentColor = MaterialTheme.scheme.onBackground
             )
         ) {
             Column(
