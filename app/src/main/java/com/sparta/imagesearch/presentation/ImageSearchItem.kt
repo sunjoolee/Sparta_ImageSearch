@@ -65,7 +65,9 @@ fun ImageSearchItem(
                 modifier = modifier.fillMaxWidth()
             ) {
                 ItemImage(
-                    modifier = modifier.align(Alignment.Center),
+                    modifier = modifier
+                        .align(Alignment.Center)
+                        .background(MaterialTheme.scheme.disabled),
                     imageUrl = item.imageUrl
                 )
                 ItemHeart(
@@ -81,8 +83,15 @@ fun ImageSearchItem(
             Column(
                 modifier = modifier.padding(Padding.medium)
             ) {
-                Text(text = item.time)
-                Text(text = item.source)
+                Text(
+                    text = item.source,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    color = MaterialTheme.scheme.disabled,
+                    text = item.time,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
     }

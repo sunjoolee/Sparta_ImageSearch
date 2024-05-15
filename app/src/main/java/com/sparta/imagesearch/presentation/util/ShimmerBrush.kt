@@ -14,9 +14,9 @@ import androidx.compose.ui.graphics.Color
 fun ShimmerBrush(showShimmer: Boolean = true, targetValue: Float = 1000f): Brush {
     return if (showShimmer) {
         val shimmerColors = listOf(
-            Color.LightGray.copy(alpha = 0.8f),
-            Color.LightGray.copy(alpha = 0.2f),
-            Color.LightGray.copy(alpha = 0.8f),
+            Color.DarkGray.copy(alpha = 0.8f),
+            Color.DarkGray.copy(alpha = 0.2f),
+            Color.DarkGray.copy(alpha = 0.8f),
         )
 
         val transition = rememberInfiniteTransition(label = "shimmer")
