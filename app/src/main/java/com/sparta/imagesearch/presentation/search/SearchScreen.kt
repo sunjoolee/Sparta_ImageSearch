@@ -35,7 +35,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -109,8 +108,7 @@ fun SearchScreen(
         ) {
             ImageSearchBar(
                 modifier = modifier.fillMaxWidth(),
-                query = searchScreenState.keyword,
-                onQueryChange = searchScreenInputs::updateKeyword,
+                keyword = searchScreenState.keyword,
                 onSearch = searchScreenInputs::updateKeyword
             )
             ResultItemsContent(
@@ -129,26 +127,32 @@ fun SearchScreen(
 @Composable
 fun ImageSearchBar(
     modifier: Modifier = Modifier,
-    query: String,
-    onQueryChange: (String) -> Unit,
+    keyword: String,
     onSearch: (String) -> Unit
 ) {
+    var textFieldValue  = rememberSaveable(keyword) {
+        TextFieldValue(text = keyword, selection = TextRange(keyword.length))
+    }
+
     TextField(
         modifier = modifier.background(Color.Transparent),
         textStyle = MaterialTheme.typography.bodyMedium,
         singleLine = true,
-        value = TextFieldValue(text = query, selection = TextRange(query.length)),
-        onValueChange = {
-            onQueryChange(it.text)
-        },
+        value = textFieldValue,
+        onValueChange = { textFieldValue = it },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = {onSearch(query)}),
+        keyboardActions = KeyboardActions(onSearch = { onSearch(textFieldValue.text) }),
         leadingIcon = {
             Image(
                 modifier = Modifier.scale(SEARCH_BAR_ICON_SCALE),
                 painter = painterResource(id = R.drawable.icon_search),
                 colorFilter = ColorFilter.tint(MaterialTheme.scheme.tertiary),
                 contentDescription = ""
+            )
+        },
+        trailingIcon = {
+            SearchBarButton(
+                onClick = { onSearch(textFieldValue.text) }
             )
         },
         placeholder = {
@@ -165,6 +169,24 @@ fun ImageSearchBar(
             cursorColor = MaterialTheme.scheme.tertiary
         )
     )
+}
+
+@Composable
+fun SearchBarButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.scheme.tertiary,
+            contentColor = MaterialTheme.scheme.onTertiary,
+            disabledContainerColor = MaterialTheme.scheme.disabled,
+            disabledContentColor = MaterialTheme.scheme.onDisabled
+        )
+    ) {
+        Text(text = stringResource(id = R.string.search))
+    }
 }
 
 @Composable

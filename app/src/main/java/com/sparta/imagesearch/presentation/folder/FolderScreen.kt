@@ -54,9 +54,8 @@ import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
 import com.sparta.imagesearch.presentation.util.SelectIndicator
 import com.sparta.imagesearch.presentation.util.hexToColor
-import javax.inject.Inject
 
-val FOLDER_LIST_ITEM_IMAGE_SCALE = 1.2f
+val FOLDER_LIST_ITEM_IMAGE_SCALE = 1.5f
 
 @Composable
 fun FolderScreen(
@@ -213,9 +212,12 @@ fun FolderListItem(
             contentDescription = ""
         )
         Text(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = Padding.medium),
             textAlign = TextAlign.Center,
             maxLines = 2,
+            style = MaterialTheme.typography.bodySmall,
             overflow = TextOverflow.Ellipsis,
             text = "${folder.name}(${folder.items.size})"
         )
@@ -233,7 +235,9 @@ fun FolderDropDown(
     var expanded by remember { mutableStateOf(false) }
 
     Box(
-        modifier = modifier.fillMaxWidth().padding(top = Padding.large),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = Padding.large),
         contentAlignment = Alignment.Center,
     ) {
         FolderDropDownIcon(
@@ -254,7 +258,8 @@ fun FolderDropDown(
                         onAddClick()
                         expanded = false
                     },
-                text = context.getString(R.string.more_add_folder)
+                text = context.getString(R.string.more_add_folder),
+                style = MaterialTheme.typography.bodyMedium
             )
             Text(
                 modifier = modifier
@@ -264,7 +269,8 @@ fun FolderDropDown(
                         onDeleteClick()
                         expanded = false
                     },
-                text = context.getString(R.string.more_delete_folder)
+                text = context.getString(R.string.more_delete_folder),
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
