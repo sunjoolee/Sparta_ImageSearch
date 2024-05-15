@@ -1,20 +1,16 @@
 package com.sparta.imagesearch.presentation.search
 
 import android.util.Log
-import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sparta.imagesearch.data.ApiResponse
-import com.sparta.imagesearch.data.mappers.toItem
 import com.sparta.imagesearch.domain.Folder
 import com.sparta.imagesearch.domain.FolderColor
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
-import com.sparta.imagesearch.domain.repositoryInterface.KakaoSearchRepository
 import com.sparta.imagesearch.domain.repositoryInterface.KeywordRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
 import com.sparta.imagesearch.domain.usecase.GetFoldersUsecase
+import com.sparta.imagesearch.domain.usecase.GetSearchItemsUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,10 +27,10 @@ data class SearchScreenState(
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val kakaoSearchRepository: KakaoSearchRepository,
     private val savedItemRepository: SavedItemRepository,
     private val keywordRepository: KeywordRepository,
-    private val getFoldersUsecase: GetFoldersUsecase
+    private val getFoldersUsecase: GetFoldersUsecase,
+    private val getSearchItemsUsecase: GetSearchItemsUsecase
 ) : ViewModel(), SearchScreenInputs {
     private val TAG = this::class.java.simpleName
 
@@ -51,7 +47,7 @@ class SearchViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getFoldersUsecase.invoke().collect{
+            getFoldersUsecase.invoke().collect {
                 _folders.value = it
             }
         }
@@ -63,7 +59,7 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             _keyword.collect {
                 Log.d(TAG, "collect keyword) keyword: $it")
-                loadSearchItems()
+                getSearchItems()
             }
         }
         viewModelScope.launch {
@@ -91,11 +87,10 @@ class SearchViewModel @Inject constructor(
     }
 
     override fun updateKeyword(newKeyword: String) {
-        _keyword.value = newKeyword
+        Log.d(TAG, "updateKeyword) newKeyword: $newKeyword")
         viewModelScope.launch {
             keywordRepository.setKeyword(newKeyword)
         }
-        Log.d(TAG, "updateKeyword) keyword: ${_keyword.value}")
     }
 
     override fun saveItem(item: Item) {
@@ -113,20 +108,8 @@ class SearchViewModel @Inject constructor(
     override fun getFolderColorHexById(folderId: Int): String =
         _folders.value.find { it.id == folderId }?.colorHex ?: FolderColor.NO_COLOR.colorHex
 
-    private suspend fun loadSearchItems() {
-        val query = _keyword.value
-        val imageResponseFlow = kakaoSearchRepository.getImages(query)
-        val videoResponseFlow = kakaoSearchRepository.getVideos(query)
-        imageResponseFlow.combine(videoResponseFlow) { i, v ->
-            val itemList = mutableListOf<Item>()
-            if (i is ApiResponse.Success) {
-                itemList.addAll(i.data.documents?.map { it.toItem() } ?: emptyList())
-            }
-            if (v is ApiResponse.Success) {
-                itemList.addAll(v.data.documents?.map { it.toItem() } ?: emptyList())
-            }
-            itemList.toList().sortedBy { it.time }
-        }.collect {
+    private suspend fun getSearchItems() {
+        getSearchItemsUsecase(_keyword.value).collect {
             _searchItems.value = it
         }
     }

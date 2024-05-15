@@ -17,14 +17,15 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,6 +34,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -40,6 +43,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sparta.imagesearch.R
@@ -119,7 +125,7 @@ fun SearchScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun ImageSearchBar(
     modifier: Modifier = Modifier,
@@ -127,32 +133,16 @@ fun ImageSearchBar(
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit
 ) {
-    val (searchBarActive, setSearchBarActive) = remember {
-        mutableStateOf(false)
-    }
-
-    SearchBar(
-        modifier = modifier
-            .background(Color.Transparent)
-            .padding(horizontal = Padding.default)
-            .padding(top = Padding.medium),
-        colors = SearchBarDefaults.colors(
-            containerColor = MaterialTheme.scheme.surface,
-            dividerColor = MaterialTheme.scheme.tertiary,
-            inputFieldColors = TextFieldDefaults.colors(
-                focusedTextColor = MaterialTheme.scheme.onSurface,
-                unfocusedTextColor = MaterialTheme.scheme.onSurface,
-                cursorColor = MaterialTheme.scheme.tertiary
-            )
-        ),
-        query = query,
-        onQueryChange = onQueryChange,
-        onSearch = {
-            onSearch(it)
-            setSearchBarActive(false)
+    TextField(
+        modifier = modifier.background(Color.Transparent),
+        textStyle = MaterialTheme.typography.bodyMedium,
+        singleLine = true,
+        value = TextFieldValue(text = query, selection = TextRange(query.length)),
+        onValueChange = {
+            onQueryChange(it.text)
         },
-        active = searchBarActive,
-        onActiveChange = setSearchBarActive,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = {onSearch(query)}),
         leadingIcon = {
             Image(
                 modifier = Modifier.scale(SEARCH_BAR_ICON_SCALE),
@@ -164,10 +154,17 @@ fun ImageSearchBar(
         placeholder = {
             Text(
                 modifier = modifier,
-                text = stringResource(R.string.search_hint)
+                text = stringResource(R.string.search_hint),
+                style = MaterialTheme.typography.bodySmall
             )
         },
-    ) {}
+        shape = RoundedCornerShape(16.dp),
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.scheme.onSurface,
+            unfocusedTextColor = MaterialTheme.scheme.onSurface,
+            cursorColor = MaterialTheme.scheme.tertiary
+        )
+    )
 }
 
 @Composable
