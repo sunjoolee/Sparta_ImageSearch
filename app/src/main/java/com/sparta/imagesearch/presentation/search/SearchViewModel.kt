@@ -7,11 +7,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sparta.imagesearch.data.ApiResponse
 import com.sparta.imagesearch.data.mappers.toItem
+import com.sparta.imagesearch.domain.Folder
+import com.sparta.imagesearch.domain.FolderColor
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.KakaoSearchRepository
 import com.sparta.imagesearch.domain.repositoryInterface.KeywordRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
+import com.sparta.imagesearch.domain.usecase.GetFoldersUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +33,8 @@ data class SearchScreenState(
 class SearchViewModel @Inject constructor(
     private val kakaoSearchRepository: KakaoSearchRepository,
     private val savedItemRepository: SavedItemRepository,
-    private val keywordRepository: KeywordRepository
+    private val keywordRepository: KeywordRepository,
+    private val getFoldersUsecase: GetFoldersUsecase
 ) : ViewModel(), SearchScreenInputs {
     private val TAG = this::class.java.simpleName
 
@@ -38,6 +42,7 @@ class SearchViewModel @Inject constructor(
     private val _searchItems = MutableStateFlow<List<Item>>(emptyList())
     private val _savedItems = MutableStateFlow<List<Item>>(emptyList())
     private val _resultItems = MutableStateFlow<List<Item>>(emptyList())
+    private val _folders = MutableStateFlow<List<Folder>>(emptyList())
 
     private val _state = MutableStateFlow(SearchScreenState())
     val state = _state.asStateFlow()
@@ -45,6 +50,11 @@ class SearchViewModel @Inject constructor(
     val inputs = this@SearchViewModel
 
     init {
+        viewModelScope.launch {
+            getFoldersUsecase.invoke().collect{
+                _folders.value = it
+            }
+        }
         viewModelScope.launch {
             keywordRepository.getKeyword().collect {
                 _keyword.value = it
@@ -99,6 +109,9 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
+
+    override fun getFolderColorHexById(folderId: Int): String =
+        _folders.value.find { it.id == folderId }?.colorHex ?: FolderColor.NO_COLOR.colorHex
 
     private suspend fun loadSearchItems() {
         val query = _keyword.value

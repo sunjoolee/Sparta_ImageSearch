@@ -112,6 +112,7 @@ fun SearchScreen(
                 gridCells = gridCellConfiguration,
                 gridState = gridState,
                 resultItems = searchScreenState.resultItems,
+                folderColorHexById = searchScreenInputs::getFolderColorHexById,
                 onHeartClick = searchScreenInputs::saveItem
             )
         }
@@ -175,6 +176,7 @@ fun ResultItemsContent(
     gridCells: StaggeredGridCells,
     gridState: LazyStaggeredGridState,
     resultItems: List<Item>,
+    folderColorHexById: (Int) -> String,
     onHeartClick: (item: Item) -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -188,6 +190,7 @@ fun ResultItemsContent(
             items(items = resultItems, key = { it.imageUrl }) {
                 ImageSearchItem(
                     item = it,
+                    heartColorHex = folderColorHexById(it.folderId),
                     onHeartClick = onHeartClick
                 )
             }
