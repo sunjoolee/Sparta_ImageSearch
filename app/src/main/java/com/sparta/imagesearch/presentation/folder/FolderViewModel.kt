@@ -7,6 +7,7 @@ import com.sparta.imagesearch.combine
 import com.sparta.imagesearch.data.mappers.toFolder
 import com.sparta.imagesearch.domain.DefaultFolder
 import com.sparta.imagesearch.domain.Folder
+import com.sparta.imagesearch.domain.FolderColor
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
@@ -22,6 +23,7 @@ import javax.inject.Inject
 data class FolderScreenState(
     val folders: List<Folder> = emptyList(),
     val selectedFolderId: Int = FolderId.DEFAULT_FOLDER.id,
+    val selectedFolderColorHex: String = FolderColor.COLOR1.colorHex,
     val selectedFolderItems:List<Item> = emptyList(),
     val showAddDialog: Boolean = false,
     val showDeleteDialog: Boolean = false,
@@ -42,16 +44,16 @@ interface FolderScreenInputs {
 
 @HiltViewModel
 class FolderViewModel @Inject constructor(
-    private val getFoldersUsecase: GetFoldersUsecase,
-    private val savedItemRepository: SavedItemRepository
+    private val savedItemRepository: SavedItemRepository,
+    private val getFoldersUsecase: GetFoldersUsecase
 ) : ViewModel(), FolderScreenInputs {
     private val TAG = this::class.java.simpleName
 
     private val _folders = MutableStateFlow<List<Folder>>(emptyList())
     private val _selectedFolderId = MutableStateFlow(FolderId.DEFAULT_FOLDER.id)
-    private val _showAddDialog = MutableStateFlow<Boolean>(false)
-    private val _showDeleteDialog = MutableStateFlow<Boolean>(false)
-    private val _showMoveDialog = MutableStateFlow<Boolean>(false)
+    private val _showAddDialog = MutableStateFlow(false)
+    private val _showDeleteDialog = MutableStateFlow(false)
+    private val _showMoveDialog = MutableStateFlow(false)
     private val _targetItem = MutableStateFlow<Item?>(null)
 
     private val _state = MutableStateFlow(FolderScreenState())
@@ -82,7 +84,10 @@ class FolderViewModel @Inject constructor(
             _state.value = FolderScreenState(
                 folders = folders,
                 selectedFolderId = selectedFolderId,
-                selectedFolderItems = folders.find { it.id == selectedFolderId }?.items ?: emptyList(),
+                selectedFolderColorHex = folders.find { it.id == selectedFolderId }?.colorHex
+                    ?: FolderColor.COLOR1.colorHex,
+                selectedFolderItems = folders.find { it.id == selectedFolderId }?.items
+                    ?: emptyList(),
                 showAddDialog = showAddDialog,
                 showDeleteDialog = showDeleteDialog,
                 showMoveDialog = showMoveDialog,

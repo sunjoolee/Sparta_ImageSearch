@@ -39,7 +39,7 @@ class SearchViewModel @Inject constructor(
     private val _savedItems = MutableStateFlow<List<Item>>(emptyList())
     private val _resultItems = MutableStateFlow<List<Item>>(emptyList())
 
-    private val _state = MutableStateFlow<SearchScreenState>(SearchScreenState())
+    private val _state = MutableStateFlow(SearchScreenState())
     val state = _state.asStateFlow()
 
     val inputs = this@SearchViewModel
@@ -89,16 +89,11 @@ class SearchViewModel @Inject constructor(
     }
 
     override fun saveItem(item: Item) {
-        Log.d(TAG, "saveItem) called, item url: ${item.imageUrl}")
-        Log.d(TAG, "saveItem) saved items size: ${_savedItems.value.size}")
-
         if (_savedItems.value.find { it.imageUrl == item.imageUrl } == null) {
-            Log.d(TAG, "saveItem) add to saved items")
             viewModelScope.launch {
                 savedItemRepository.saveSavedItem(item.copy(folderId = FolderId.DEFAULT_FOLDER.id))
             }
         } else {
-            Log.d(TAG, "saveItem) delete from saved items")
             viewModelScope.launch {
                 savedItemRepository.deleteSavedItem(item)
             }

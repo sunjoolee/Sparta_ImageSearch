@@ -54,9 +54,9 @@ import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
 import com.sparta.imagesearch.presentation.util.SelectIndicator
 import com.sparta.imagesearch.presentation.util.hexToColor
+import javax.inject.Inject
 
 val FOLDER_LIST_ITEM_IMAGE_SCALE = 1.2f
-val FOLDER_DROP_DOWN_ICON_SCALE = 3.5f
 
 @Composable
 fun FolderScreen(
@@ -90,6 +90,7 @@ fun FolderScreen(
             FolderItemsContent(
                 modifier = modifier.fillMaxHeight(),
                 folderItems = folderScreenState.selectedFolderItems,
+                folderColorHex = folderScreenState.selectedFolderColorHex,
                 onHeartClick = folderScreenInputs::unSaveItem,
                 onHeartLongClick = folderScreenInputs::openMoveDialog
             )
@@ -216,7 +217,7 @@ fun FolderListItem(
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            text = folder.name
+            text = "${folder.name}(${folder.items.size})"
         )
         SelectIndicator(alpha = indicatorAlpha.value)
     }
@@ -288,6 +289,7 @@ fun FolderDropDownIcon(
 fun FolderItemsContent(
     modifier: Modifier = Modifier,
     folderItems: List<Item>,
+    folderColorHex: String,
     onHeartClick: (item: Item) -> Unit,
     onHeartLongClick: (item: Item) -> Unit
 ) {
@@ -304,8 +306,9 @@ fun FolderItemsContent(
             items(items = folderItems, key = { it.imageUrl }) { item ->
                 ImageSearchItem(
                     item = item,
+                    heartColorHex = folderColorHex,
                     onHeartClick = { onHeartClick(item) },
-                    onHeartLongClick = { onHeartLongClick(item) }
+                    onHeartLongClick = { onHeartLongClick(item) },
                 )
             }
         }

@@ -1,6 +1,5 @@
 package com.sparta.imagesearch.presentation
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -34,7 +33,6 @@ import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.glide.GlideImageState
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.FolderColor
-import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
@@ -48,13 +46,10 @@ val ITEM_IMAGE_SHIMMER_SIZE = 160.dp
 fun ImageSearchItem(
     modifier: Modifier = Modifier,
     item: Item,
+    heartColorHex: String = FolderColor.NO_COLOR.colorHex,
     onHeartClick: (item: Item) -> Unit = {},
     onHeartLongClick: (item: Item) -> Unit = {}
 ) {
-    val folderColor =
-        if (item.folderId == FolderId.NO_FOLDER.id) FolderColor.NO_COLOR.colorHex
-        else FolderColor.COLOR1.colorHex
-
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -78,15 +73,9 @@ fun ImageSearchItem(
                         .align(Alignment.TopEnd)
                         .padding(Padding.medium)
                         .scale(ITEM_HEART_SCALE),
-                    folderColor = folderColor,
-                    onHeartClick = {
-                        Log.d("ImageSearchItem)", "onHeartClick) item url: ${item.imageUrl}")
-                        onHeartClick(item)
-                    },
-                    onHeartLongClick = {
-                        Log.d("ImageSearchItem)", "onHeartLongClick) item url: ${item.imageUrl}")
-                        onHeartLongClick(item)
-                    }
+                    colorHex = heartColorHex,
+                    onHeartClick = { onHeartClick(item) },
+                    onHeartLongClick = { onHeartLongClick(item) }
                 )
             }
             Column(
@@ -131,12 +120,12 @@ fun ItemImage(
 @Composable
 fun ItemHeart(
     modifier: Modifier = Modifier,
-    folderColor: String = FolderColor.NO_COLOR.colorHex,
+    colorHex: String = FolderColor.NO_COLOR.colorHex,
     onHeartClick: () -> Unit,
     onHeartLongClick: () -> Unit = {}
 ) {
     val heartColor = animateColorAsState(
-        targetValue = Color(android.graphics.Color.parseColor(folderColor)),
+        targetValue = Color(android.graphics.Color.parseColor(colorHex)),
         label = "heart_color"
     )
 

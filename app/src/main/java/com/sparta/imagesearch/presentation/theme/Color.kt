@@ -18,23 +18,12 @@ val onDisabled = Color.DarkGray
 val dropdown = Color.Gray
 val onDropDown = Color.White
 
-val basicFolderColor1 = Color(0xFFFCC233)
-val basicFolderColor2 = Color(0xFFF95B19)
-val basicFolderColor3 = Color(0xFFCCF919)
-val basicFolderColor4 = Color(0xFFF919E2)
-val basicFolderColor5 = Color(0xFF7CF6F6)
-
 data class ImageSearchColors(
     val material: ColorScheme,
     val disabled: Color,
     val onDisabled: Color,
     val dropdown: Color,
-    val onDropDown: Color,
-    val basicFolderColor1: Color,
-    val basicFolderColor2: Color,
-    val basicFolderColor3: Color,
-    val basicFolderColor4: Color,
-    val basicFolderColor5: Color
+    val onDropDown: Color
 ) {
     val primary get() = material.primary
     val onPrimary get() = material.onPrimary
@@ -65,12 +54,7 @@ sealed class ImageSearchColorScheme {
             disabled = disabled,
             onDisabled = onDisabled,
             dropdown = dropdown,
-            onDropDown = onDropDown,
-            basicFolderColor1 = basicFolderColor1,
-            basicFolderColor2 = basicFolderColor2,
-            basicFolderColor3 = basicFolderColor3,
-            basicFolderColor4 = basicFolderColor4,
-            basicFolderColor5 = basicFolderColor5
+            onDropDown = onDropDown
         )
         override val darkScheme = lightScheme
     }
