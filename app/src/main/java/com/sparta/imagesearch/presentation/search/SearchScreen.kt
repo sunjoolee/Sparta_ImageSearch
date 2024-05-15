@@ -130,7 +130,7 @@ fun ImageSearchBar(
     keyword: String,
     onSearch: (String) -> Unit
 ) {
-    var textFieldValue  = rememberSaveable(keyword) {
+    var textFieldValue  = remember(keyword){
         TextFieldValue(text = keyword, selection = TextRange(keyword.length))
     }
 
