@@ -1,6 +1,13 @@
 package com.sparta.imagesearch.presentation.app
 
 import android.util.Log
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -23,7 +30,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun ImageSearchNavGraph(
     navGraphState: ImageSearchNavGraphState = rememberImageSearchNavGraphState()
 ) {
-    var curDestinationState by remember{ mutableStateOf(ImageSearchScreen.SEARCH_SCREEN.route) }
+    var curDestinationState by remember { mutableStateOf(ImageSearchScreen.SEARCH_SCREEN.route) }
 
     LaunchedEffect(Unit) {
         navGraphState.navController.currentBackStackEntryFlow.collectLatest { entry ->
@@ -46,12 +53,56 @@ fun ImageSearchNavGraph(
         Surface(modifier = Modifier.padding(it)) {
             NavHost(
                 navController = navGraphState.navController,
-                startDestination = navGraphState.startDestination
+                startDestination = navGraphState.startDestination,
             ) {
-                composable(ImageSearchScreen.SEARCH_SCREEN.route) {
+                composable(
+                    route = ImageSearchScreen.SEARCH_SCREEN.route,
+                    enterTransition = {
+                        fadeIn(
+                            animationSpec = tween(
+                                300, easing = LinearEasing
+                            )
+                        ) + slideIntoContainer(
+                            animationSpec = tween(300, easing = EaseIn),
+                            towards = AnimatedContentTransitionScope.SlideDirection.End
+                        )
+                    },
+                    exitTransition = {
+                        fadeOut(
+                            animationSpec = tween(
+                                300, easing = LinearEasing
+                            )
+                        ) + slideOutOfContainer(
+                            animationSpec = tween(300, easing = EaseOut),
+                            towards = AnimatedContentTransitionScope.SlideDirection.Start
+                        )
+                    }
+                ) {
                     SearchScreen()
                 }
-                composable(ImageSearchScreen.FOLDER_SCREEN.route) {
+                composable(
+                    route = ImageSearchScreen.FOLDER_SCREEN.route,
+                    enterTransition = {
+                        fadeIn(
+                            animationSpec = tween(
+                                300, easing = LinearEasing
+                            )
+                        ) + slideIntoContainer(
+                            animationSpec = tween(300, easing = EaseIn),
+                            towards = AnimatedContentTransitionScope.SlideDirection.Start
+                        )
+                    },
+                    exitTransition = {
+                        fadeOut(
+                            animationSpec = tween(
+                                300, easing = LinearEasing
+                            )
+                        ) + slideOutOfContainer(
+                            animationSpec = tween(300, easing = EaseOut),
+                            towards = AnimatedContentTransitionScope.SlideDirection.End
+                        )
+                    }
+                ) {
                     FolderScreen()
                 }
             }
