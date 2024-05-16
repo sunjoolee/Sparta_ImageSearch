@@ -2,6 +2,8 @@ package com.sparta.imagesearch.presentation.app
 
 import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.LinearEasing
@@ -18,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,6 +28,13 @@ import androidx.navigation.compose.rememberNavController
 import com.sparta.imagesearch.presentation.folder.FolderScreen
 import com.sparta.imagesearch.presentation.search.SearchScreen
 import kotlinx.coroutines.flow.collectLatest
+
+
+data class ImageSearchNavGraphState(
+    val navController: NavHostController,
+    val startDestination: String,
+    val navActions: ImageSearchNavigationActions
+)
 
 @Composable
 fun ImageSearchNavGraph(
@@ -58,24 +68,10 @@ fun ImageSearchNavGraph(
                 composable(
                     route = ImageSearchScreen.SEARCH_SCREEN.route,
                     enterTransition = {
-                        fadeIn(
-                            animationSpec = tween(
-                                300, easing = LinearEasing
-                            )
-                        ) + slideIntoContainer(
-                            animationSpec = tween(300, easing = EaseIn),
-                            towards = AnimatedContentTransitionScope.SlideDirection.End
-                        )
+                        getEnterTransition(AnimatedContentTransitionScope.SlideDirection.End)
                     },
                     exitTransition = {
-                        fadeOut(
-                            animationSpec = tween(
-                                300, easing = LinearEasing
-                            )
-                        ) + slideOutOfContainer(
-                            animationSpec = tween(300, easing = EaseOut),
-                            towards = AnimatedContentTransitionScope.SlideDirection.Start
-                        )
+                        getExitTransition(AnimatedContentTransitionScope.SlideDirection.Start)
                     }
                 ) {
                     SearchScreen()
@@ -83,24 +79,10 @@ fun ImageSearchNavGraph(
                 composable(
                     route = ImageSearchScreen.FOLDER_SCREEN.route,
                     enterTransition = {
-                        fadeIn(
-                            animationSpec = tween(
-                                300, easing = LinearEasing
-                            )
-                        ) + slideIntoContainer(
-                            animationSpec = tween(300, easing = EaseIn),
-                            towards = AnimatedContentTransitionScope.SlideDirection.Start
-                        )
+                        getEnterTransition(AnimatedContentTransitionScope.SlideDirection.Start)
                     },
                     exitTransition = {
-                        fadeOut(
-                            animationSpec = tween(
-                                300, easing = LinearEasing
-                            )
-                        ) + slideOutOfContainer(
-                            animationSpec = tween(300, easing = EaseOut),
-                            towards = AnimatedContentTransitionScope.SlideDirection.End
-                        )
+                        getExitTransition(AnimatedContentTransitionScope.SlideDirection.End)
                     }
                 ) {
                     FolderScreen()
@@ -121,8 +103,28 @@ fun rememberImageSearchNavGraphState(
     ImageSearchNavGraphState(navController, startDestination, navActions)
 }
 
-data class ImageSearchNavGraphState(
-    val navController: NavHostController,
-    val startDestination: String,
-    val navActions: ImageSearchNavigationActions
-)
+fun AnimatedContentTransitionScope<NavBackStackEntry>.getEnterTransition(
+    slideDirection: AnimatedContentTransitionScope.SlideDirection
+): EnterTransition =
+    fadeIn(
+        animationSpec = tween(
+            300, easing = LinearEasing
+        )
+    ) + slideIntoContainer(
+        animationSpec = tween(300, easing = EaseIn),
+        towards = slideDirection
+    )
+
+fun AnimatedContentTransitionScope<NavBackStackEntry>.getExitTransition(
+    slideDirection: AnimatedContentTransitionScope.SlideDirection
+): ExitTransition =
+    fadeOut(
+        animationSpec = tween(
+            300, easing = LinearEasing
+        )
+    ) + slideOutOfContainer(
+        animationSpec = tween(300, easing = EaseOut),
+        towards = slideDirection
+    )
+
+
