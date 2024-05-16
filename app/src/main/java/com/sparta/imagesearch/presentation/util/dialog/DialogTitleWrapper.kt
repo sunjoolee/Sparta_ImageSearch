@@ -44,7 +44,7 @@ fun DefaultDialogTitle(@StringRes titleId:Int) {
     Text(
         modifier = Modifier.fillMaxWidth(),
         text = stringResource(titleId),
-        style = MaterialTheme.typography.titleLarge,
+        style = MaterialTheme.typography.titleMedium,
         textAlign = TextAlign.Center
     )
 }
@@ -63,7 +63,7 @@ fun AlertDialogTitle(@DrawableRes iconId:Int, @StringRes titleId:Int) {
         Spacer(modifier = Modifier.padding(top = Padding.default))
         Text(
             text = stringResource(titleId),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
         )
     }
 }

@@ -41,24 +41,13 @@ fun FolderListDialogContent(
     @DrawableRes selectedIconId: Int,
     onFolderSelectById: (Int) -> Unit
 ){
-    val context = LocalContext.current
-
     LazyColumn{
         items(items = folders, key = { it.id }) {
             FolderItem(
                 folder = it,
                 folderSelected = selectedFolderIds.contains(it.id),
                 selectedIconId = selectedIconId,
-                onFolderSelectById = {selectedFolderId ->
-                    if (selectedFolderId == FolderId.DEFAULT_FOLDER.id)
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.delete_folder_default_toast),
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    else onFolderSelectById(selectedFolderId)
-                }
+                onFolderSelectById = onFolderSelectById
             )
         }
     }
@@ -97,7 +86,10 @@ fun FolderItem(
                 contentDescription = ""
             )
             Spacer(modifier = Modifier.padding(start = Padding.medium))
-            Text(text = folder.name)
+            Text(
+                text = folder.name,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }

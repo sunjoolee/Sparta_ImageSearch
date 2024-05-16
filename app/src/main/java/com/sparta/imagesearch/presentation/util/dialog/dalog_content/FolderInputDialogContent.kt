@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -67,15 +68,20 @@ fun FolderNameInput(
     ) {
         Text(
             modifier = modifier.padding(end = Padding.medium),
-            text = stringResource(R.string.add_folder_name)
+            text = stringResource(R.string.add_folder_name),
+            style = MaterialTheme.typography.bodyMedium
         )
         TextField(
             modifier = modifier.height(FOLDER_NAME_INPUT_TEXT_FIELD_HEIGHT),
             value = value,
             singleLine = true,
             onValueChange = onValueChange,
+            textStyle = MaterialTheme.typography.bodyMedium,
             placeholder = {
-                Text(text = stringResource(R.string.add_folder_name_hint))
+                Text(
+                    text = stringResource(R.string.add_folder_name_hint),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         )
     }
@@ -97,14 +103,17 @@ fun FolderColorInput(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                modifier = modifier.scale(FOLDER_COLOR_INPUT_ICON_SCALE),
+                modifier = modifier
+                    .scale(FOLDER_COLOR_INPUT_ICON_SCALE)
+                    .padding(bottom = Padding.medium),
                 painter = painterResource(id = R.drawable.icon_folder),
                 colorFilter = ColorFilter.tint(selectedColorHex.hexToColor()),
                 contentDescription = ""
             )
             Text(
                 modifier = modifier,
-                text = stringResource(R.string.add_folder_color)
+                text = stringResource(R.string.add_folder_color),
+                style = MaterialTheme.typography.bodyMedium
             )
         }
         FolderColorList(
