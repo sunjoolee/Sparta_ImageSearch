@@ -25,6 +25,12 @@ data class SearchScreenState(
     val resultItems: List<Item> = emptyList()
 )
 
+interface SearchScreenInputs {
+    fun updateKeyword(newKeyword: String)
+    fun saveItem(item: Item)
+    fun getFolderColorHexById(folderId:Int): String
+}
+
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val savedItemRepository: SavedItemRepository,

@@ -1,6 +1,7 @@
 package com.sparta.imagesearch.presentation.search
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,26 +19,29 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,7 +68,7 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
 
-) {
+    ) {
     val searchScreenState by viewModel.state.collectAsState(initial = SearchScreenState())
     val searchScreenInputs = viewModel.inputs
 
@@ -120,45 +125,64 @@ fun ImageSearchBar(
     keyword: String,
     onSearch: (String) -> Unit
 ) {
-    var textFieldValue  = remember(keyword){
-        TextFieldValue(text = keyword, selection = TextRange(keyword.length))
+    var textFieldValue by remember(keyword) {
+        mutableStateOf(
+            TextFieldValue( text = keyword, selection = TextRange(keyword.length))
+        )
     }
 
-    TextField(
-        modifier = modifier.background(Color.Transparent),
-        textStyle = MaterialTheme.typography.bodyMedium,
-        singleLine = true,
-        value = textFieldValue,
-        onValueChange = { textFieldValue = it },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { onSearch(textFieldValue.text) }),
-        leadingIcon = {
-            Image(
-                modifier = Modifier.scale(SEARCH_BAR_ICON_SCALE),
-                painter = painterResource(id = R.drawable.icon_search),
-                colorFilter = ColorFilter.tint(MaterialTheme.scheme.tertiary),
-                contentDescription = ""
-            )
-        },
-        trailingIcon = {
-            SearchBarButton(
-                onClick = { onSearch(textFieldValue.text) }
-            )
-        },
-        placeholder = {
-            Text(
+    Row(
+        modifier = Modifier
+            .background(Color.Transparent)
+            .padding(horizontal = Padding.default)
+            .padding(top = Padding.default),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(0.9f)
+                .padding(end = Padding.medium)
+        ) {
+            BasicTextField(
+                value = textFieldValue,
+                onValueChange = {
+                    Log.d("SearchScreen", "it.text = ${it.text}")
+                    textFieldValue = it.copy(selection = TextRange(it.text.length))
+                    Log.d("SearchScreen", "textFieldValue.text = ${textFieldValue.text}")
+                },
+                cursorBrush = SolidColor(MaterialTheme.scheme.tertiary),
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.scheme.onSurface
+                ),
                 modifier = modifier,
-                text = stringResource(R.string.search_hint),
-                style = MaterialTheme.typography.bodySmall
-            )
-        },
-        shape = RoundedCornerShape(16.dp),
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.scheme.onSurface,
-            unfocusedTextColor = MaterialTheme.scheme.onSurface,
-            cursorColor = MaterialTheme.scheme.tertiary
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { onSearch(textFieldValue.text) }),
+            ) { innerTextField ->
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                ) {
+                    Row(
+                        modifier = Modifier.padding(Padding.default)
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(end = Padding.default)
+                                .scale(SEARCH_BAR_ICON_SCALE),
+                            painter = painterResource(id = R.drawable.icon_search),
+                            colorFilter = ColorFilter.tint(MaterialTheme.scheme.tertiary),
+                            contentDescription = ""
+                        )
+                        innerTextField()
+                    }
+                }
+            }
+        }
+        SearchBarButton(
+            onClick = { onSearch(textFieldValue.text) }
         )
-    )
+    }
+
 }
 
 @Composable
@@ -175,7 +199,10 @@ fun SearchBarButton(
             disabledContentColor = MaterialTheme.scheme.onDisabled
         )
     ) {
-        Text(text = stringResource(id = R.string.search))
+        Text(
+            text = stringResource(id = R.string.search),
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 
