@@ -3,8 +3,10 @@ package com.sparta.imagesearch.presentation.util
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -20,42 +22,12 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import com.sparta.imagesearch.R
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
 
-
-val SEARCH_BAR_ICON_SCALE = 1.5f
-
-@Composable
-fun MyTextField(
-    modifier: Modifier = Modifier,
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    @DrawableRes leadingIconId: Int? = null,
-    @StringRes placeholderTextId: Int? = null
-) {
-    BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
-        cursorBrush = SolidColor(MaterialTheme.scheme.tertiary),
-        textStyle = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.scheme.onSurface
-        ),
-        singleLine = true,
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-    ) { innerTextField ->
-        MyDecorationBox(
-            valueString = value.text,
-            innerTextField = innerTextField,
-            leadingIconId = leadingIconId,
-            placeholderTextId = placeholderTextId
-        )
-    }
-}
+val SEARCH_BAR_LEADING_ICON_SCALE = 1.5f
+val SEARCH_BAR_CLEAR_ICON_SCALE = 0.6f
 
 @Composable
 fun MyTextField(
@@ -65,7 +37,8 @@ fun MyTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     @DrawableRes leadingIconId: Int? = null,
-    @StringRes placeholderTextId: Int? = null
+    @StringRes placeholderTextId: Int? = null,
+    clearTextFieldButton: Boolean = false
 ) {
     BasicTextField(
         value = value,
@@ -80,20 +53,58 @@ fun MyTextField(
         keyboardActions = keyboardActions,
     ) { innerTextField ->
         MyDecorationBox(
-            valueString = value,
+            valueText = value,
+            clearValueText = { onValueChange("") },
             innerTextField = innerTextField,
             leadingIconId = leadingIconId,
-            placeholderTextId = placeholderTextId
+            placeholderTextId = placeholderTextId,
+            clearTextFieldButton = clearTextFieldButton
+        )
+    }
+}
+
+@Composable
+fun MyTextField(
+    modifier: Modifier = Modifier,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    @DrawableRes leadingIconId: Int? = null,
+    @StringRes placeholderTextId: Int? = null,
+    clearTextFieldButton: Boolean = false
+) {
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        cursorBrush = SolidColor(MaterialTheme.scheme.tertiary),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            color = MaterialTheme.scheme.onSurface
+        ),
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+    ) { innerTextField ->
+        MyDecorationBox(
+            valueText = value.text,
+            clearValueText = { onValueChange(value.copy(text = "")) },
+            innerTextField = innerTextField,
+            leadingIconId = leadingIconId,
+            placeholderTextId = placeholderTextId,
+            clearTextFieldButton = clearTextFieldButton
         )
     }
 }
 
 @Composable
 fun MyDecorationBox(
-    valueString: String,
+    valueText: String,
+    clearValueText: () -> Unit,
     innerTextField: @Composable () -> Unit,
     @DrawableRes leadingIconId: Int? = null,
-    @StringRes placeholderTextId: Int? = null
+    @StringRes placeholderTextId: Int? = null,
+    clearTextFieldButton: Boolean = false
 ) {
     Surface(
         shape = MaterialTheme.shapes.extraLarge,
@@ -104,22 +115,35 @@ fun MyDecorationBox(
             leadingIconId?.let {
                 Image(
                     modifier = Modifier
-                        .padding(end = Padding.default)
-                        .scale(SEARCH_BAR_ICON_SCALE),
+                        .weight(0.1f)
+                        .scale(SEARCH_BAR_LEADING_ICON_SCALE),
                     painter = painterResource(id = leadingIconId),
                     colorFilter = ColorFilter.tint(MaterialTheme.scheme.tertiary),
                     contentDescription = ""
                 )
+                Spacer(modifier = Modifier.padding(end = Padding.default))
             }
-            Box {
+            Box(modifier = Modifier.weight(0.8f)) {
                 placeholderTextId?.let {
-                    if (valueString.isBlank()) Text(
+                    if (valueText.isBlank()) Text(
                         text = stringResource(id = placeholderTextId),
                         color = MaterialTheme.scheme.disabled,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
                 innerTextField()
+            }
+            if (clearTextFieldButton && valueText.isNotBlank()) {
+                Image(
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .scale(SEARCH_BAR_CLEAR_ICON_SCALE)
+                        .padding(Padding.small)
+                        .clickable { clearValueText() },
+                    painter = painterResource(id = R.drawable.icon_clear_textfield),
+                    colorFilter = ColorFilter.tint(MaterialTheme.scheme.disabled),
+                    contentDescription = ""
+                )
             }
         }
     }

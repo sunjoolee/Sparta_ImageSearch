@@ -1,6 +1,5 @@
 package com.sparta.imagesearch.presentation.util.dialog.dalog_content
 
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -22,12 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.Folder
-import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
 import com.sparta.imagesearch.presentation.util.dialog.FOLDER_ITEM_HEIGHT_DP
