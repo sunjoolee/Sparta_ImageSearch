@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.presentation.theme.Padding
+import com.sparta.imagesearch.presentation.util.MyTextField
 import com.sparta.imagesearch.presentation.util.SelectIndicator
 import com.sparta.imagesearch.presentation.util.hexToColor
 
@@ -71,18 +71,11 @@ fun FolderNameInput(
             text = stringResource(R.string.add_folder_name),
             style = MaterialTheme.typography.bodyMedium
         )
-        TextField(
-            modifier = modifier.height(FOLDER_NAME_INPUT_TEXT_FIELD_HEIGHT),
+        MyTextField(
             value = value,
-            singleLine = true,
             onValueChange = onValueChange,
-            textStyle = MaterialTheme.typography.bodyMedium,
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.add_folder_name_hint),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            modifier = Modifier.fillMaxWidth().height(FOLDER_NAME_INPUT_TEXT_FIELD_HEIGHT),
+            placeholderTextId = R.string.add_folder_name_hint
         )
     }
 }
@@ -172,3 +165,4 @@ fun FolderColorItem(
         )
     }
 }
+
