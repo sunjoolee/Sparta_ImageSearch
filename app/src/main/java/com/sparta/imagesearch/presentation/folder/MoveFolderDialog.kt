@@ -35,14 +35,19 @@ fun MoveFolderDialog(
         ),
         dialogNegButton = DialogButton.NegativeDialogButton(
             labelId = R.string.move_folder_negative,
-            onClick = onDismissRequest
+            onClick = {
+                moveFolderDialogInputs.clearTargetFolderId()
+                onDismissRequest()
+            }
         ),
         dialogPosButton = DialogButton.PositiveDialogButton(
             labelId = R.string.move_folder_positive,
             onClick = {
                 moveFolderDialogInputs.moveFolder()
+                moveFolderDialogInputs.clearTargetFolderId()
                 onDismissRequest()
-            }
+            },
+            enabled = moveFolderDialogState.enableConfirmButton
         ),
         onDismissRequest = onDismissRequest
     )

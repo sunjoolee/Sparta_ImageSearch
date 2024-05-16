@@ -2,11 +2,13 @@ package com.sparta.imagesearch.presentation.folder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sparta.imagesearch.domain.Folder
 import com.sparta.imagesearch.domain.FolderId
 import com.sparta.imagesearch.domain.Item
 import com.sparta.imagesearch.domain.repositoryInterface.FolderRepository
 import com.sparta.imagesearch.domain.repositoryInterface.SavedItemRepository
+import com.sparta.imagesearch.domain.usecase.GetFoldersUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,13 +27,14 @@ data class MoveFolderDialogState(
 interface MoveFolderDialogInputs {
     fun setTargetItem(targetItem: Item)
     fun selectTargetFolderId(targetFolderId: Int)
+    fun clearTargetFolderId()
     fun moveFolder()
 }
 
 @HiltViewModel
 class MoveFolderDialogViewModel @Inject constructor(
-    private val folderRepository: FolderRepository,
-    private val savedItemRepository: SavedItemRepository
+    private val savedItemRepository: SavedItemRepository,
+    private val getFoldersUsecase: GetFoldersUsecase
 ) : ViewModel(), MoveFolderDialogInputs {
 
     private val _targetItem = MutableStateFlow<Item?>(null)
@@ -45,18 +48,29 @@ class MoveFolderDialogViewModel @Inject constructor(
     val inputs = this@MoveFolderDialogViewModel
 
     init {
+        _targetFolderId.value = _targetItem.value?.folderId ?: FolderId.DEFAULT_FOLDER.id
+
         viewModelScope.launch {
-            folderRepository.getAllFolders().collect {
+            getFoldersUsecase().collect{
                 _folders.value = it
             }
         }
-
-        combine(_targetItem, _targetFolderId) { targetItem, targetFolderId ->
-            _enableConfirmButton.update {
-                if (targetItem == null) false
-                else targetItem.folderId != targetFolderId
+        viewModelScope.launch {
+            _targetItem.collect {
+                _targetFolderId.update {
+                    _targetItem.value?.folderId ?: FolderId.DEFAULT_FOLDER.id
+                }
             }
-        }.launchIn(viewModelScope)
+        }
+        viewModelScope.launch {
+            _targetFolderId.collect {targetFolderId ->
+                _enableConfirmButton.update {
+                    _targetItem.value?.folderId?.let{
+                        (it != targetFolderId)
+                    } ?: false
+                }
+            }
+        }
 
         combine(
             _targetFolderId,
@@ -73,6 +87,10 @@ class MoveFolderDialogViewModel @Inject constructor(
 
     override fun selectTargetFolderId(targetFolderId: Int) {
         _targetFolderId.value = targetFolderId
+    }
+
+    override fun clearTargetFolderId() {
+        _targetFolderId.value = _targetItem.value?.folderId ?: FolderId.DEFAULT_FOLDER.id
     }
 
     override fun moveFolder() {

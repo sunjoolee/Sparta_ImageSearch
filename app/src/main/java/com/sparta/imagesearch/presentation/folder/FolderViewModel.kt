@@ -125,8 +125,8 @@ class FolderViewModel @Inject constructor(
     }
 
     override fun openMoveDialog(targetItem: Item) {
-        _showMoveDialog.value = true
         _targetItem.value = targetItem
+        _showMoveDialog.value = true
     }
 
     override fun closeMoveDialog() {
