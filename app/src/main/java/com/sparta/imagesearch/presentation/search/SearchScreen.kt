@@ -50,6 +50,7 @@ import com.sparta.imagesearch.presentation.ImageSearchItem
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
 import com.sparta.imagesearch.presentation.util.MyTextField
+import com.sparta.imagesearch.presentation.util.compositionlocal.LocalButtonColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -163,12 +164,14 @@ fun SearchBarButton(
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.scheme.tertiary,
-            contentColor = MaterialTheme.scheme.onTertiary,
-            disabledContainerColor = MaterialTheme.scheme.disabled,
-            disabledContentColor = MaterialTheme.scheme.onDisabled
-        )
+        colors = with(LocalButtonColors.current.tertiaryButton) {
+            ButtonDefaults.buttonColors(
+                containerColor = containerColor,
+                contentColor = contentColor,
+                disabledContainerColor = disabledContainerColor,
+                disabledContentColor = disabledContentColor
+            )
+        }
     ) {
         Text(
             text = stringResource(id = R.string.search),
@@ -215,10 +218,12 @@ fun ScrollToTopFab(
     Box {
         Button(
             modifier = modifier,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.scheme.tertiary,
-                contentColor = MaterialTheme.scheme.onTertiary
-            ),
+            colors = with(LocalButtonColors.current.tertiaryButton) {
+                ButtonDefaults.buttonColors(
+                    containerColor = containerColor,
+                    contentColor = contentColor
+                )
+            },
             onClick = {
                 scope.launch { gridState.animateScrollToItem(0) }
             }

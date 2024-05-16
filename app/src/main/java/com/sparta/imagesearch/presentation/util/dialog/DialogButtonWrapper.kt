@@ -7,7 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.sparta.imagesearch.presentation.theme.scheme
+import com.sparta.imagesearch.presentation.util.compositionlocal.LocalButtonColors
 
 sealed class DialogButton {
     abstract val labelId: Int
@@ -41,20 +41,18 @@ fun DialogButtonWrapper(dialogButton: DialogButton) {
 }
 
 @Composable
-fun PositiveDialogButton(
-    @StringRes labelId: Int,
-    onClick: () -> Unit,
-    enabled: Boolean
-) {
+fun NegativeDialogButton(@StringRes labelId: Int, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.scheme.tertiary,
-            contentColor = MaterialTheme.scheme.onTertiary,
-            disabledContainerColor = MaterialTheme.scheme.disabled,
-            disabledContentColor = MaterialTheme.scheme.onDisabled
-        ),
-        enabled = enabled
+        colors =
+        with(LocalButtonColors.current.primaryButton) {
+            ButtonDefaults.buttonColors(
+                containerColor = containerColor,
+                contentColor = contentColor,
+                disabledContainerColor = disabledContainerColor,
+                disabledContentColor = disabledContentColor
+            )
+        }
     ) {
         Text(
             text = stringResource(id = labelId),
@@ -63,14 +61,25 @@ fun PositiveDialogButton(
     }
 }
 
+
 @Composable
-fun NegativeDialogButton(@StringRes labelId: Int, onClick: () -> Unit) {
+fun PositiveDialogButton(
+    @StringRes labelId: Int,
+    onClick: () -> Unit,
+    enabled: Boolean
+) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.scheme.primary,
-            contentColor = MaterialTheme.scheme.onPrimary,
-        )
+        colors =
+        with(LocalButtonColors.current.tertiaryButton) {
+            ButtonDefaults.buttonColors(
+                containerColor = containerColor,
+                contentColor = contentColor,
+                disabledContainerColor = disabledContainerColor,
+                disabledContentColor = disabledContentColor
+            )
+        },
+        enabled = enabled
     ) {
         Text(
             text = stringResource(id = labelId),
