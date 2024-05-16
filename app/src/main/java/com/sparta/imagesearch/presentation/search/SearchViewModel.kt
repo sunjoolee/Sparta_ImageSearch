@@ -27,8 +27,9 @@ data class SearchScreenState(
 
 interface SearchScreenInputs {
     fun updateKeyword(newKeyword: String)
+    fun incrementPage()
     fun saveItem(item: Item)
-    fun getFolderColorHexById(folderId:Int): String
+    fun getFolderColorHexById(folderId: Int): String
 }
 
 @HiltViewModel
@@ -41,6 +42,7 @@ class SearchViewModel @Inject constructor(
     private val TAG = this::class.java.simpleName
 
     private val _keyword = MutableStateFlow("")
+    private val _page = MutableStateFlow(1)
     private val _searchItems = MutableStateFlow<List<Item>>(emptyList())
     private val _savedItems = MutableStateFlow<List<Item>>(emptyList())
     private val _resultItems = MutableStateFlow<List<Item>>(emptyList())
@@ -53,30 +55,27 @@ class SearchViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getFoldersUsecase.invoke().collect {
-                _folders.value = it
+            keywordRepository.getKeyword().collect { keyword ->
+                Log.d(TAG, "collect keyword) keyword: $keyword")
+                _keyword.value = keyword
+                _page.value = 1
             }
         }
-        viewModelScope.launch {
-            keywordRepository.getKeyword().collect {
-                _keyword.value = it
+        combine(_keyword, _page){ keyword, page ->
+            getSearchItemsUsecase.invoke(keyword, page).collect { searchItems ->
+                _searchItems.update {
+                    if(page == 1) searchItems
+                    else (it + searchItems).distinctBy { item -> item.imageUrl }
+                }
             }
-        }
-        viewModelScope.launch {
-            _keyword.collect {
-                Log.d(TAG, "collect keyword) keyword: $it")
-                getSearchItems()
-            }
-        }
+        }.launchIn(viewModelScope)
         viewModelScope.launch {
             savedItemRepository.getAllSavedItems().collect {
                 Log.d(TAG, "collect savedItem) size: ${it.size}")
                 _savedItems.value = it
             }
         }
-
         combine(_searchItems, _savedItems) { searchItems, savedItems ->
-            Log.d(TAG, "combine resultItems) savedItems.size: ${savedItems.size}")
             _resultItems.update {
                 searchItems.map { searchItem ->
                     val savedItem = savedItems.find { it.imageUrl == searchItem.imageUrl }
@@ -85,6 +84,11 @@ class SearchViewModel @Inject constructor(
                 }
             }
         }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            getFoldersUsecase.invoke().collect {
+                _folders.value = it
+            }
+        }
 
         combine(_keyword, _resultItems) { keyword, resultItems ->
             Log.d(TAG, "combine new state)")
@@ -96,6 +100,12 @@ class SearchViewModel @Inject constructor(
         Log.d(TAG, "updateKeyword) newKeyword: $newKeyword")
         viewModelScope.launch {
             keywordRepository.setKeyword(newKeyword)
+        }
+    }
+
+    override fun incrementPage() {
+        viewModelScope.launch {
+            _page.value++
         }
     }
 
@@ -113,10 +123,4 @@ class SearchViewModel @Inject constructor(
 
     override fun getFolderColorHexById(folderId: Int): String =
         _folders.value.find { it.id == folderId }?.colorHex ?: FolderColor.NO_COLOR.colorHex
-
-    private suspend fun getSearchItems() {
-        getSearchItemsUsecase(_keyword.value).collect {
-            _searchItems.value = it
-        }
-    }
 }

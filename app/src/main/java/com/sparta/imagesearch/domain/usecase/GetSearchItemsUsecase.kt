@@ -10,11 +10,14 @@ import javax.inject.Inject
 
 class GetSearchItemsUsecase @Inject constructor(
     private val kakaoSearchRepository: KakaoSearchRepository
-){
-    suspend operator fun invoke(query:String): Flow<List<Item>> {
-        val imageResponseFlow = kakaoSearchRepository.getImages(query)
-        val videoResponseFlow = kakaoSearchRepository.getVideos(query)
-        return imageResponseFlow.combine(videoResponseFlow) { i, v ->
+) {
+    suspend operator fun invoke(query: String, page: Int): Flow<List<Item>> {
+        val imageResponseFlow =
+            kakaoSearchRepository.getImages(query = query, page = page)
+        val videoResponseFlow =
+            kakaoSearchRepository.getVideos(query = query, page = page)
+
+        return combine(imageResponseFlow, videoResponseFlow) { i, v ->
             val itemList = mutableListOf<Item>()
             if (i is ApiResponse.Success) {
                 itemList.addAll(i.data.documents?.map { it.toItem() } ?: emptyList())
@@ -22,7 +25,7 @@ class GetSearchItemsUsecase @Inject constructor(
             if (v is ApiResponse.Success) {
                 itemList.addAll(v.data.documents?.map { it.toItem() } ?: emptyList())
             }
-            itemList.toList().distinctBy { it.imageUrl }.sortedBy { it.time }
+            itemList.toList().distinctBy { it.imageUrl }
         }
     }
 }

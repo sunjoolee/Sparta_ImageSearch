@@ -1,6 +1,7 @@
 package com.sparta.imagesearch.presentation.search
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -62,8 +64,7 @@ val FAB_ICON_SIZE = 20.dp
 fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
-
-    ) {
+) {
     val searchScreenState by viewModel.state.collectAsState(initial = SearchScreenState())
     val searchScreenInputs = viewModel.inputs
 
@@ -73,10 +74,23 @@ fun SearchScreen(
         } else {
             StaggeredGridCells.Fixed(GRID_CELL_FIZED)
         }
+
     val gridState = rememberLazyStaggeredGridState()
     val showScrollToTopFab by remember {
         derivedStateOf {
             gridState.firstVisibleItemIndex > 0
+        }
+    }
+
+    val canScrollForward by remember {
+        derivedStateOf {
+            gridState.canScrollForward || searchScreenState.resultItems.isEmpty()
+        }
+    }
+    LaunchedEffect(canScrollForward) {
+        if (!canScrollForward) {
+            Log.d("SearchScreen", "canScrollForward = false")
+            searchScreenInputs.incrementPage()
         }
     }
 
