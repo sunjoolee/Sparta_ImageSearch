@@ -31,10 +31,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -49,8 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.Item
-import com.sparta.imagesearch.presentation.BottomNavItem
-import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
@@ -66,7 +62,7 @@ val FAB_ICON_SIZE = 20.dp
 fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
-    navToFolder: () -> Unit
+
 ) {
     val searchScreenState by viewModel.state.collectAsState(initial = SearchScreenState())
     val searchScreenInputs = viewModel.inputs
@@ -88,12 +84,6 @@ fun SearchScreen(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.scheme.background,
         contentColor = MaterialTheme.scheme.onBackground,
-        bottomBar = {
-            ImageSearchBottomNavBar(
-                selectedNavItem = BottomNavItem.Search,
-                onNavItemClick = navToFolder
-            )
-        },
         floatingActionButton = {
             AnimatedVisibility(
                 modifier = modifier.padding(Padding.default),

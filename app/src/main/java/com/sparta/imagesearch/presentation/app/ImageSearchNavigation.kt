@@ -1,32 +1,41 @@
 package com.sparta.imagesearch.presentation.app
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.navigation.NavController
-import com.sparta.imagesearch.presentation.app.ImageSearchScreens.FOLDER_SCREEN
-import com.sparta.imagesearch.presentation.app.ImageSearchScreens.SEARCH_SCREEN
+import com.sparta.imagesearch.R
 
-private object ImageSearchScreens{
-    const val SEARCH_SCREEN = "search_screen"
-    const val FOLDER_SCREEN = "folder_screen"
-}
-
-object ImageSearchDestinations{
-    const val SEARCH_ROUTE = SEARCH_SCREEN
-    const val FOLDER_ROUTE = FOLDER_SCREEN
+sealed class ImageSearchScreen {
+    data object SEARCH_SCREEN {
+        val route = "search_screen"
+        @StringRes
+        val bottomNavLabelId = R.string.menu_search
+        @DrawableRes
+        val bottomNavIconId = R.drawable.icon_search
+    }
+    data object FOLDER_SCREEN {
+        val route = "folder_screen"
+        @StringRes
+        val bottomNavLabelId = R.string.menu_folder
+        @DrawableRes
+        val bottomNavIconId = R.drawable.icon_folder
+    }
 }
 
 class ImageSearchNavigationActions(
     private val navController: NavController
-){
-    fun navigateToSearch(){
-        navController.navigate(ImageSearchDestinations.SEARCH_ROUTE){
-            popUpTo(ImageSearchDestinations.FOLDER_ROUTE){
+) {
+    fun navigateToSearch() {
+        navController.navigate(ImageSearchScreen.SEARCH_SCREEN.route) {
+            popUpTo(ImageSearchScreen.FOLDER_SCREEN.route) {
                 inclusive = true
             }
         }
     }
-    fun navigateToFolder(){
-        navController.navigate(ImageSearchDestinations.FOLDER_ROUTE){
-            popUpTo(ImageSearchDestinations.SEARCH_ROUTE){
+
+    fun navigateToFolder() {
+        navController.navigate(ImageSearchScreen.FOLDER_SCREEN.route) {
+            popUpTo(ImageSearchScreen.SEARCH_SCREEN.route) {
                 inclusive = true
             }
         }

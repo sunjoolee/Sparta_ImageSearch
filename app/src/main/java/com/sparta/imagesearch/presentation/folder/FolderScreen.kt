@@ -47,8 +47,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.Folder
 import com.sparta.imagesearch.domain.Item
-import com.sparta.imagesearch.presentation.BottomNavItem
-import com.sparta.imagesearch.presentation.ImageSearchBottomNavBar
 import com.sparta.imagesearch.presentation.ImageSearchItem
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
@@ -60,8 +58,7 @@ val FOLDER_LIST_ITEM_IMAGE_SCALE = 1.5f
 @Composable
 fun FolderScreen(
     modifier: Modifier = Modifier,
-    viewModel: FolderViewModel = hiltViewModel(),
-    navToSearch: () -> Unit
+    viewModel: FolderViewModel = hiltViewModel()
 ) {
     val folderScreenState by viewModel.state.collectAsState(initial = FolderScreenState())
     val folderScreenInputs = viewModel.inputs
@@ -76,12 +73,6 @@ fun FolderScreen(
                 onFolderClick = folderScreenInputs::selectFolder,
                 onAddClick = folderScreenInputs::openAddDialog,
                 onDeleteClick = folderScreenInputs::openDeleteDialog
-            )
-        },
-        bottomBar = {
-            ImageSearchBottomNavBar(
-                selectedNavItem = BottomNavItem.Folder,
-                onNavItemClick = navToSearch
             )
         }
     ) { innerPadding ->

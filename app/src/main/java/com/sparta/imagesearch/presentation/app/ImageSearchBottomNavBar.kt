@@ -1,4 +1,4 @@
-package com.sparta.imagesearch.presentation
+package com.sparta.imagesearch.presentation.app
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -15,19 +15,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import com.sparta.imagesearch.R
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
 
+private val BOTTOM_NAV_ITEM_IMAGE_SCALE = 1.2f
 
 @Composable
 fun ImageSearchBottomNavBar(
-    bottomNavItems: List<BottomNavItem> = listOf(BottomNavItem.Search, BottomNavItem.Folder),
-    selectedNavItem: BottomNavItem,
-    onNavItemClick: () -> Unit
+    curDestination: String,
+    navigationActions: ImageSearchNavigationActions
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -35,16 +35,23 @@ fun ImageSearchBottomNavBar(
         contentColor = MaterialTheme.scheme.onSurface
     ) {
         Row(
+            modifier = Modifier.padding(vertical = Padding.medium),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            bottomNavItems.forEach { navItem ->
+            with(ImageSearchScreen.SEARCH_SCREEN) {
                 ImageSearchBottomNavItem(
-                    iconId = navItem.iconId,
-                    labelId = navItem.labelId,
-                    selected = (selectedNavItem == navItem),
-                    onClick = {
-                        if (navItem != selectedNavItem) onNavItemClick()
-                    }
+                    iconId = bottomNavIconId,
+                    labelId = bottomNavLabelId,
+                    selected = (route == curDestination),
+                    onClick = navigationActions::navigateToSearch
+                )
+            }
+            with(ImageSearchScreen.FOLDER_SCREEN) {
+                ImageSearchBottomNavItem(
+                    iconId = bottomNavIconId,
+                    labelId = bottomNavLabelId,
+                    selected = (route == curDestination),
+                    onClick = navigationActions::navigateToFolder
                 )
             }
         }
@@ -60,12 +67,16 @@ fun ImageSearchBottomNavItem(
 ) {
     Column(
         modifier = Modifier
-            .padding(vertical = Padding.medium)
-            .clickable(onClick = onClick),
+            .padding(Padding.medium)
+            .clickable(
+                onClick = { if(!selected) onClick() }
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            modifier = Modifier.padding(bottom = Padding.small),
+            modifier = Modifier
+                .scale(BOTTOM_NAV_ITEM_IMAGE_SCALE)
+                .padding(bottom = Padding.medium),
             painter = painterResource(id = iconId),
             colorFilter = ColorFilter.tint(
                 if (selected) MaterialTheme.scheme.tertiary
@@ -75,17 +86,11 @@ fun ImageSearchBottomNavItem(
         )
         Text(
             color =
-            if (selected) MaterialTheme.scheme.onSurface
-            else MaterialTheme.scheme.disabled,
-            text = stringResource(id = labelId)
+            if (selected) MaterialTheme.scheme.onSurface else MaterialTheme.scheme.disabled,
+            text = stringResource(id = labelId),
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
 
-sealed class BottomNavItem(
-    @DrawableRes val iconId: Int,
-    @StringRes val labelId: Int
-) {
-    data object Search : BottomNavItem(R.drawable.icon_search, R.string.menu_search)
-    data object Folder : BottomNavItem(R.drawable.icon_folder, R.string.menu_folder)
-}
+
