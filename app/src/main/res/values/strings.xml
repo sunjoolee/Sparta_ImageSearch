@@ -16,7 +16,7 @@
 
     <string name="add_folder_title">폴더 추가하기</string>
     <string name="add_folder_name">폴더 이름</string>
-    <string name="add_folder_name_hint">폴더 이름을 입력하세요.</string>
+    <string name="add_folder_name_hint">폴더 이름을 입력하세요</string>
     <string name="add_folder_color">폴더 색상</string>
     <string name="add_folder_negative">닫기</string>
     <string name="add_folder_positive">추가</string>
@@ -26,7 +26,7 @@
     <string name="delete_folder_negative">닫기</string>
     <string name="delete_folder_positive">삭제</string>
 
-    <string name="warning_delete_title">삭제한 폴더는 복구할 수 없습니다.</string>
+    <string name="warning_delete_title">삭제한 폴더는 복구할 수 없습니다</string>
     <string name="warning_delete_body">그래도 삭제하시겠습니까?</string>
     <string name="warning_negative">취소</string>
     <string name="warning_positive">삭제</string>

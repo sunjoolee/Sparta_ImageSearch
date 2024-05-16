@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,12 +23,13 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
 
-val SEARCH_BAR_LEADING_ICON_SCALE = 1.5f
-val SEARCH_BAR_CLEAR_ICON_SCALE = 0.6f
+private const val SEARCH_BAR_LEADING_ICON_SCALE = 1.5f
+private const val SEARCH_BAR_CLEAR_ICON_SIZE = 18
 
 @Composable
 fun MyTextField(
@@ -137,7 +139,7 @@ fun MyDecorationBox(
                 Image(
                     modifier = Modifier
                         .weight(0.1f)
-                        .scale(SEARCH_BAR_CLEAR_ICON_SCALE)
+                        .size(SEARCH_BAR_CLEAR_ICON_SIZE.dp)
                         .padding(Padding.small)
                         .clickable { clearValueText() },
                     painter = painterResource(id = R.drawable.icon_clear_textfield),

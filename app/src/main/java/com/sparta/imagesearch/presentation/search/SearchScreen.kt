@@ -2,6 +2,7 @@ package com.sparta.imagesearch.presentation.search
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -35,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -54,9 +57,9 @@ import com.sparta.imagesearch.presentation.util.compositionlocal.LocalButtonColo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-val GRID_CELL_MIN_SIZE = 128.dp
-val GRID_CELL_FIZED = 2
-val FAB_ICON_SIZE = 20.dp
+private const val GRID_CELL_MIN_SIZE = 128
+private const val GRID_CELL_FIZED = 2
+private const val FAB_ICON_SIZE = 20
 
 @Composable
 fun SearchScreen(
@@ -64,12 +67,21 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
 
     ) {
+    val localConfig = LocalConfiguration.current
+
     val searchScreenState by viewModel.state.collectAsState(initial = SearchScreenState())
     val searchScreenInputs = viewModel.inputs
 
+    val searchBarOffset = animateOffsetAsState(
+        targetValue =
+        if (searchScreenState.resultItems.isEmpty()) Offset(0f, localConfig.screenHeightDp.toFloat()*1/3)
+        else Offset(0f, 0f),
+        label = "search_bar_offset"
+    )
+
     val gridCellConfiguration =
-        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            StaggeredGridCells.Adaptive(minSize = GRID_CELL_MIN_SIZE)
+        if (localConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            StaggeredGridCells.Adaptive(minSize = GRID_CELL_MIN_SIZE.dp)
         } else {
             StaggeredGridCells.Fixed(GRID_CELL_FIZED)
         }
@@ -97,7 +109,7 @@ fun SearchScreen(
             modifier = modifier.padding(innerPadding),
         ) {
             ImageSearchBar(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxWidth().offset(y = searchBarOffset.value.y.dp),
                 keyword = searchScreenState.keyword,
                 onSearch = searchScreenInputs::updateKeyword
             )
@@ -126,7 +138,7 @@ fun ImageSearchBar(
         )
     }
     Row(
-        modifier = Modifier
+        modifier = modifier
             .background(Color.Transparent)
             .padding(horizontal = Padding.default)
             .padding(top = Padding.default),
@@ -142,7 +154,6 @@ fun ImageSearchBar(
                 onValueChange = {
                     textFieldValue = it.copy(selection = TextRange(it.text.length))
                 },
-                modifier = modifier,
                 leadingIconId = R.drawable.icon_search,
                 placeholderTextId = R.string.search_hint,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -233,7 +244,7 @@ fun ScrollToTopFab(
                 contentDescription = "",
                 modifier = Modifier
                     .padding(Padding.xSmall)
-                    .size(FAB_ICON_SIZE)
+                    .size(FAB_ICON_SIZE.dp)
             )
         }
     }
