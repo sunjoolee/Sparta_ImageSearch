@@ -125,7 +125,6 @@ fun ImageSearchBar(
             TextFieldValue(text = keyword, selection = TextRange(keyword.length))
         )
     }
-
     Row(
         modifier = Modifier
             .background(Color.Transparent)
@@ -147,7 +146,8 @@ fun ImageSearchBar(
                 leadingIconId = R.drawable.icon_search,
                 placeholderTextId = R.string.search_hint,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = { onSearch(textFieldValue.text) })
+                keyboardActions = KeyboardActions(onSearch = { onSearch(textFieldValue.text) }),
+                clearTextFieldButton = true
             )
         }
         SearchBarButton(
