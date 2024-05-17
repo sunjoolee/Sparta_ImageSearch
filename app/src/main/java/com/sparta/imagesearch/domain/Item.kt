@@ -1,6 +1,7 @@
 package com.sparta.imagesearch.domain
 
 data class Item(
+    val itemType: ItemType,
     val imageUrl: String,
     val source: String,
     val time: String,
