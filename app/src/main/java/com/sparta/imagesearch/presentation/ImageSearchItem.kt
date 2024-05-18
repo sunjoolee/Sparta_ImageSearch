@@ -28,19 +28,22 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.glide.GlideImageState
 import com.sparta.imagesearch.R
 import com.sparta.imagesearch.domain.FolderColor
 import com.sparta.imagesearch.domain.Item
+import com.sparta.imagesearch.domain.ItemType
 import com.sparta.imagesearch.presentation.theme.Padding
 import com.sparta.imagesearch.presentation.theme.scheme
 import com.sparta.imagesearch.presentation.util.ShimmerBrush
 
-val ITEM_HEART_SCALE = 1.2f
-val ITEM_HEART_ICON_SCALE = 1.5f
-val ITEM_IMAGE_SHIMMER_SIZE = 160.dp
+private const val ITEM_HEART_SCALE = 1.2f
+private const val ITEM_HEART_ICON_SCALE = 1.5f
+private const val ITEM_IMAGE_SHIMMER_SIZE = 160
+private const val ITEM_IMAGE_VIDEO_ICON_SIZE = 20
 
 @Composable
 fun ImageSearchItem(
@@ -68,6 +71,7 @@ fun ImageSearchItem(
                     modifier = modifier
                         .align(Alignment.Center)
                         .background(MaterialTheme.scheme.disabled),
+                    itemType = item.itemType,
                     imageUrl = item.imageUrl
                 )
                 ItemHeart(
@@ -100,29 +104,43 @@ fun ImageSearchItem(
 
 @Composable
 fun ItemImage(
+    modifier: Modifier = Modifier,
+    itemType: ItemType,
     imageUrl: String,
-    modifier: Modifier = Modifier
 ) {
     var state by remember { mutableStateOf<GlideImageState>(GlideImageState.None) }
 
-    if (state is GlideImageState.None || state is GlideImageState.Loading) {
-        Spacer(
-            modifier = modifier
-                .fillMaxWidth()
-                .size(ITEM_IMAGE_SHIMMER_SIZE)
-                .background(brush = ShimmerBrush())
+    Box {
+        if (state is GlideImageState.None || state is GlideImageState.Loading) {
+            Spacer(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .size(ITEM_IMAGE_SHIMMER_SIZE.dp)
+                    .background(brush = ShimmerBrush())
+            )
+        } else {
+            if (itemType == ItemType.VIDEO)
+                Image(
+                    modifier = Modifier
+                        .size(ITEM_IMAGE_VIDEO_ICON_SIZE.dp)
+                        .align(Alignment.Center)
+                        .zIndex(1f),
+                    painter = painterResource(id = R.drawable.icon_play_video),
+                    colorFilter = ColorFilter.tint(MaterialTheme.scheme.disabled),
+                    contentDescription = ""
+                )
+        }
+        GlideImage(
+            modifier = modifier,
+            imageModel = { imageUrl },
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.FillWidth
+            ),
+            onImageStateChanged = {
+                state = it
+            }
         )
     }
-    GlideImage(
-        modifier = modifier,
-        imageModel = { imageUrl },
-        imageOptions = ImageOptions(
-            contentScale = ContentScale.FillWidth
-        ),
-        onImageStateChanged = {
-            state = it
-        }
-    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
