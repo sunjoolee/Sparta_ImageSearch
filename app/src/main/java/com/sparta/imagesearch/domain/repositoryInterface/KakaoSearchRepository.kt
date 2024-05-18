@@ -6,6 +6,13 @@ import com.sparta.imagesearch.data.source.remote.KakaoSearchDTO
 import kotlinx.coroutines.flow.Flow
 
 interface KakaoSearchRepository {
-    suspend fun getImages(query: String): Flow<ApiResponse<KakaoSearchDTO<Document.ImageDocument>>>
-    suspend fun getVideos(query: String): Flow<ApiResponse<KakaoSearchDTO<Document.VideoDocument>>>
+    suspend fun getImages(
+        query: String,
+        page: Int
+    ): Flow<ApiResponse<KakaoSearchDTO<Document.ImageDocument>>>
+
+    suspend fun getVideos(
+        query: String,
+        page: Int
+    ): Flow<ApiResponse<KakaoSearchDTO<Document.VideoDocument>>>
 }

@@ -13,14 +13,14 @@ import javax.inject.Inject
 class KakaoSearchRepositoryImpl @Inject constructor(
     private val kakaoSearchSource: KakaoSearchApi
 ) : KakaoSearchRepository {
-    override suspend fun getImages(query: String): Flow<ApiResponse<KakaoSearchDTO<Document.ImageDocument>>> =
+    override suspend fun getImages(query: String, page:Int): Flow<ApiResponse<KakaoSearchDTO<Document.ImageDocument>>> =
         handleKakaoSearchDTO {
-            kakaoSearchSource.getImageDTO(query)
+            kakaoSearchSource.getImageDTO(query = query, page = page)
         }
 
-    override suspend fun getVideos(query: String): Flow<ApiResponse<KakaoSearchDTO<Document.VideoDocument>>> =
+    override suspend fun getVideos(query: String, page:Int): Flow<ApiResponse<KakaoSearchDTO<Document.VideoDocument>>> =
         handleKakaoSearchDTO {
-            kakaoSearchSource.getVideoDTO(query)
+            kakaoSearchSource.getVideoDTO(query = query, page = page)
         }
 
     private fun <T:Document> handleKakaoSearchDTO(

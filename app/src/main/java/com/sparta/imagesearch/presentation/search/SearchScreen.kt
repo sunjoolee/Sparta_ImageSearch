@@ -1,6 +1,7 @@
 package com.sparta.imagesearch.presentation.search
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.Image
@@ -28,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -64,8 +66,7 @@ private const val FAB_ICON_SIZE = 20
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    viewModel: SearchViewModel = hiltViewModel(),
-
+    viewModel: SearchViewModel = hiltViewModel()
     ) {
     val localConfig = LocalConfiguration.current
 
@@ -89,6 +90,18 @@ fun SearchScreen(
     val showScrollToTopFab by remember {
         derivedStateOf {
             gridState.firstVisibleItemIndex > 0
+        }
+    }
+
+    val canScrollForward by remember {
+        derivedStateOf {
+            gridState.canScrollForward || searchScreenState.resultItems.isEmpty()
+        }
+    }
+    LaunchedEffect(canScrollForward) {
+        if (!canScrollForward) {
+            Log.d("SearchScreen", "canScrollForward = false")
+            searchScreenInputs.incrementPage()
         }
     }
 
